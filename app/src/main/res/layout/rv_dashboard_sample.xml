@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="4dp">
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image_post"
+            android:layout_width="@dimen/_40mdp"
+            android:layout_height="@dimen/_40mdp"
+            android:src="@drawable/p3"
+
+            app:civ_border_color="#FF000000"
+            app:civ_border_width="2dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Ramanand Kumar"
+                android:textColor="@color/black"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/about"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-4dp"
+                android:text="Student of CS" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="16dp"
+            app:srcCompat="@drawable/ic_more" />
+    </LinearLayout>
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/postImg"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_400mdp"
+        android:layout_marginTop="16dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/p5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+
+        app:riv_corner_radius="12dip"
+        app:riv_mutate_background="true"
+        app:riv_oval="false" />
+
+    <ImageView
+        android:id="@+id/saveImg"
+        android:layout_width="@dimen/_24mdp"
+        android:layout_height="@dimen/_24mdp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/postImg"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        app:srcCompat="@drawable/ic_bookmark"
+        app:tint="@color/white" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/postImg">
+
+        <TextView
+            android:id="@+id/likeTV"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_18mdp"
+            android:text="324"
+            android:gravity="center_vertical"
+            android:textSize="16dp"
+            android:drawablePadding="8dp"
+            android:drawableLeft="@drawable/ic_up"
+            android:layout_marginEnd="24dp"
+            />
+
+        <TextView
+            android:id="@+id/commentTV"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_18mdp"
+            android:text="324"
+            android:gravity="center_vertical"
+            android:textSize="16dp"
+            android:drawablePadding="8dp"
+            android:drawableLeft="@drawable/ic_comment"
+            android:layout_marginEnd="24dp"
+            />
+
+        <TextView
+            android:id="@+id/shareTV"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_18mdp"
+            android:text="324"
+            android:gravity="center_vertical"
+            android:textSize="16dp"
+            android:drawablePadding="8dp"
+            android:drawableLeft="@drawable/ic_share"
+            />
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
