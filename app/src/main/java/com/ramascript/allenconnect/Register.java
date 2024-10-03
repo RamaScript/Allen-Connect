@@ -25,8 +25,27 @@ public class Register extends AppCompatActivity {
             return insets;
         });
 
-        TextView loginTitleTV;
-        loginTitleTV = findViewById(R.id.loginTitleTV);
+        String userType = getIntent().getStringExtra("userType");
+
+        if(userType.equals("Student")){
+            findViewById(R.id.studentCV).setVisibility(View.VISIBLE);
+            findViewById(R.id.professorCV).setVisibility(View.GONE);
+            findViewById(R.id.alumniCV).setVisibility(View.GONE);
+        } else if (userType.equals("Alumni")) {
+            findViewById(R.id.alumniCV).setVisibility(View.VISIBLE);
+            findViewById(R.id.professorCV).setVisibility(View.GONE);
+            findViewById(R.id.studentCV).setVisibility(View.GONE);
+        } else if (userType.equals("Professor")) {
+            findViewById(R.id.professorCV).setVisibility(View.VISIBLE);
+            findViewById(R.id.alumniCV).setVisibility(View.GONE);
+            findViewById(R.id.studentCV).setVisibility(View.GONE);
+        }else {
+            findViewById(R.id.studentCV).setVisibility(View.GONE);
+            findViewById(R.id.professorCV).setVisibility(View.GONE);
+            findViewById(R.id.alumniCV).setVisibility(View.GONE);
+        }
+
+
 
         AppCompatButton backBtn = findViewById(R.id.backBtn);
 

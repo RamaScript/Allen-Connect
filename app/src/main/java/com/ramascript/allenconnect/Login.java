@@ -3,6 +3,7 @@ package com.ramascript.allenconnect;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +24,11 @@ public class Login extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        TextView loginTitleTV;
+        loginTitleTV = findViewById(R.id.loginTitleTV);
+        String userType = getIntent().getStringExtra("userType")+" Login" ;
+        loginTitleTV.setText(userType);
 
         AppCompatButton loginBtn = findViewById(R.id.loginBtn);
         AppCompatButton backBtn = findViewById(R.id.backBtn);

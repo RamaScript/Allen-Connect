@@ -7,8 +7,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
+import com.ramascript.allenconnect.Adapters.NotificationViewPagerAdapter;
+import com.ramascript.allenconnect.Adapters.chatTabViewpagerAdapter;
 
 public class Chat extends AppCompatActivity {
+
+    ViewPager viewPager;
+    TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,5 +28,11 @@ public class Chat extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        viewPager = findViewById(R.id.viewPagerChat);
+//        viewPager.setAdapter(new NotificationViewPagerAdapter(getChildFragmentManager()));
+        viewPager.setAdapter(new chatTabViewpagerAdapter(getSupportFragmentManager()));
+        tabLayout = findViewById(R.id.tabLayoutChat);
+        tabLayout.setupWithViewPager(viewPager);
     }
 }

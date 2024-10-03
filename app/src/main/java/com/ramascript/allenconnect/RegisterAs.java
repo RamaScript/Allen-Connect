@@ -25,33 +25,33 @@ public class RegisterAs extends AppCompatActivity {
             return insets;
         });
 
-        LinearLayout tutorRegisterLL = findViewById(R.id.tutorRegisterLL);
-        LinearLayout parentRegisterLL = findViewById(R.id.parentRegisterLL);
-        LinearLayout adminRegisterLL = findViewById(R.id.adminRegisterLL);
+        LinearLayout studentRegisterLL = findViewById(R.id.studentRegisterLL);
+        LinearLayout alumniRegisterLL = findViewById(R.id.alumniRegisterLL);
+        LinearLayout professorRegisterLL = findViewById(R.id.professorRegisterLL);
 
-        tutorRegisterLL.setOnClickListener(new View.OnClickListener() {
+        studentRegisterLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(RegisterAs.this, Register.class);
-
+                i.putExtra("userType", "Student");
                 startActivity(i);
             }
         });
 
-        parentRegisterLL.setOnClickListener(new View.OnClickListener() {
+        alumniRegisterLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(RegisterAs.this, Register.class);
-
+                i.putExtra("userType", "Alumni");
                 startActivity(i);
             }
         });
 
-        adminRegisterLL.setOnClickListener(new View.OnClickListener() {
+        professorRegisterLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(RegisterAs.this, Register.class);
-
+                i.putExtra("userType", "Professor");
                 startActivity(i);
             }
         });

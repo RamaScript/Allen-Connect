@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -48,4 +49,7 @@ dependencies {
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation("com.github.MrNouri:DynamicSizes:1.0")
     implementation("com.makeramen:roundedimageview:2.3.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation("com.google.firebase:firebase-auth")
+
 }

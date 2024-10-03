@@ -25,33 +25,33 @@ public class LoginAs extends AppCompatActivity {
             return insets;
         });
 
-        LinearLayout tutorLoginLL = findViewById(R.id.tutorLoginLL);
-        LinearLayout parentLoginLL = findViewById(R.id.parentLoginLL);
-        LinearLayout adminLoginLL = findViewById(R.id.adminLoginLL);
+        LinearLayout StudentLoginLL = findViewById(R.id.studentLoginLL);
+        LinearLayout AlumniLoginLL = findViewById(R.id.alumniLoginLL);
+        LinearLayout ProfessorLoginLL = findViewById(R.id.professorLoginLL);
 
-        tutorLoginLL.setOnClickListener(new View.OnClickListener() {
+        StudentLoginLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(LoginAs.this, Login.class);
-
+                i.putExtra("userType", "Student");
                 startActivity(i);
             }
         });
 
-        parentLoginLL.setOnClickListener(new View.OnClickListener() {
+        AlumniLoginLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(LoginAs.this, Login.class);
-                
+                i.putExtra("userType", "Alumni");
                 startActivity(i);
             }
         });
 
-        adminLoginLL.setOnClickListener(new View.OnClickListener() {
+        ProfessorLoginLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(LoginAs.this, Login.class);
-
+                i.putExtra("userType", "Professor");
                 startActivity(i);
             }
         });

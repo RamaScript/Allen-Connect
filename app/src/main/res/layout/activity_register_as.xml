@@ -54,7 +54,7 @@
                 android:textSize="16dp" />
 
             <LinearLayout
-                android:id="@+id/tutorRegisterLL"
+                android:id="@+id/studentRegisterLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -68,7 +68,7 @@
                 android:paddingBottom="6dp">
 
                 <TextView
-                    android:id="@+id/registerAsTutorTV"
+                    android:id="@+id/registerAsStudentTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -86,7 +86,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/parentRegisterLL"
+                android:id="@+id/alumniRegisterLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -100,7 +100,7 @@
                 android:paddingBottom="6dp">
 
                 <TextView
-                    android:id="@+id/registerAsParentTV"
+                    android:id="@+id/registerAsAlumniTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -118,7 +118,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/adminRegisterLL"
+                android:id="@+id/professorRegisterLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -132,7 +132,7 @@
                 android:paddingBottom="6dp">
 
                 <TextView
-                    android:id="@+id/registerAsAdminTV"
+                    android:id="@+id/registerAsProfessorTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"

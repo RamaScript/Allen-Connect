@@ -54,7 +54,7 @@
                 android:textSize="16dp" />
 
             <LinearLayout
-                android:id="@+id/tutorLoginLL"
+                android:id="@+id/studentLoginLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -68,7 +68,7 @@
                 android:paddingBottom="6dp">
 
                 <TextView
-                    android:id="@+id/loginAsTutorTV"
+                    android:id="@+id/loginAsStudentTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -86,7 +86,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/parentLoginLL"
+                android:id="@+id/alumniLoginLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -100,7 +100,7 @@
                 android:paddingBottom="6dp">
 
                 <TextView
-                    android:id="@+id/loginAsParentTV"
+                    android:id="@+id/loginAsAlumniTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -118,7 +118,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/adminLoginLL"
+                android:id="@+id/professorLoginLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -132,7 +132,7 @@
                 android:paddingBottom="6dp">
 
                 <TextView
-                    android:id="@+id/loginAsAdminTV"
+                    android:id="@+id/loginAsProfessorTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"

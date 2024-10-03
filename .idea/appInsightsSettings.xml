@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.ramascript.allenconnect" />
+                  <option name="mobileSdkAppId" value="1:215900927950:android:03260e666de9179aec1d9f" />
+                  <option name="projectId" value="allenconnect" />
+                  <option name="projectNumber" value="215900927950" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:diagonal="http://schemas.android.com/tools">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/notification_profile_image"
+        android:layout_width="@dimen/_40mdp"
+        android:layout_height="@dimen/_40mdp"
+        android:src="@drawable/p3"
+        app:civ_border_color="@color/black"
+        app:civ_border_width="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/notificationTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/poppins"
+        android:text="Ramanand mentioned u in comment"
+        android:textColor="@color/black"
+
+        android:textSize="@dimen/_12font_mdp"
+        app:layout_constraintBottom_toBottomOf="@+id/notification_profile_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/notification_profile_image"
+        app:layout_constraintTop_toTopOf="@+id/notification_profile_image"
+        app:layout_constraintVertical_bias="0.13999999" />
+
+    <TextView
+        android:id="@+id/notificationTimeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Just Now"
+        app:layout_constraintEnd_toEndOf="@+id/notificationTV"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/notificationTV"
+        app:layout_constraintTop_toBottomOf="@+id/notificationTV" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

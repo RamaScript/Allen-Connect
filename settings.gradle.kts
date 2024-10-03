@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AllenGram"
+rootProject.name = "AllenConnect"
 include(":app")
  
