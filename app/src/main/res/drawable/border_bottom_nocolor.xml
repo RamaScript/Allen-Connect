@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Shadow Layer -->
+    <item android:bottom="3dp" android:gravity="bottom">
+        <shape>
+            <gradient
+            android:angle="90" /> <!-- Vertical gradient for shadow effect -->
+        </shape>
+    </item>
+
+    <!-- Bottom Border Layer -->
+    <item android:gravity="bottom">
+        <shape>
+            <size android:height="1dp" />
+            <solid android:color="@color/transparent_black" /> <!-- Bottom border color -->
+        </shape>
+    </item>
+
+</layer-list>

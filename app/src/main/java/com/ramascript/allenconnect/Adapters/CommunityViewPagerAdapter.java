@@ -7,11 +7,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.ramascript.allenconnect.Fragments.ActivityNotificationFragment;
+import com.ramascript.allenconnect.Fragments.CommunityAlumniFragment;
+import com.ramascript.allenconnect.Fragments.CommunityProfessorFragment;
+import com.ramascript.allenconnect.Fragments.CommunityStudentFragment;
 import com.ramascript.allenconnect.Fragments.EventsNotificationFragment;
 import com.ramascript.allenconnect.Fragments.RequestsNotificationFragment;
 
-public class NotificationViewPagerAdapter extends FragmentPagerAdapter {
-    public NotificationViewPagerAdapter(@NonNull FragmentManager fm) {
+public class CommunityViewPagerAdapter extends FragmentPagerAdapter {
+    public CommunityViewPagerAdapter(@NonNull FragmentManager fm) {
         super(fm);
     }
 
@@ -19,10 +22,10 @@ public class NotificationViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position){
-            case 0: return new ActivityNotificationFragment();
-            case 1: return new RequestsNotificationFragment();
-            case 2: return new EventsNotificationFragment();
-            default: return new ActivityNotificationFragment();
+            case 0: return new CommunityStudentFragment();
+            case 1: return new CommunityProfessorFragment();
+            case 2: return new CommunityAlumniFragment();
+            default: return new CommunityStudentFragment();
         }
     }
 
@@ -36,13 +39,12 @@ public class NotificationViewPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         String title = null;
         if (position == 0){
-            title = "Activity";
+            title = "Student";
         } else if (position == 1){
-            title = "Requests";
+            title = "Professor";
         } else if (position == 2){
-            title = "Events";
+            title = "Alumni";
         }
         return title;
     }
-
 }

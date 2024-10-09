@@ -15,7 +15,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ramascript.allenconnect.Fragments.HomeFragment;
 import com.ramascript.allenconnect.Fragments.JobsFragment;
-import com.ramascript.allenconnect.Fragments.NetworkFragment;
+import com.ramascript.allenconnect.Fragments.CommunityFragment;
 import com.ramascript.allenconnect.Fragments.PostFragment;
 import com.ramascript.allenconnect.Fragments.ProfileFragment;
 import com.ramascript.allenconnect.databinding.ActivityMainBinding;
@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
                 if (itemId == R.id.navigation_home){
                     loadFragment(new HomeFragment(), false);
                 }
-                else if (itemId == R.id.navigation_network) {
-                    loadFragment(new NetworkFragment(), false);
+                else if (itemId == R.id.navigation_community) {
+                    loadFragment(new CommunityFragment(), false);
                 }
                 else if (itemId == R.id.navigation_post) {
                     loadFragment(new PostFragment(), false);

@@ -19,15 +19,16 @@ import com.ramascript.allenconnect.Chat;
 import com.ramascript.allenconnect.Models.DashBoardModel;
 import com.ramascript.allenconnect.Models.StoryModel;
 import com.ramascript.allenconnect.R;
+import com.ramascript.allenconnect.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
+    // Step 1: Declare the binding variable
+    private FragmentHomeBinding binding;
 
-    RecyclerView storyRv, dashboardRv;
     ArrayList<StoryModel> list;
     ArrayList<DashBoardModel> dashBoardList;
-
 
     public HomeFragment() {
         // Required empty public constructor
@@ -41,14 +42,14 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        // Step 2: Inflate the layout using binding
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
-        ImageView notificationHomeIV = view.findViewById(R.id.notificationHomeIV);
-        notificationHomeIV.setOnClickListener(new View.OnClickListener() {
+        // Step 3: Use binding to access views instead of findViewById
+        binding.notificationHomeIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    // he chatgpt mujhe yaha ka code do taki mai apne notification fragmnet me ja saku
                 // Create an instance of the NotificationFragment
                 Fragment notificationFragment = new NotificationFragment();
 
@@ -56,15 +57,14 @@ public class HomeFragment extends Fragment {
                 FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
 
                 // Replace the fragment container with the new fragment and add it to the backstack
-                transaction.replace(R.id.container, notificationFragment); // Replace 'fragment_container' with your actual container ID
-                transaction.addToBackStack(null); // Adds this transaction to the backstack so the user can navigate back
-                transaction.commit(); // Commit the transaction
+                transaction.replace(R.id.container, notificationFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 
-        ImageView chatHomeIV = view.findViewById(R.id.chatHomeIV);
-
-        chatHomeIV.setOnClickListener(new View.OnClickListener() {
+        // Step 3: For the chatHomeIV
+        binding.chatHomeIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getContext(), Chat.class);
@@ -72,7 +72,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        storyRv = view.findViewById(R.id.storyRV);
+        // Step 4: Use binding to access RecyclerViews and setup adapters
         list = new ArrayList<>();
         list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p7, "Ramanand"));
         list.add(new StoryModel(R.drawable.p7, R.drawable.ic_live, R.drawable.p3, "Rajat"));
@@ -83,15 +83,13 @@ public class HomeFragment extends Fragment {
         list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p1, "hum"));
 
         StoryAdapter adapter = new StoryAdapter(list, getContext());
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
-        storyRv.setLayoutManager(layoutManager);
-        storyRv.setNestedScrollingEnabled(false);
-        storyRv.setAdapter(adapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        binding.storyRV.setLayoutManager(layoutManager);
+        binding.storyRV.setNestedScrollingEnabled(false);
+        binding.storyRV.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        dashboardRv = view.findViewById(R.id.dashBoardRV);
         dashBoardList = new ArrayList<>();
-
         dashBoardList.add(new DashBoardModel(R.drawable.p7, R.drawable.p5, R.drawable.ic_bookmark,
                 "Ramanand", "Student CS", "370", "310", "518"));
         dashBoardList.add(new DashBoardModel(R.drawable.p8, R.drawable.p1, R.drawable.ic_bookmark,
@@ -101,13 +99,13 @@ public class HomeFragment extends Fragment {
         dashBoardList.add(new DashBoardModel(R.drawable.p2, R.drawable.p6, R.drawable.ic_bookmark,
                 "Sohan", "Designer", "200", "180", "250"));
 
-        DashboardAdapter dashboardAdapter = new DashboardAdapter(dashBoardList,getContext());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
-        dashboardRv.setLayoutManager(linearLayoutManager);
-        dashboardRv.setNestedScrollingEnabled(false);
-        dashboardRv.setAdapter(dashboardAdapter);
-
+        DashboardAdapter dashboardAdapter = new DashboardAdapter(dashBoardList, getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        binding.dashBoardRV.setLayoutManager(linearLayoutManager);
+        binding.dashBoardRV.setNestedScrollingEnabled(false);
+        binding.dashBoardRV.setAdapter(dashboardAdapter);
 
         return view;
     }
+
 }

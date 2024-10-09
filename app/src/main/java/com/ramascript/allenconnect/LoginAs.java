@@ -12,7 +12,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class LoginAs extends AppCompatActivity {
+
+    FirebaseUser currentUser;
+    FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,5 +73,19 @@ public class LoginAs extends AppCompatActivity {
                 finish();
             }
         });
+
+        auth = FirebaseAuth.getInstance();
+        currentUser = auth.getCurrentUser();
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(currentUser != null){
+            Intent i = new Intent(LoginAs.this, MainActivity.class);
+            startActivity(i);
+            finish();
+        }
     }
 }

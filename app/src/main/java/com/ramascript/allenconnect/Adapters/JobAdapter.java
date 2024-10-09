@@ -11,38 +11,37 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ramascript.allenconnect.Models.NotificationModel;
+import com.ramascript.allenconnect.Models.JobModel;
 import com.ramascript.allenconnect.R;
+import com.ramascript.allenconnect.databinding.RvJobsBinding;
 
 import java.util.ArrayList;
 
-public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.viewHolder>{
+public class JobAdapter extends RecyclerView.Adapter<JobAdapter.viewHolder> {
 
-    ArrayList<NotificationModel> list;
     Context context;
+    ArrayList<JobModel> list;
 
-    public NotificationAdapter(ArrayList<NotificationModel> list, Context context) {
-        this.list = list;
+    public JobAdapter(Context context, ArrayList<JobModel> list) {
         this.context = context;
+        this.list = list;
     }
 
     @NonNull
     @Override
     public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        View view = LayoutInflater.from(context).inflate(R.layout.rv_activity_notification, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.rv_jobs,parent,false);
 
         return new viewHolder(view);
+
     }
 
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        NotificationModel model = list.get(position);
-
-        holder.profile.setImageResource(model.getProfile());
-        holder.notification.setText(Html.fromHtml(model.getNotification() ));
-        holder.time.setText(model.getTime());
-
+        JobModel jobModel = list.get(position);
+        holder.companyLogo.setImageResource(jobModel.getCompanyLogo());
+        holder.companyName.setText(jobModel.getComapanyName());
+        holder.jobTitle.setText(jobModel.getJobTitle());
     }
 
     @Override
@@ -52,15 +51,20 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
     public class viewHolder extends RecyclerView.ViewHolder{
 
-        ImageView profile;
-        TextView notification, time;
+        RvJobsBinding binding;
+
+        ImageView companyLogo;
+        TextView jobTitle,companyName;
+
 
         public viewHolder(@NonNull View itemView) {
             super(itemView);
 
-            profile = itemView.findViewById(R.id.notification_profile_image);
-            notification = itemView.findViewById(R.id.notificationTV);
-            time = itemView.findViewById(R.id.notificationTimeTV);
+            binding = RvJobsBinding.bind(itemView);
+
+            companyLogo = binding.compnayLogo;
+            jobTitle = binding.jobTitle;
+            companyName = binding.comapanyName;
         }
     }
 }

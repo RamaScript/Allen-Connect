@@ -7,6 +7,21 @@
     android:background="@drawable/bg_register_login"
     android:layout_height="match_parent"
     tools:context=".Login">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/backBtn"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/round"
+        android:backgroundTint="@color/btn_color"
+        android:drawableStart="@drawable/arrow_back"
+        android:drawableTint="@color/white"
+        android:paddingStart="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,9 +61,8 @@
                 android:layout_marginTop="12dp"
                 />
 
-
             <EditText
-                android:id="@+id/editTextText"
+                android:id="@+id/usernameET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -59,7 +73,7 @@
                 />
 
             <EditText
-                android:id="@+id/editTextText2"
+                android:id="@+id/passwordET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -86,20 +100,6 @@
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/backBtn"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/round"
-        android:backgroundTint="@color/btn_color"
-        android:drawableStart="@drawable/arrow_back"
-        android:drawableTint="@color/white"
-        android:paddingStart="12dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -30,7 +30,6 @@ public class NotificationFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -90,6 +89,4 @@ public class NotificationFragment extends Fragment {
 
         return view;
     }
-
-
 }
