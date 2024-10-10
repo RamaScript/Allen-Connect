@@ -64,7 +64,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.viewHolder> {
 
             companyLogo = binding.compnayLogo;
             jobTitle = binding.jobTitle;
-            companyName = binding.comapanyName;
+            companyName = binding.companyName;
         }
     }
 }

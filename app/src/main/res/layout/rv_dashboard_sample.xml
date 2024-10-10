@@ -22,7 +22,6 @@
             android:layout_width="@dimen/_40mdp"
             android:layout_height="@dimen/_40mdp"
             android:src="@drawable/p3"
-
             app:civ_border_color="#FF000000"
             app:civ_border_width="2dp" />
 
@@ -63,14 +62,13 @@
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/postImg"
         android:layout_width="0dp"
-        android:layout_height="@dimen/_400mdp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:scaleType="centerCrop"
         android:src="@drawable/p5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-
         app:riv_corner_radius="12dip"
         app:riv_mutate_background="true"
         app:riv_oval="false" />

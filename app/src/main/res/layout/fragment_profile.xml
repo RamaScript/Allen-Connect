@@ -110,7 +110,7 @@
         diagonal:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/professionTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Android Student"
@@ -165,7 +165,7 @@
         diagonal:cardCornerRadius="8dp"
         diagonal:layout_constraintEnd_toEndOf="parent"
         diagonal:layout_constraintStart_toStartOf="parent"
-        diagonal:layout_constraintTop_toBottomOf="@+id/textView5">
+        diagonal:layout_constraintTop_toBottomOf="@+id/professionTV">
 
 
         <LinearLayout
@@ -194,7 +194,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
                     android:gravity="center"
-                    android:text="326"
+                    android:text="0"
                     android:textColor="@color/black"
                     android:textSize="24dp" />
             </LinearLayout>
@@ -255,7 +255,7 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id="@+id/textView10"
+        android:id="@+id/BioTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -269,18 +269,18 @@
         diagonal:layout_constraintTop_toBottomOf="@+id/cardView" />
 
     <TextView
-        android:id="@+id/name2"
+        android:id="@+id/myFollowersTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/poppins_semibold"
-        android:text="my Friends"
+        android:text="my Followers"
         android:textColor="@color/black"
         android:textSize="18dp"
-        diagonal:layout_constraintEnd_toEndOf="@+id/textView10"
+        diagonal:layout_constraintEnd_toEndOf="@+id/BioTV"
         diagonal:layout_constraintHorizontal_bias="0.0"
-        diagonal:layout_constraintStart_toStartOf="@+id/textView10"
-        diagonal:layout_constraintTop_toBottomOf="@+id/textView10" />
+        diagonal:layout_constraintStart_toStartOf="@+id/BioTV"
+        diagonal:layout_constraintTop_toBottomOf="@+id/BioTV" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/friendRV"
@@ -288,12 +288,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
 
-        tools:listitem="@layout/rv_friend_sample"
+        tools:listitem="@layout/rv_followers_sample"
         diagonal:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="horizontal"
-        diagonal:layout_constraintEnd_toEndOf="@+id/name2"
+        diagonal:layout_constraintEnd_toEndOf="@+id/myFollowersTV"
         diagonal:layout_constraintHorizontal_bias="0.0"
-        diagonal:layout_constraintStart_toStartOf="@+id/name2"
-        diagonal:layout_constraintTop_toBottomOf="@+id/name2" />
+        diagonal:layout_constraintStart_toStartOf="@+id/myFollowersTV"
+        diagonal:layout_constraintTop_toBottomOf="@+id/myFollowersTV" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,20 +3,25 @@ package com.ramascript.allenconnect.Fragments;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
-import com.ramascript.allenconnect.Adapters.DashboardAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.ramascript.allenconnect.Adapters.PostAdapter;
 import com.ramascript.allenconnect.Adapters.StoryAdapter;
 import com.ramascript.allenconnect.Chat;
-import com.ramascript.allenconnect.Models.DashBoardModel;
+import com.ramascript.allenconnect.Models.PostModel;
 import com.ramascript.allenconnect.Models.StoryModel;
 import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.FragmentHomeBinding;
@@ -28,7 +33,10 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
 
     ArrayList<StoryModel> list;
-    ArrayList<DashBoardModel> dashBoardList;
+    ArrayList<PostModel> postList;
+
+    FirebaseDatabase database;
+    FirebaseAuth auth;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -42,11 +50,13 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Step 2: Inflate the layout using binding
+
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        // Step 3: Use binding to access views instead of findViewById
+        database = FirebaseDatabase.getInstance();
+        auth = FirebaseAuth.getInstance();
+
         binding.notificationHomeIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,7 +73,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        // Step 3: For the chatHomeIV
         binding.chatHomeIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,7 +81,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        // Step 4: Use binding to access RecyclerViews and setup adapters
         list = new ArrayList<>();
         list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p7, "Ramanand"));
         list.add(new StoryModel(R.drawable.p7, R.drawable.ic_live, R.drawable.p3, "Rajat"));
@@ -89,21 +97,32 @@ public class HomeFragment extends Fragment {
         binding.storyRV.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        dashBoardList = new ArrayList<>();
-        dashBoardList.add(new DashBoardModel(R.drawable.p7, R.drawable.p5, R.drawable.ic_bookmark,
-                "Ramanand", "Student CS", "370", "310", "518"));
-        dashBoardList.add(new DashBoardModel(R.drawable.p8, R.drawable.p1, R.drawable.ic_bookmark,
-                "Abhinav", "Developer", "370", "310", "518"));
-        dashBoardList.add(new DashBoardModel(R.drawable.p1, R.drawable.p3, R.drawable.ic_bookmark,
-                "Suraj", "Engineer", "100", "90", "150"));
-        dashBoardList.add(new DashBoardModel(R.drawable.p2, R.drawable.p6, R.drawable.ic_bookmark,
-                "Sohan", "Designer", "200", "180", "250"));
 
-        DashboardAdapter dashboardAdapter = new DashboardAdapter(dashBoardList, getContext());
+        //dashboard recycler view
+        postList = new ArrayList<>();
+
+        PostAdapter postAdapter = new PostAdapter(postList, getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         binding.dashBoardRV.setLayoutManager(linearLayoutManager);
+        binding.dashBoardRV.addItemDecoration(new DividerItemDecoration(binding.dashBoardRV.getContext(), DividerItemDecoration.VERTICAL));
         binding.dashBoardRV.setNestedScrollingEnabled(false);
-        binding.dashBoardRV.setAdapter(dashboardAdapter);
+        binding.dashBoardRV.setAdapter(postAdapter);
+
+        database.getReference().child("Posts").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot dataSnapshot:snapshot.getChildren()){
+                    PostModel postModel = dataSnapshot.getValue(PostModel.class);
+                    postList.add(postModel);
+                }
+                postAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         return view;
     }

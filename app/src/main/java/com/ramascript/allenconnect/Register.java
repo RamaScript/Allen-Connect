@@ -3,13 +3,11 @@ package com.ramascript.allenconnect;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -19,13 +17,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
-import com.ramascript.allenconnect.Models.StudentUserModel;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.ramascript.allenconnect.Models.UserModel;
 import com.ramascript.allenconnect.databinding.ActivityRegisterBinding;
 
 public class Register extends AppCompatActivity {
 
     FirebaseAuth auth;
     FirebaseDatabase database;
+    FirebaseStorage storage;
 
     ActivityRegisterBinding binding;
 
@@ -75,25 +76,31 @@ public class Register extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
+        storage = FirebaseStorage.getInstance();
 
         if (userType.equals("Student")){
-            AppCompatButton registerBtn = findViewById(R.id.studentRegisterBtn);
-            registerBtn.setOnClickListener(new View.OnClickListener() {
+            binding.studentRegisterBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String email = binding.studentEmailET.getText().toString();
                     String password = binding.studentPasswordET.getText().toString();
-                    auth.createUserWithEmailAndPassword(email,password)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    final StorageReference reference = storage.getReference().child("profile_pictures").child("ic_avatar.png");
+                    auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
-                                StudentUserModel studentUserModel = new StudentUserModel( binding.crnET.getText().toString(),
-                                        email, binding.studentPhoneNoET.getText().toString(),
-                                        binding.studentUsernameET.getText().toString(), password);
+                                UserModel userModel = new UserModel(binding.crnET.getText().toString(),
+                                                                                    email,
+                                                                                    binding.studentPhoneNoET.getText().toString(),
+                                                                                    binding.studentUsernameET.getText().toString(),
+                                                                                    password,
+                                                                                    binding.nameET.getText().toString(),
+                                                                                    binding.courseET.getText().toString(),
+                                                                                    binding.yearET.getText().toString(),
+                                                                                    reference.getPath());
 
                                 String id = task.getResult().getUser().getUid();
-                                database.getReference().child("Users").child("Students").child(id).setValue(studentUserModel);
+                                database.getReference().child("Users").child(id).setValue(userModel);
                                 Toast.makeText(Register.this, "Your student account has been created", Toast.LENGTH_SHORT).show();
                                 Intent i = new Intent(Register.this, MainActivity.class);
                                 startActivity(i);
@@ -106,5 +113,6 @@ public class Register extends AppCompatActivity {
                 }
             });
         }
+
     }
 }

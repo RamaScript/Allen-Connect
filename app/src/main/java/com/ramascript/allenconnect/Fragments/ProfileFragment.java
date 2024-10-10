@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,9 +23,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.ramascript.allenconnect.Adapters.FriendAdapter;
-import com.ramascript.allenconnect.Models.FriendModel;
-import com.ramascript.allenconnect.Models.StudentUserModel;
+import com.ramascript.allenconnect.Adapters.FollowerAdapter;
+import com.ramascript.allenconnect.LoginAs;
+import com.ramascript.allenconnect.Models.FollowerModel;
+import com.ramascript.allenconnect.Models.UserModel;
 import com.ramascript.allenconnect.R;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import com.ramascript.allenconnect.databinding.FragmentProfileBinding;
 
 public class ProfileFragment extends Fragment {
 
-    ArrayList<FriendModel> list;
+    ArrayList<FollowerModel> list;
     FirebaseAuth auth;
     FirebaseStorage storage;
     FirebaseDatabase database;
@@ -60,16 +60,22 @@ public class ProfileFragment extends Fragment {
         View view = binding.getRoot();
 
         // Fetch the profile photo from Firebase Database
-        database.getReference().child("Users").child("Students").child(auth.getUid())
+        database.getReference().child("Users").child(auth.getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
-                            StudentUserModel studentUserModel = snapshot.getValue(StudentUserModel.class);
+
+                            UserModel userModel = snapshot.getValue(UserModel.class);
                             Picasso.get()
-                                    .load(studentUserModel.getProfilePhoto())
+                                    .load(userModel.getProfilePhoto())
                                     .placeholder(R.drawable.ic_avatar)
                                     .into(binding.profileImage); // Using binding
+
+                            binding.name.setText(userModel.getName());
+                            binding.professionTV.setText(userModel.getCourse()+"("+ userModel.getYear()+" year)");
+                            binding.BioTV.setText("Hi, I am "+ userModel.getName()+" and i am a "+ userModel.getCourse()+" ("+ userModel.getYear()+" year) student.");
+                            binding.followersCountTV.setText(userModel.getFollowerCount()+" ");
                         }
                     }
 
@@ -78,19 +84,31 @@ public class ProfileFragment extends Fragment {
                     }
                 });
 
-        // Initialize the RecyclerView using binding
         list = new ArrayList<>();
-        list.add(new FriendModel(R.drawable.p8));
-        list.add(new FriendModel(R.drawable.p1));
-        list.add(new FriendModel(R.drawable.p2));
-        list.add(new FriendModel(R.drawable.p3));
-        list.add(new FriendModel(R.drawable.p5));
-        list.add(new FriendModel(R.drawable.p6));
 
-        FriendAdapter adapter = new FriendAdapter(list, getContext());
+        FollowerAdapter adapter = new FollowerAdapter(list, getContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         binding.friendRV.setLayoutManager(layoutManager);  // Using binding
         binding.friendRV.setAdapter(adapter);  // Using binding
+
+        database.getReference().child("Users")
+                        .child(auth.getUid())
+                                .child("Followers").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        list.clear();
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                            FollowerModel followerModel = dataSnapshot.getValue(FollowerModel.class);
+                            list.add(followerModel);
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
 
         // Profile settings menu button click event
         binding.profileSettingsMenuBtn.setOnClickListener(new View.OnClickListener() {
@@ -113,6 +131,9 @@ public class ProfileFragment extends Fragment {
                         } else if (item.getItemId() == R.id.action_settings) {
                             return true;
                         } else if (item.getItemId() == R.id.action_logout) {
+                            auth.signOut();
+                            Intent intent = new Intent(getContext(), LoginAs.class);
+                            startActivity(intent);
                             return true;
                         } else {
                             return false;
@@ -143,7 +164,7 @@ public class ProfileFragment extends Fragment {
                     reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            database.getReference().child("Users").child("Students")
+                            database.getReference().child("Users")
                                     .child(auth.getUid()).child("profilePhoto").setValue(uri.toString());
                         }
                     });
