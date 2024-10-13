@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ramascript.allenconnect.Models.JobModel;
 import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.RvJobsBinding;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -39,7 +40,11 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.viewHolder> {
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
         JobModel jobModel = list.get(position);
-        holder.companyLogo.setImageResource(jobModel.getCompanyLogo());
+//        holder.companyLogo.setImageResource(jobModel.getCompanyLogo());
+        Picasso.get()
+                .load(jobModel.getCompanyLogo())
+                .placeholder(R.drawable.ic_avatar)
+                .into(holder.companyLogo);
         holder.companyName.setText(jobModel.getComapanyName());
         holder.jobTitle.setText(jobModel.getJobTitle());
     }

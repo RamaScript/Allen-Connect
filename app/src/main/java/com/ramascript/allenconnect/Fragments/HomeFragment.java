@@ -27,12 +27,14 @@ import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class HomeFragment extends Fragment {
     // Step 1: Declare the binding variable
-    private FragmentHomeBinding binding;
 
-    ArrayList<StoryModel> list;
+    FragmentHomeBinding binding;
+
+//    ArrayList<StoryModel> list;
     ArrayList<PostModel> postList;
 
     FirebaseDatabase database;
@@ -81,21 +83,21 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        list = new ArrayList<>();
-        list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p7, "Ramanand"));
-        list.add(new StoryModel(R.drawable.p7, R.drawable.ic_live, R.drawable.p3, "Rajat"));
-        list.add(new StoryModel(R.drawable.p6, R.drawable.ic_live, R.drawable.p3, "suraj"));
-        list.add(new StoryModel(R.drawable.p7, R.drawable.ic_live, R.drawable.p8, "Sohan"));
-        list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p1, "hum"));
-        list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p1, "hum"));
-        list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p1, "hum"));
+//        list = new ArrayList<>();
+//        list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p7, "Ramanand"));
+//        list.add(new StoryModel(R.drawable.p7, R.drawable.ic_live, R.drawable.p3, "Rajat"));
+//        list.add(new StoryModel(R.drawable.p6, R.drawable.ic_live, R.drawable.p3, "suraj"));
+//        list.add(new StoryModel(R.drawable.p7, R.drawable.ic_live, R.drawable.p8, "Sohan"));
+//        list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p1, "hum"));
+//        list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p1, "hum"));
+//        list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p1, "hum"));
 
-        StoryAdapter adapter = new StoryAdapter(list, getContext());
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        binding.storyRV.setLayoutManager(layoutManager);
-        binding.storyRV.setNestedScrollingEnabled(false);
-        binding.storyRV.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+//        StoryAdapter adapter = new StoryAdapter(list, getContext());
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+//        binding.storyRV.setLayoutManager(layoutManager);
+//        binding.storyRV.setNestedScrollingEnabled(true);
+//        binding.storyRV.setAdapter(adapter);
+//        adapter.notifyDataSetChanged();
 
 
         //dashboard recycler view
@@ -111,10 +113,13 @@ public class HomeFragment extends Fragment {
         database.getReference().child("Posts").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                postList.clear();
                 for(DataSnapshot dataSnapshot:snapshot.getChildren()){
                     PostModel postModel = dataSnapshot.getValue(PostModel.class);
+                    postModel.setPostID(dataSnapshot.getKey());
                     postList.add(postModel);
                 }
+                Collections.reverse(postList);
                 postAdapter.notifyDataSetChanged();
             }
 

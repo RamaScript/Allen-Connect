@@ -81,7 +81,7 @@
             android:paddingTop="4dp"
             android:text="Follow"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="@color/white_my"
             android:textSize="14dp" />
 
     </LinearLayout>

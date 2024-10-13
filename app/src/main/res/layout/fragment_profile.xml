@@ -49,7 +49,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="@font/poppins_semibold"
             android:text="My Profile"
-            android:textColor="@color/white"
+            android:textColor="@color/white_my"
             android:textSize="18dp"
             diagonal:layout_constraintStart_toStartOf="parent"
             diagonal:layout_constraintTop_toTopOf="parent" />
@@ -63,7 +63,7 @@
             android:src="@drawable/ic_more"
             diagonal:layout_constraintEnd_toEndOf="parent"
             diagonal:layout_constraintTop_toTopOf="parent"
-            diagonal:tint="@color/white" />
+            diagonal:tint="@color/white_my" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -73,7 +73,7 @@
         android:layout_height="@dimen/_90mdp"
         android:layout_marginBottom="-56dp"
         android:src="@drawable/ic_avatar"
-        app:civ_border_color="@color/white"
+        app:civ_border_color="@color/white_my"
         app:civ_border_width="5dp"
         diagonal:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
         diagonal:layout_constraintEnd_toEndOf="parent"
@@ -150,7 +150,7 @@
             android:id="@+id/imageView11"
             android:layout_width="@dimen/_24mdp"
             android:layout_height="@dimen/_24mdp"
-            android:src="@drawable/ic_call" />
+            android:src="@drawable/ic_call_vector" />
     </LinearLayout>
 
 
@@ -194,7 +194,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
                     android:gravity="center"
-                    android:text="0"
+                    android:text="3"
                     android:textColor="@color/black"
                     android:textSize="24dp" />
             </LinearLayout>
@@ -220,7 +220,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
                     android:gravity="center"
-                    android:text="204"
+                    android:text="0"
                     android:textColor="@color/black"
                     android:textSize="24dp" />
             </LinearLayout>
@@ -246,7 +246,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
                     android:gravity="center"
-                    android:text="18"
+                    android:text="1"
                     android:textColor="@color/black"
                     android:textSize="24dp" />
             </LinearLayout>

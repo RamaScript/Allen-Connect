@@ -17,7 +17,7 @@
         android:background="@drawable/round"
         android:backgroundTint="@color/btn_color"
         android:drawableStart="@drawable/arrow_back"
-        android:drawableTint="@color/white"
+        android:drawableTint="@color/white_my"
         android:paddingStart="12dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -94,7 +94,7 @@
                 android:layout_marginTop="12dp"
                 android:backgroundTint="@color/btn_color"
                 android:textAllCaps="false"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white_my"/>
 
 
         </LinearLayout>

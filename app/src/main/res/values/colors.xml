@@ -9,10 +9,13 @@
     <color name="transparent_black">#1A303030</color>
     <color name="textColor">#171717</color>
     <color name="alphaBlack">#99000000</color>
-    <color name="white">#f8f8f8</color>
+    <color name="white_my">#f8f8f8</color>
+    <color name="white">#FFFFFF</color>
+
     <color name="BG_COLOR">#B3F5FEFD</color>
     <color name="btn_color">#ff5400</color>
     <color name="transparent">#00000000</color>
     <color name="gray">#808080</color>
+    <color name="light_gray">#C2C2C2</color>
 
 </resources>

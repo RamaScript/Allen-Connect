@@ -106,7 +106,7 @@ public class PostFragment extends Fragment {
                 if(!caption.isEmpty()){
                     binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(getContext(),R.drawable.btnbg));
                     binding.postBtn.setEnabled(true);
-                    binding.postBtn.setTextColor(getContext().getResources().getColor(R.color.white));
+                    binding.postBtn.setTextColor(getContext().getResources().getColor(R.color.white_my));
                 }else {
                     binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(getContext(),R.drawable.border_black));
                     binding.postBtn.setEnabled(false);
@@ -179,7 +179,7 @@ public class PostFragment extends Fragment {
 
             binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(getContext(),R.drawable.btnbg));
             binding.postBtn.setEnabled(true);
-            binding.postBtn.setTextColor(getContext().getResources().getColor(R.color.white));
+            binding.postBtn.setTextColor(getContext().getResources().getColor(R.color.white_my));
         }
 
     }

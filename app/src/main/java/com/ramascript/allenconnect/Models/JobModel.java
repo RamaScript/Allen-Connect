@@ -3,12 +3,12 @@ package com.ramascript.allenconnect.Models;
 public class JobModel {
 
     private String comapanyName, jobTitle;
-    private int companyLogo;
+    private String companyLogo;
 
     public JobModel() {
     }
 
-    public JobModel(String comapanyName, String jobTitle, int companyLogo) {
+    public JobModel(String comapanyName, String jobTitle, String companyLogo) {
         this.comapanyName = comapanyName;
         this.jobTitle = jobTitle;
         this.companyLogo = companyLogo;
@@ -30,11 +30,11 @@ public class JobModel {
         this.jobTitle = jobTitle;
     }
 
-    public int getCompanyLogo() {
+    public String getCompanyLogo() {
         return companyLogo;
     }
 
-    public void setCompanyLogo(int companyLogo) {
+    public void setCompanyLogo(String companyLogo) {
         this.companyLogo = companyLogo;
     }
 }

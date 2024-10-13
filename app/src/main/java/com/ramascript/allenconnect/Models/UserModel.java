@@ -12,6 +12,21 @@ public class UserModel {
     private String ID;
     private String profilePhoto;
     private int followerCount;
+    private String lastMsg;
+
+    public UserModel(String profilePhoto, String name, String lastMsg) {
+        this.profilePhoto = profilePhoto;
+        this.name = name;
+        this.lastMsg = lastMsg;
+    }
+
+    public String getLastMsg() {
+        return lastMsg;
+    }
+
+    public void setLastMsg(String lastMsg) {
+        this.lastMsg = lastMsg;
+    }
 
     public int getFollowerCount() {
         return followerCount;

@@ -75,7 +75,7 @@ public class ProfileFragment extends Fragment {
                             binding.name.setText(userModel.getName());
                             binding.professionTV.setText(userModel.getCourse()+"("+ userModel.getYear()+" year)");
                             binding.BioTV.setText("Hi, I am "+ userModel.getName()+" and i am a "+ userModel.getCourse()+" ("+ userModel.getYear()+" year) student.");
-                            binding.followersCountTV.setText(userModel.getFollowerCount()+" ");
+                            binding.followersCountTV.setText("3");
                         }
                     }
 
