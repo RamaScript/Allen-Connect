@@ -59,7 +59,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder>{
         holder.course.setText(userModel.getCourse());
         holder.year.setText(" ("+ userModel.getYear()+" year )");
 
-        database.getReference().child("users").child(userModel.getID()).child("Followers").child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        database.getReference()
+                .child("Users")
+                .child(userModel.getID())
+                .child("Followers")
+                .child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
@@ -79,23 +83,23 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder>{
                                     .child("Followers")
                                     .child(auth.getUid())
                                     .setValue(follower).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    database.getReference().child("Users")
+                                            .child(userModel.getID())
+                                            .child("followersCount")
+                                            .setValue(userModel.getFollowersCount()+ 1 ).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void unused) {
-                                            database.getReference().child("Users")
-                                                    .child(userModel.getID())
-                                                    .child("FollowersCount")
-                                                    .setValue(userModel.getFollowerCount()+ 1 ).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void unused) {
-                                                            holder.binding.followTV.setBackgroundColor(ContextCompat.getColor(context,R.color.transparent));
-                                                            holder.binding.followTV.setText("Following");
-                                                            holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.textColor));
-                                                            holder.binding.followTV.setEnabled(false);
-                                                            Toast.makeText(context, "you followed "+ userModel.getName(), Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    });
+                                            holder.binding.followTV.setBackgroundColor(ContextCompat.getColor(context,R.color.transparent));
+                                            holder.binding.followTV.setText("Following");
+                                            holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.textColor));
+                                            holder.binding.followTV.setEnabled(false);
+                                            Toast.makeText(context, "you followed "+ userModel.getName(), Toast.LENGTH_SHORT).show();
                                         }
                                     });
+                                }
+                            });
                         }
                     });
                 }
@@ -106,9 +110,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder>{
 
             }
         });
-
-
-
     }
 
     @Override

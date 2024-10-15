@@ -15,16 +15,15 @@
         android:maxWidth="310dp"
         android:maxHeight="400dp"
         android:minHeight="30dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp">
+        android:paddingEnd="8dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        >
 
         <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
             app:layout_constraintBottom_toTopOf="@+id/senderTime"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5">
@@ -34,12 +33,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="none"
+                android:layout_marginEnd="8dp"
                 android:inputType="textMultiLine"
                 android:maxLines="1000000000"
                 android:minLines="1"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:text="RamaRamaRahhgmaRambgaRamaRamaRamahhhR"
+                android:text="Ramanand"
                 android:textColor="@color/white" />
 
         </ScrollView>
@@ -48,20 +46,13 @@
             android:id="@+id/senderTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:layout_marginBottom="3dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="4dp"
             android:text="1:10 PM"
             android:textColor="@color/gray"
             android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_end="20dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

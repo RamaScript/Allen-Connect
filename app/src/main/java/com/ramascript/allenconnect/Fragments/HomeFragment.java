@@ -56,6 +56,9 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        // Show progress bar while loading posts
+        binding.progressBar.setVisibility(View.VISIBLE);
+
         database = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
 
@@ -119,13 +122,21 @@ public class HomeFragment extends Fragment {
                     postModel.setPostID(dataSnapshot.getKey());
                     postList.add(postModel);
                 }
+
+                // Reverse the order and update the adapter
                 Collections.reverse(postList);
                 postAdapter.notifyDataSetChanged();
+
+                // Hide progress bar after data has loaded
+                binding.progressBar.setVisibility(View.GONE);
+
+
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                // Hide progress bar if there's an error
+                binding.progressBar.setVisibility(View.GONE);
             }
         });
 

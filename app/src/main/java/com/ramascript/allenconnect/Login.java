@@ -3,6 +3,7 @@ package com.ramascript.allenconnect;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +19,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.ramascript.allenconnect.databinding.ActivityLoginBinding;
 import com.ramascript.allenconnect.databinding.ActivityRegisterBinding;
@@ -50,32 +53,57 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        String userType = getIntent().getStringExtra("userType")+" Login" ;
-        binding.loginTitleTV.setText(userType);
+        String userType = getIntent().getStringExtra("userType") ;
+        binding.loginTitleTV.setText(userType+" Login");
 
         auth = FirebaseAuth.getInstance();
 
         binding.loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = binding.usernameET.getText().toString();
-                String password = binding.passwordET.getText().toString();
-                auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(Login.this, MainActivity.class);
-                            startActivity(i);
-                            finish();
-                        }else {
-                            Toast.makeText(Login.this, "Wrong Credentials", Toast.LENGTH_SHORT).show();
+                String email = binding.emailET.getText().toString().trim();
+                String password = binding.passwordET.getText().toString().trim();
+
+                // Check if email or password fields are empty
+                if (email.isEmpty() || password.isEmpty()) {
+                    binding.errorBoxTV.setVisibility(View.VISIBLE);
+                    binding.errorBoxTV.setText("Please fill in all fields.");
+                } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    binding.errorBoxTV.setVisibility(View.VISIBLE);
+                    binding.errorBoxTV.setText("Please enter a valid email.");
+                } else {
+                    binding.errorBoxTV.setVisibility(View.GONE);  // Hide error message
+                    binding.loginBtn.setVisibility(View.GONE);
+                    binding.progressBar.setVisibility(View.VISIBLE);  // Show ProgressBar
+
+
+                    auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            binding.progressBar.setVisibility(View.GONE);  // Hide ProgressBar after login attempt
+                            binding.loginBtn.setVisibility(View.VISIBLE);
+                            if (task.isSuccessful()) {
+                                Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                                Intent i = new Intent(Login.this, MainActivity.class);
+                                startActivity(i);
+                                finish();
+                            } else {
+                                // Handle different types of errors from Firebase
+                                if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                    // User email does not exist
+                                    binding.errorBoxTV.setVisibility(View.VISIBLE);
+                                    binding.errorBoxTV.setText("Email or password is incorrect. Please try again.");
+                                } else {
+                                    // General login failure
+                                    binding.errorBoxTV.setVisibility(View.VISIBLE);
+                                    binding.errorBoxTV.setText("Login failed. Please try again.");
+                                }
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
 
     }
-
 }

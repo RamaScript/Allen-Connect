@@ -34,7 +34,6 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.viewHo
     @Override
     public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.rv_followers_sample,parent,false);
-
         return new viewHolder(view);
     }
 
@@ -67,6 +66,7 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.viewHo
     public class viewHolder extends RecyclerView.ViewHolder {
 
         RvFollowersSampleBinding binding;
+
         public viewHolder(@NonNull View itemView) {
             super(itemView);
 

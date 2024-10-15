@@ -194,7 +194,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
                     android:gravity="center"
-                    android:text="3"
+                    android:text="0"
                     android:textColor="@color/black"
                     android:textSize="24dp" />
             </LinearLayout>
@@ -204,18 +204,19 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:padding="8dp">
+                android:padding="8dp"
+                android:visibility="gone">
 
                 <TextView
-                    android:id="@+id/friendsTV"
+                    android:id="@+id/followingTV"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
                     android:gravity="center"
-                    android:text="Friends" />
+                    android:text="Following" />
 
                 <TextView
-                    android:id="@+id/friendsCountTV"
+                    android:id="@+id/followingCountTV"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
@@ -233,20 +234,20 @@
                 android:padding="8dp">
 
                 <TextView
-                    android:id="@+id/photosTV"
+                    android:id="@+id/postsTV"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
                     android:gravity="center"
-                    android:text="Photos" />
+                    android:text="Posts" />
 
                 <TextView
-                    android:id="@+id/photosCountTV"
+                    android:id="@+id/postsCountTV"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
                     android:gravity="center"
-                    android:text="1"
+                    android:text="0"
                     android:textColor="@color/black"
                     android:textSize="24dp" />
             </LinearLayout>

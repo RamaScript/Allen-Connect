@@ -1,6 +1,8 @@
 package com.ramascript.allenconnect;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,9 +18,6 @@ import com.ramascript.allenconnect.databinding.ActivityChatBinding;
 
 public class Chat extends AppCompatActivity {
 
-    ViewPager viewPager;
-    TabLayout tabLayout;
-
     ActivityChatBinding binding;
 
     @Override
@@ -33,11 +32,17 @@ public class Chat extends AppCompatActivity {
             return insets;
         });
 
+        binding.backBtnIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Chat.this, MainActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
 
-
-//        viewPager = findViewById(R.id.viewPagerChat);
         binding.viewPagerChat.setAdapter(new chatTabViewpagerAdapter(getSupportFragmentManager()));
-//        tabLayout = findViewById(R.id.tabLayoutChat);
+
         binding.tabLayoutChat.setupWithViewPager(binding.viewPagerChat);
     }
 }

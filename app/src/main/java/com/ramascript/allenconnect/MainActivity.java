@@ -1,7 +1,9 @@
 package com.ramascript.allenconnect;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -39,7 +41,13 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-
+        binding.botIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, AllenBot.class);
+                startActivity(i);
+            }
+        });
 
         binding.bottomNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override

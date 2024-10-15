@@ -64,7 +64,6 @@ public class CommunityStudentFragment extends Fragment {
                     if(!dataSnapshot.getKey().equals(auth.getUid())){
                         list.add(model);
                     }
-
                 }
                 adapter.notifyDataSetChanged();
             }

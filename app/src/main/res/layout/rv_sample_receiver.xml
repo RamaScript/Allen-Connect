@@ -7,19 +7,21 @@
     android:layout_marginLeft="5dp"
     android:layout_marginTop="7dp"
     android:background="@drawable/bg_reciever"
-    android:paddingEnd="12dp"
+    android:paddingStart="16dp"
+    android:layout_marginStart="8dp"
     android:maxWidth="310dp"
     android:maxHeight="400dp"
     android:minHeight="30dp"
-    android:paddingRight="8dp">
+    android:paddingRight="16dp">
 
 
     <TextView
         android:id="@+id/recieverText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
         android:textColor="@color/black"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="4dp"
         android:inputType="text|textLongMessage|textImeMultiLine|textMultiLine|textNoSuggestions"
         android:maxWidth="270dp"
         android:minWidth="50dp"
@@ -33,7 +35,8 @@
         android:id="@+id/recieveTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="3dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="4dp"
         android:textColor="@color/gray"
         android:text="1:10 PM"
         android:textSize="10dp"
@@ -45,6 +48,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="20dp" />
+        app:layout_constraintGuide_end="78dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,15 +4,31 @@ public class UserModel {
     private String CRN;
     private String email;
     private String phoneNo;
-    private String username;
     private String password;
     private String name;
     private String course;
     private String year;
     private String ID;
     private String profilePhoto;
-    private int followerCount;
     private String lastMsg;
+    private String userType;
+    private int followersCount;
+
+    public int getFollowersCount() {
+        return followersCount;
+    }
+
+    public void setFollowersCount(int followersCount) {
+        this.followersCount = followersCount;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
 
     public UserModel(String profilePhoto, String name, String lastMsg) {
         this.profilePhoto = profilePhoto;
@@ -28,14 +44,6 @@ public class UserModel {
         this.lastMsg = lastMsg;
     }
 
-    public int getFollowerCount() {
-        return followerCount;
-    }
-
-    public void setFollowerCount(int followerCount) {
-        this.followerCount = followerCount;
-    }
-
     public String getProfilePhoto() {
         return profilePhoto;
     }
@@ -47,16 +55,16 @@ public class UserModel {
     public UserModel() {
     }
 
-    public UserModel(String CRN, String email, String phoneNo, String username, String password, String name, String course, String year, String profilePhoto) {
+    public UserModel(String CRN, String email, String phoneNo, String password, String name, String course, String year, String profilePhoto, String userType) {
         this.CRN = CRN;
         this.email = email;
         this.phoneNo = phoneNo;
-        this.username = username;
         this.password = password;
         this.name = name;
         this.course = course;
         this.year = year;
         this.profilePhoto = profilePhoto;
+        this.userType = userType;
     }
 
     public String getName() {
@@ -113,14 +121,6 @@ public class UserModel {
 
     public void setPhoneNo(String phoneNo) {
         this.phoneNo = phoneNo;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {

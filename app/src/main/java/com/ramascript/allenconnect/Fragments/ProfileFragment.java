@@ -75,7 +75,24 @@ public class ProfileFragment extends Fragment {
                             binding.name.setText(userModel.getName());
                             binding.professionTV.setText(userModel.getCourse()+"("+ userModel.getYear()+" year)");
                             binding.BioTV.setText("Hi, I am "+ userModel.getName()+" and i am a "+ userModel.getCourse()+" ("+ userModel.getYear()+" year) student.");
-                            binding.followersCountTV.setText("3");
+                            binding.followersCountTV.setText(userModel.getFollowersCount()+"");
+
+                            // Fetch the number of posts made by the user and display in postsCountTV
+                            database.getReference().child("Posts")
+                                    .orderByChild("postedBy")
+                                    .equalTo(auth.getUid())
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            int postCount = (int) snapshot.getChildrenCount();  // Count the number of posts
+                                            binding.postsCountTV.setText(String.valueOf(postCount));  // Set the post count in the TextView
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
                         }
                     }
 
@@ -99,6 +116,8 @@ public class ProfileFragment extends Fragment {
                         list.clear();
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                             FollowerModel followerModel = dataSnapshot.getValue(FollowerModel.class);
+                            long followerCount = snapshot.getChildrenCount();
+                            binding.followersCountTV.setText(String.valueOf(followerCount));
                             list.add(followerModel);
                         }
                         adapter.notifyDataSetChanged();
