@@ -13,10 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.auth.User;
 import com.ramascript.allenconnect.ChatDetailActivity;
+import com.ramascript.allenconnect.Fragments.ChatsFragment;
 import com.ramascript.allenconnect.Models.UserModel;
 import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.RvChatsBinding;
 import com.squareup.picasso.Picasso;
+
 
 import java.util.ArrayList;
 
@@ -62,6 +64,7 @@ public class ChatUsersAdapter extends RecyclerView.Adapter<ChatUsersAdapter.view
                 intent.putExtra("profilePicture",userModel.getProfilePhoto());
                 intent.putExtra("userName",userModel.getName());
                 context.startActivity(intent);
+                // Finish the current activity
             }
         });
     }

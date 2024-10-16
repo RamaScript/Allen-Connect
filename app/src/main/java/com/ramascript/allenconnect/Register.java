@@ -78,58 +78,58 @@ public class Register extends AppCompatActivity {
                     // Validate input fields
                     boolean isValid = true;
 
-                    // Name validation
-                    if (name.isEmpty()) {
-                        binding.nameET.setError("Name is required");
-                        isValid = false;
-                    }
+                    //in this block i am cheaking all the values. kaam to nhi hai kuch is {block} ka bas code ko minimize kar saku is liye laga diya hai
+                    {
+                        // Name validation
+                        if (name.isEmpty()) {
+                            binding.nameET.setError("Name is required");
+                            isValid = false;
+                        }
 
-                    // CRN validation
-                    if (crn.isEmpty()) {
-                        binding.crnET.setError("CRN is required");
-                        isValid = false;
-                    }
+                        // CRN validation
+                        if (crn.isEmpty()) {
+                            binding.crnET.setError("CRN is required");
+                            isValid = false;
+                        }
 
-                    // Year validation
-                    if (year.isEmpty()) {
-                        binding.yearET.setError("Year is required");
-                        isValid = false;
-                    }
+                        // Year validation
+                        if (year.isEmpty()) {
+                            binding.yearET.setError("Year is required");
+                            isValid = false;
+                        }
 
-                    // Course validation
-                    if (course.isEmpty()) {
-                        binding.courseET.setError("Course is required");
-                        isValid = false;
-                    }
+                        // Course validation
+                        if (course.isEmpty()) {
+                            binding.courseET.setError("Course is required");
+                            isValid = false;
+                        }
 
-                    // Phone validation (10 digits check)
-                    if (phone.isEmpty()) {
-                        binding.studentPhoneNoET.setError("Phone number is required");
-                        isValid = false;
-                    }
-                    else if (!phone.matches("^\\d{10}$")) {  // Regex for exactly 10 digits
-                        binding.studentPhoneNoET.setError("Please enter exactly 10 digits");
-                        isValid = false;
-                    }
+                        // Phone validation (10 digits check)
+                        if (phone.isEmpty()) {
+                            binding.studentPhoneNoET.setError("Phone number is required");
+                            isValid = false;
+                        } else if (!phone.matches("^\\d{10}$")) {  // Regex for exactly 10 digits
+                            binding.studentPhoneNoET.setError("Please enter exactly 10 digits");
+                            isValid = false;
+                        }
 
-                    // Email validation
-                    if (email.isEmpty()) {
-                        binding.studentEmailET.setError("Email is required");
-                        isValid = false;
-                    }
-                    else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                        binding.studentEmailET.setError("Please enter a valid email address");
-                        isValid = false;
-                    }
+                        // Email validation
+                        if (email.isEmpty()) {
+                            binding.studentEmailET.setError("Email is required");
+                            isValid = false;
+                        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                            binding.studentEmailET.setError("Please enter a valid email address");
+                            isValid = false;
+                        }
 
-                    // Password validation
-                    if (password.isEmpty()) {
-                        binding.studentPasswordET.setError("Password is required");
-                        isValid = false;
-                    }
-                    else if (password.length() < 8) {
-                        binding.studentPasswordET.setError("Password should be at least 8 characters");
-                        isValid = false;
+                        // Password validation
+                        if (password.isEmpty()) {
+                            binding.studentPasswordET.setError("Password is required");
+                            isValid = false;
+                        } else if (password.length() < 8) {
+                            binding.studentPasswordET.setError("Password should be at least 8 characters");
+                            isValid = false;
+                        }
                     }
 
                     // Proceed with registration if all inputs are valid
@@ -144,103 +144,109 @@ public class Register extends AppCompatActivity {
         }
 
         else if (userType.equals("Alumni")) {
+
             binding.alumniCV.setVisibility(View.VISIBLE);
             binding.professorCV.setVisibility(View.GONE);
             binding.studentCV.setVisibility(View.GONE);
 
-            binding.alumniRegisterBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String email = binding.alumniEmailET.getText().toString().trim();
-                    String password = binding.alumniPasswordET.getText().toString().trim();
-                    String name = binding.alumniNameET.getText().toString().trim();
-                    String course = binding.alumniCourseET.getText().toString().trim();
-                    String passingYear = binding.alumniPassingYearET.getText().toString().trim();
-                    String company = binding.alumniCompanyET.getText().toString().trim();
-                    String jobRole = binding.alumniJobRoleET.getText().toString().trim();
-                    String phone = binding.alumniPhoneNoET.getText().toString().trim();
+            //            binding.alumniRegisterBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    String email = binding.alumniEmailET.getText().toString().trim();
+//                    String password = binding.alumniPasswordET.getText().toString().trim();
+//                    String name = binding.alumniNameET.getText().toString().trim();
+//                    String course = binding.alumniCourseET.getText().toString().trim();
+//                    String passingYear = binding.alumniPassingYearET.getText().toString().trim();
+//                    String company = binding.alumniCompanyET.getText().toString().trim();
+//                    String jobRole = binding.alumniJobRoleET.getText().toString().trim();
+//                    String phone = binding.alumniPhoneNoET.getText().toString().trim();
+//
+//                    // Validate input fields
+//                    boolean isValid = true;
+//
+//                    //in this block i am cheaking all the values. kaam to nhi hai kuch is {block} ka bas code ko minimize kar saku is liye laga diya hai
+//                    {
+//                        // Name validation
+//                        if (name.isEmpty()) {
+//                            binding.alumniNameET.setError("Name is required");
+//                            isValid = false;
+//                        }
+//
+//                        // Course validation
+//                        if (course.isEmpty()) {
+//                            binding.alumniCourseET.setError("Course is required");
+//                            isValid = false;
+//                        }
+//
+//                        // Passing Year validation (should be a 4-digit number)
+//                        if (passingYear.isEmpty()) {
+//                            binding.alumniPassingYearET.setError("Passing year is required");
+//                            isValid = false;
+//                        } else if (!passingYear.matches("^\\d{4}$")) {
+//                            binding.alumniPassingYearET.setError("Enter a valid 4-digit year");
+//                            isValid = false;
+//                        }
+//
+//                        // Company validation
+//                        if (company.isEmpty()) {
+//                            binding.alumniCompanyET.setError("Company name is required");
+//                            isValid = false;
+//                        }
+//
+//                        // Job Role validation
+//                        if (jobRole.isEmpty()) {
+//                            binding.alumniJobRoleET.setError("Job role is required");
+//                            isValid = false;
+//                        }
+//
+//                        // Phone validation (10 digits check)
+//                        if (phone.isEmpty()) {
+//                            binding.alumniPhoneNoET.setError("Phone number is required");
+//                            isValid = false;
+//                        } else if (!phone.matches("^\\d{10}$")) {  // Regex for exactly 10 digits
+//                            binding.alumniPhoneNoET.setError("Please enter exactly 10 digits");
+//                            isValid = false;
+//                        }
+//
+//                        // Email validation
+//                        if (email.isEmpty()) {
+//                            binding.alumniEmailET.setError("Email is required");
+//                            isValid = false;
+//                        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+//                            binding.alumniEmailET.setError("Please enter a valid email address");
+//                            isValid = false;
+//                        }
+//
+//                        // Password validation
+//                        if (password.isEmpty()) {
+//                            binding.alumniPasswordET.setError("Password is required");
+//                            isValid = false;
+//                        } else if (password.length() < 8) {
+//                            binding.alumniPasswordET.setError("Password should be at least 8 characters");
+//                            isValid = false;
+//                        }
+//                    }
+//
+//                    // Proceed with registration if all inputs are valid
+//                    if (isValid) {
+//                        // Show the ProgressBar when the registration process starts
+//                        binding.progressBar.setVisibility(View.VISIBLE);
+//                        binding.alumniRegisterBtn.setVisibility(View.GONE);
+//                        register(email, password,userType);
+//                    }
+//                }
+//            });
+//
 
-                    // Validate input fields
-                    boolean isValid = true;
-
-                    // Name validation
-                    if (name.isEmpty()) {
-                        binding.alumniNameET.setError("Name is required");
-                        isValid = false;
-                    }
-
-                    // Course validation
-                    if (course.isEmpty()) {
-                        binding.alumniCourseET.setError("Course is required");
-                        isValid = false;
-                    }
-
-                    // Passing Year validation (should be a 4-digit number)
-                    if (passingYear.isEmpty()) {
-                        binding.alumniPassingYearET.setError("Passing year is required");
-                        isValid = false;
-                    }
-                    else if (!passingYear.matches("^\\d{4}$")) {
-                        binding.alumniPassingYearET.setError("Enter a valid 4-digit year");
-                        isValid = false;
-                    }
-
-                    // Company validation
-                    if (company.isEmpty()) {
-                        binding.alumniCompanyET.setError("Company name is required");
-                        isValid = false;
-                    }
-
-                    // Job Role validation
-                    if (jobRole.isEmpty()) {
-                        binding.alumniJobRoleET.setError("Job role is required");
-                        isValid = false;
-                    }
-
-                    // Phone validation (10 digits check)
-                    if (phone.isEmpty()) {
-                        binding.alumniPhoneNoET.setError("Phone number is required");
-                        isValid = false;
-                    }
-                    else if (!phone.matches("^\\d{10}$")) {  // Regex for exactly 10 digits
-                        binding.alumniPhoneNoET.setError("Please enter exactly 10 digits");
-                        isValid = false;
-                    }
-
-                    // Email validation
-                    if (email.isEmpty()) {
-                        binding.alumniEmailET.setError("Email is required");
-                        isValid = false;
-                    }
-                    else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                        binding.alumniEmailET.setError("Please enter a valid email address");
-                        isValid = false;
-                    }
-
-                    // Password validation
-                    if (password.isEmpty()) {
-                        binding.alumniPasswordET.setError("Password is required");
-                        isValid = false;
-                    }
-                    else if (password.length() < 8) {
-                        binding.alumniPasswordET.setError("Password should be at least 8 characters");
-                        isValid = false;
-                    }
-
-                    // Proceed with registration if all inputs are valid
-                    if (isValid) {
-                        // Show the ProgressBar when the registration process starts
-                        binding.progressBar.setVisibility(View.VISIBLE);
-                        binding.alumniRegisterBtn.setVisibility(View.GONE);
-                        register(email, password,userType);
-                    }
-                }
-            });
+            Toast.makeText(this, "Bhai register as Student karo ...", Toast.LENGTH_LONG).show();
         }
         else if (userType.equals("Professor")) {
             binding.professorCV.setVisibility(View.VISIBLE);
             binding.alumniCV.setVisibility(View.GONE);
             binding.studentCV.setVisibility(View.GONE);
+
+            Toast.makeText(this, "Bhai register as Student karo ...", Toast.LENGTH_LONG).show();
+
         }
         else {
             binding.professorCV.setVisibility(View.GONE);
@@ -282,11 +288,11 @@ public class Register extends AppCompatActivity {
                     // Store the user data in Firebase Realtime Database under "Users"
                     database.getReference().child("Users").child(id).setValue(userModel);
 
-                    binding.greenBoxTV.setText("Your " + userType + " account has been created!!");
+                    binding.greenBoxTV.setText("Your " + userType + " account has been created!!!....");
                     binding.greenBoxTV.setVisibility(View.VISIBLE);
+                    binding.errorBoxTV.setVisibility(View.GONE);
 
                     // Notify the user that the account has been created and redirect them to the login screen
-                    Toast.makeText(Register.this, "Your " + userType + " account has been created. Now you can login.", Toast.LENGTH_SHORT).show();
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -294,7 +300,7 @@ public class Register extends AppCompatActivity {
                             startActivity(i);
                             finish();
                         }
-                    }, 1200);
+                    }, 1000);
                 }
 
                 else if (task.getException() != null) {

@@ -130,7 +130,6 @@ public class HomeFragment extends Fragment {
                 // Hide progress bar after data has loaded
                 binding.progressBar.setVisibility(View.GONE);
 
-
             }
 
             @Override

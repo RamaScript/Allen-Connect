@@ -1,5 +1,6 @@
 package com.ramascript.allenconnect.Fragments;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,6 +40,7 @@ public class ProfileFragment extends Fragment {
     FirebaseStorage storage;
     FirebaseDatabase database;
     FragmentProfileBinding binding; // Declare the binding
+    ProgressDialog dialog;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -50,6 +52,8 @@ public class ProfileFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();
+        dialog = new ProgressDialog(getContext());
+
     }
 
     @Override
@@ -58,6 +62,12 @@ public class ProfileFragment extends Fragment {
         // Initialize the binding
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
+
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setTitle("Changing Profile Picture");
+        dialog.setMessage("Please Wait...");
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
 
         // Fetch the profile photo from Firebase Database
         database.getReference().child("Users").child(auth.getUid())
@@ -82,17 +92,17 @@ public class ProfileFragment extends Fragment {
                                     .orderByChild("postedBy")
                                     .equalTo(auth.getUid())
                                     .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            int postCount = (int) snapshot.getChildrenCount();  // Count the number of posts
-                                            binding.postsCountTV.setText(String.valueOf(postCount));  // Set the post count in the TextView
-                                        }
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    int postCount = (int) snapshot.getChildrenCount();  // Count the number of posts
+                                    binding.postsCountTV.setText(String.valueOf(postCount));  // Set the post count in the TextView
+                                }
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
 
-                                        }
-                                    });
+                                }
+                            });
                         }
                     }
 
@@ -140,14 +150,17 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         if (item.getItemId() == R.id.action_edit_profile) {
+                            Toast.makeText(getContext(), "Abhi editing allow nhi hai", Toast.LENGTH_SHORT).show();
                             return true;
                         } else if (item.getItemId() == R.id.action_change_profile_picture) {
                             Intent intent = new Intent();
                             intent.setAction(Intent.ACTION_GET_CONTENT);
                             intent.setType("image/*");
+
                             startActivityForResult(intent, 11);
                             return true;
                         } else if (item.getItemId() == R.id.action_settings) {
+                            Toast.makeText(getContext(), "Bhai abhi setting mat karo abhi just group me bheje gaye instruction ko follow karo", Toast.LENGTH_SHORT).show();
                             return true;
                         } else if (item.getItemId() == R.id.action_logout) {
                             auth.signOut();
@@ -162,7 +175,6 @@ public class ProfileFragment extends Fragment {
                 popupMenu.show();
             }
         });
-
         return view;
     }
 
@@ -173,6 +185,9 @@ public class ProfileFragment extends Fragment {
             Uri uri = data.getData();
             binding.profileImage.setImageURI(uri); // Using binding
 
+            // Show the dialog after the image is selected
+            dialog.show();
+
             final StorageReference reference = storage.getReference().child("profile_pictures")
                     .child(FirebaseAuth.getInstance().getUid());
 
@@ -180,6 +195,7 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Toast.makeText(getContext(), "Profile photo changed", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
                     reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {

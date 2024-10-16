@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,18 +48,23 @@ public class LoginAs extends AppCompatActivity {
         AlumniLoginLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(LoginAs.this, Login.class);
-                i.putExtra("userType", "Alumni");
-                startActivity(i);
+
+                Toast.makeText(LoginAs.this, "Bhai Login as Student karo ...", Toast.LENGTH_SHORT).show();
+
+//                Intent i = new Intent(LoginAs.this, Login.class);
+//                i.putExtra("userType", "Alumni");
+//                startActivity(i);
             }
         });
 
         ProfessorLoginLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(LoginAs.this, Login.class);
-                i.putExtra("userType", "Professor");
-                startActivity(i);
+                Toast.makeText(LoginAs.this, "Bhai Login as Student karo ...", Toast.LENGTH_SHORT).show();
+
+//                Intent i = new Intent(LoginAs.this, Login.class);
+//                i.putExtra("userType", "Professor");
+//                startActivity(i);
             }
         });
 

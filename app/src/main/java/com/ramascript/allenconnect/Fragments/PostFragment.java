@@ -153,12 +153,20 @@ public class PostFragment extends Fragment {
                                 database.getReference().child("Posts")
                                         .push()
                                         .setValue(postModel).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void unused) {
-                                                dialog.dismiss();
-                                                Toast.makeText(getContext(), "Posted Sucessfully", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        dialog.dismiss();
+                                        Toast.makeText(getContext(), "Posted Sucessfully", Toast.LENGTH_SHORT).show();
+
+                                        // Replace PostFragment with HomeFragment
+                                        Fragment homeFragment = new HomeFragment();
+                                        getActivity().getSupportFragmentManager()
+                                                .beginTransaction()
+                                                .replace(R.id.container, homeFragment) // Replace with your container's id
+                                                .addToBackStack(null) // Optional, if you want to add it to the back stack
+                                                .commit();
+                                    }
+                                });
                             }
                         });
                     }
