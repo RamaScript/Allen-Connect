@@ -18,6 +18,8 @@
     <color name="btn_color">#ff5400</color>
     <color name="transparent">#00000000</color>
     <color name="gray">#808080</color>
+    <color name="dark_gray">#232323</color>
     <color name="light_gray">#C2C2C2</color>
+    <color name="portfolio">#ef6c00</color>
 
 </resources>

@@ -84,7 +84,15 @@ public class PostFragment extends Fragment {
                             .placeholder(R.drawable.ic_avatar)
                             .into(binding.profileImage);
                     binding.name.setText(userModel.getName());
-                    binding.title.setText(userModel.getCourse()+"("+userModel.getYear()+" year)");
+
+                    // Set the text based on user type
+                    if ( "Student".equals(userModel.getUserType())) {
+                        binding.title.setText(userModel.getCourse() + " (" + userModel.getYear() + " year)");
+                    } else if ("Alumni".equals(userModel.getUserType())) {
+                        binding.title.setText(userModel.getJobRole() + " at " + userModel.getCompany());
+                    } else if ("Professor".equals(userModel.getUserType())) {
+                        binding.title.setText("Professor at AGOI");
+                    }
                 }
             }
 

@@ -22,7 +22,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class ChatUsersAdapter extends RecyclerView.Adapter<ChatUsersAdapter.viewHolder>{
+public class ChatUsersAdapter extends RecyclerView.Adapter<ChatUsersAdapter.viewHolder> {
 
     ArrayList<UserModel> list;
     Context context;
@@ -35,7 +35,7 @@ public class ChatUsersAdapter extends RecyclerView.Adapter<ChatUsersAdapter.view
     @NonNull
     @Override
     public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.rv_chats,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.rv_chats, parent, false);
         return new viewHolder(view);
     }
 
@@ -43,15 +43,22 @@ public class ChatUsersAdapter extends RecyclerView.Adapter<ChatUsersAdapter.view
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
         UserModel userModel = list.get(position);
         Picasso.get()
-                .load(userModel.getProfilePhoto())
-                .placeholder(R.drawable.ic_avatar)
-                .into(holder.binding.profileImage);
+            .load(userModel.getProfilePhoto())
+            .placeholder(R.drawable.ic_avatar)
+            .into(holder.binding.profileImage);
         holder.binding.userName.setText(userModel.getName());
 
         String lastMsg = userModel.getLastMsg();
-        if(lastMsg==null){
-            holder.binding.lastMessage.setText(userModel.getCourse()+"("+userModel.getYear()+" year)");
-        }else{
+        if (lastMsg == null) {
+            // Set the text based on user type
+            if ("Student".equals(userModel.getUserType())) {
+                holder.binding.lastMessage.setText(userModel.getCourse() + " (" + userModel.getYear() + " year)");
+            } else if ("Alumni".equals(userModel.getUserType())) {
+                holder.binding.lastMessage.setText(userModel.getJobRole() + " at " + userModel.getCompany());
+            } else if ("Professor".equals(userModel.getUserType())) {
+                holder.binding.lastMessage.setText("Professor at AGOI");
+            }
+        } else {
             holder.binding.lastMessage.setText(userModel.getLastMsg());
         }
 
@@ -60,9 +67,9 @@ public class ChatUsersAdapter extends RecyclerView.Adapter<ChatUsersAdapter.view
             public void onClick(View v) {
 //                ab mai sare data ko main activity se chat activity me bhej rha hhuuuu
                 Intent intent = new Intent(context, ChatDetailActivity.class);
-                intent.putExtra("userId",userModel.getID());
-                intent.putExtra("profilePicture",userModel.getProfilePhoto());
-                intent.putExtra("userName",userModel.getName());
+                intent.putExtra("userId", userModel.getID());
+                intent.putExtra("profilePicture", userModel.getProfilePhoto());
+                intent.putExtra("userName", userModel.getName());
                 context.startActivity(intent);
                 // Finish the current activity
             }
@@ -74,7 +81,7 @@ public class ChatUsersAdapter extends RecyclerView.Adapter<ChatUsersAdapter.view
         return list.size();
     }
 
-    public class viewHolder extends RecyclerView.ViewHolder{
+    public class viewHolder extends RecyclerView.ViewHolder {
 
         RvChatsBinding binding;
 

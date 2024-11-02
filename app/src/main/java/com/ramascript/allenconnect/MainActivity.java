@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
 
+
+
         binding.botIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,6 +80,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         loadFragment(new HomeFragment(),true);
+
+        // Check if intent has instruction to open ProfileFragment for meet devs activity
+        if (getIntent().getStringExtra("openFragment") != null &&
+                getIntent().getStringExtra("openFragment").equals("ProfileFragment")) {
+
+            // Avoid duplicate fragments by checking if ProfileFragment is already loaded
+            if (getSupportFragmentManager().findFragmentByTag("ProfileFragment") == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, new ProfileFragment(), "ProfileFragment")
+                        .commit();
+            }
+        }
     }
 
     private void loadFragment(Fragment fragment, boolean isAppInitialized){

@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/backBtnIV"
+            android:id="@+id/backBtn"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:padding="8dp"
@@ -207,6 +207,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                android:layout_marginBottom="16dp"
                 android:elevation="4dp"
                 app:cardCornerRadius="12dp">
 
@@ -237,6 +238,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center_vertical"
+                            android:layout_weight="1"
                             android:orientation="vertical">
 
                             <TextView
@@ -253,6 +255,12 @@
                                 android:text="BCA student at ABS"
                                 android:textColor="@color/black" />
                         </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/portfolioRamaIV"
+                            android:layout_width="@dimen/_24mdp"
+                            android:layout_height="@dimen/_30mdp"
+                            app:srcCompat="@drawable/ic_portfolio" />
 
                     </LinearLayout>
 
