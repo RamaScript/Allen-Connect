@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.HomeFragment">
+
+    <LinearLayout
+        android:id="@+id/linearLayout8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_bottom"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Allenhouse"
+            android:textColor="@color/black"
+            android:textSize="24dp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/notificationHomeIV"
+            android:layout_width="@dimen/_24mdp"
+            android:layout_height="@dimen/_28mdp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_notification" />
+
+        <ImageView
+            android:id="@+id/chatHomeIV"
+            android:layout_width="@dimen/_24mdp"
+            android:layout_height="@dimen/_28mdp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_chat"
+
+            />
+    </LinearLayout>
+
+        <!--            <HorizontalScrollView-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_marginTop="8dp"-->
+        <!--                android:background="@drawable/border_bottom"-->
+        <!--                android:paddingBottom="8dp"-->
+        <!--                android:scrollbars="none">-->
+
+        <!--                <LinearLayout-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    android:orientation="horizontal">-->
+
+        <!--                    <androidx.constraintlayout.widget.ConstraintLayout-->
+        <!--                        android:layout_width="wrap_content"-->
+        <!--                        android:layout_height="wrap_content"-->
+        <!--                        android:orientation="horizontal"-->
+        <!--                        android:paddingStart="8dp">-->
+
+        <!--                        <com.makeramen.roundedimageview.RoundedImageView-->
+        <!--                            android:id="@+id/story"-->
+        <!--                            android:layout_width="@dimen/_130mdp"-->
+        <!--                            android:layout_height="@dimen/_85mdp"-->
+        <!--                            android:scaleType="centerCrop"-->
+        <!--                            android:src="@drawable/p3"-->
+        <!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                            app:layout_constraintStart_toStartOf="parent"-->
+        <!--                            app:layout_constraintTop_toTopOf="parent"-->
+        <!--                            app:riv_border_color="#333333"-->
+        <!--                            app:riv_border_width="2dip"-->
+        <!--                            app:riv_corner_radius="12dip"-->
+        <!--                            app:riv_mutate_background="true"-->
+        <!--                            app:riv_oval="false" />-->
+
+        <!--                        <View-->
+        <!--                            android:id="@+id/view"-->
+        <!--                            android:layout_width="0dp"-->
+        <!--                            android:layout_height="0dp"-->
+        <!--                            android:background="@drawable/round_bg"-->
+        <!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                            app:layout_constraintStart_toStartOf="parent"-->
+        <!--                            app:layout_constraintTop_toTopOf="parent" />-->
+
+        <!--                        <ImageView-->
+        <!--                            android:id="@+id/imageView"-->
+        <!--                            android:layout_width="@dimen/_24mdp"-->
+        <!--                            android:layout_height="@dimen/_24mdp"-->
+        <!--                            android:background="@color/transparent"-->
+        <!--                            android:src="@drawable/ic_plus_thick"-->
+        <!--                            app:layout_constraintBottom_toBottomOf="@+id/story"-->
+        <!--                            app:layout_constraintEnd_toEndOf="@+id/story"-->
+        <!--                            app:layout_constraintStart_toStartOf="@+id/story"-->
+        <!--                            app:layout_constraintTop_toTopOf="@+id/story"-->
+        <!--                            app:layout_constraintVertical_bias="0.36"-->
+        <!--                            app:tint="@color/btn_color" />-->
+
+        <!--                        <TextView-->
+        <!--                            android:id="@+id/textView3"-->
+        <!--                            android:layout_width="wrap_content"-->
+        <!--                            android:layout_height="wrap_content"-->
+        <!--                            android:layout_marginTop="4dp"-->
+        <!--                            android:fontFamily="@font/poppins_semibold"-->
+        <!--                            android:text="Create a story"-->
+        <!--                            android:textColor="@color/white"-->
+        <!--                            android:textSize="18sp"-->
+        <!--                            app:layout_constraintEnd_toEndOf="@+id/imageView"-->
+        <!--                            app:layout_constraintStart_toStartOf="@+id/imageView"-->
+        <!--                            app:layout_constraintTop_toBottomOf="@+id/imageView" />-->
+
+
+        <!--                    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+        <!--                    <androidx.recyclerview.widget.RecyclerView-->
+        <!--                        android:id="@+id/storyRV"-->
+        <!--                        android:layout_width="wrap_content"-->
+        <!--                        android:layout_height="match_parent"-->
+        <!--                        android:layout_marginStart="12dp"-->
+        <!--                        android:orientation="horizontal"-->
+        <!--                        />-->
+
+        <!--                </LinearLayout>-->
+        <!--            </HorizontalScrollView>-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/dashBoardRV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/_8mdp"
+        android:paddingEnd="@dimen/_8mdp"
+        android:nestedScrollingEnabled="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout8"
+        android:paddingBottom="@dimen/_36mdp"
+        />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:indeterminateTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout8" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

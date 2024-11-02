@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:diagonal="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/tools"
+    android:paddingStart="@dimen/_8mdp"
+    android:paddingEnd="@dimen/_8mdp"
+    >
+
+    <LinearLayout
+        diagonal:layout_constraintEnd_toEndOf="parent"
+        diagonal:layout_constraintStart_toStartOf="parent"
+        diagonal:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingTop="@dimen/_8mdp"
+        android:paddingBottom="@dimen/_8mdp"
+        android:background="@drawable/border_bottom_nocolor"
+
+        android:orientation="horizontal">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/studentPic"
+            app:civ_border_color="@color/gray"
+            app:civ_border_width="2dp"
+            android:layout_width="@dimen/_40mdp"
+            android:layout_height="@dimen/_40mdp"
+            android:src="@drawable/p7" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="-4dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Ramanand Kumar"
+                android:textSize="18dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/courseTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins"
+                    android:text="BCA"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/yearTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins"
+                    android:text="(3rd Year)"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/followTV"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:background="@drawable/border_black"
+            android:backgroundTint="@color/btn_color"
+            android:fontFamily="@font/poppins_semibold"
+            android:paddingTop="4dp"
+            android:text="Follow"
+            android:textAllCaps="false"
+            android:textColor="@color/white_my"
+            android:textSize="14dp" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

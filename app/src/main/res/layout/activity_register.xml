@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:background="@drawable/bg_register_login"
+    android:layout_height="match_parent"
+    tools:context=".Register">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/backBtn"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/round"
+        android:backgroundTint="@color/btn_color"
+        android:drawableStart="@drawable/arrow_back"
+        android:drawableTint="@color/white_my"
+        android:paddingStart="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/studentCV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:backgroundTint="@color/BG_COLOR"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        tools:visibility="invisible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_12mdp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/studentRegisterTitleTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/_4mdp"
+                android:fontFamily="@font/poppins_semibold"
+                android:gravity="center"
+                android:text="Student Registeration"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:scrollbarFadeDuration="0"
+                android:scrollbarSize="5dp"
+                android:scrollbarStyle="insideOverlay">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/nameET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Name"
+                        android:inputType="text"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+
+                    <EditText
+                        android:id="@+id/crnET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="CRN"
+                        android:inputType="text"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+
+                    <EditText
+                        android:id="@+id/yearET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Year (eg. 1st, 2nd, 3rd, 4th)"
+                        android:inputType="text"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+
+                    <EditText
+                        android:id="@+id/courseET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Course (eg. BCA, BBA, MCA etc."
+                        android:inputType="text"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+
+                    <EditText
+                        android:id="@+id/studentPhoneNoET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Phone No."
+                        android:inputType="phone"
+                        android:maxLength="10"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+
+                    <EditText
+                        android:id="@+id/studentEmailET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Email"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+
+                    <EditText
+                        android:id="@+id/studentPasswordET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:ems="10"
+                        android:hint="Password"
+                        android:inputType="text"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+                </LinearLayout>
+            </ScrollView>
+
+
+            <TextView
+                android:id="@+id/errorBoxTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="TextView"
+                android:textColor="@color/red"
+                android:textSize="16dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/greenBoxTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:padding="4dp"
+                android:text="TextView"
+                android:textColor="@color/green"
+                android:textSize="16dp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:layout_marginTop="12dp"
+                android:background="@drawable/round"
+                android:backgroundTint="@color/btn_color"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/studentRegisterBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Register"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white_my"
+                    android:textSize="18dp"
+                    android:visibility="visible" />
+
+                <ProgressBar
+                    android:id="@+id/studentProgressBar"
+                    android:layout_width="36dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:indeterminateTint="@color/white"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/alumniCV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:backgroundTint="@color/BG_COLOR"
+        android:visibility="invisible"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_12mdp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/alumniRegisterTitleTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:gravity="center"
+                android:text="Alumni Registeration"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scrollbarFadeDuration="0"
+                android:scrollbarSize="5dp"
+                android:scrollbarStyle="insideOverlay"
+                android:scrollbars="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/alumniNameET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Name"
+                        android:inputType="text"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+
+                    <EditText
+                        android:id="@+id/alumniCourseET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Course (eg. BCA, BBA, BTech etc.)"
+                        android:inputType="text"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+
+                    <EditText
+                        android:id="@+id/alumniPassingYearET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Passing Year"
+                        android:inputType="number"
+                        android:maxLength="4"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+
+                    <EditText
+                        android:id="@+id/alumniCompanyET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Company name"
+                        android:inputType="text"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+
+                    <EditText
+                        android:id="@+id/alumniJobRoleET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Job Role"
+                        android:inputType="text"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+
+                    <EditText
+                        android:id="@+id/alumniPhoneNoET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Phone No."
+                        android:inputType="phone"
+                        android:maxLength="10"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+
+                    <EditText
+                        android:id="@+id/alumniEmailET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Email"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+
+                    <EditText
+                        android:id="@+id/alumniPasswordET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:ems="10"
+                        android:hint="Password"
+                        android:inputType="textPassword"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/alphaBlack" />
+                </LinearLayout>
+            </ScrollView>
+
+            <TextView
+                android:id="@+id/alumniErrorBoxTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="TextView"
+                android:textColor="@color/red"
+                android:textSize="16dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/alumniGreenBoxTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:padding="4dp"
+                android:text="TextView"
+                android:textColor="@color/green"
+                android:textSize="16dp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:layout_marginTop="12dp"
+                android:background="@drawable/round"
+                android:backgroundTint="@color/btn_color"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/alumniRegisterBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Register"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white_my"
+                    android:textSize="18dp"
+                    android:visibility="visible" />
+
+                <ProgressBar
+                    android:id="@+id/alumniProgressBar"
+                    android:layout_width="36dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:indeterminateTint="@color/white"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/professorCV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:backgroundTint="@color/BG_COLOR"
+        android:visibility="visible"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingTop="12dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:id="@+id/professorRegisterTitleTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:gravity="center"
+                android:text="Professor Registeration"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
+
+            <EditText
+                android:id="@+id/professorNameET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Name"
+                android:inputType="text"
+                android:textColor="@color/black"
+                android:textColorHint="@color/alphaBlack" />
+
+            <EditText
+                android:id="@+id/professorPhoneNoET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Phone No."
+                android:inputType="phone"
+                android:maxLength="10"
+                android:textColor="@color/black"
+                android:textColorHint="@color/alphaBlack" />
+
+            <EditText
+                android:id="@+id/professorEmailET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/black"
+                android:textColorHint="@color/alphaBlack" />
+
+            <EditText
+                android:id="@+id/professorPasswordET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ems="10"
+                android:hint="Password"
+                android:inputType="text"
+                android:textColor="@color/black"
+                android:textColorHint="@color/alphaBlack" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:layout_marginTop="12dp"
+                android:background="@drawable/round"
+                android:backgroundTint="@color/btn_color"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/professorRegisterBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Register"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white_my"
+                    android:textSize="18dp"
+                    android:visibility="visible" />
+
+                <ProgressBar
+                    android:id="@+id/professorProgressBar"
+                    android:layout_width="36dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:indeterminateTint="@color/white"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
