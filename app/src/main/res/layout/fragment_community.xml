@@ -36,7 +36,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_quiz" />
+            android:src="@drawable/ic_quiz"
+            android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/helpDeskCommunityIV"
@@ -45,7 +46,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_help_desk" />
+            android:src="@drawable/ic_help_desk"
+            android:visibility="invisible" />
     </LinearLayout>
 
     <com.google.android.material.tabs.TabLayout
