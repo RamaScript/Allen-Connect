@@ -108,7 +108,7 @@
                 android:paddingTop="4dp"
                 android:paddingRight="12dp"
                 android:paddingBottom="1dp"
-                android:text="TextView"
+                android:text=" "
                 android:textColor="@color/black"
                 android:textSize="16dp"
                 app:layout_constraintBottom_toBottomOf="@+id/profile_image_post"
@@ -123,7 +123,7 @@
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="12dp"
-                android:text="TextView"
+                android:text=" "
                 app:layout_constraintEnd_toEndOf="@+id/postImageComment"
                 app:layout_constraintStart_toStartOf="@+id/postImageComment"
                 app:layout_constraintTop_toBottomOf="@id/postImageComment" />

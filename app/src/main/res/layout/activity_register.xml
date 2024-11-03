@@ -35,8 +35,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5"
-        tools:visibility="invisible">
+        app:layout_constraintVertical_bias="0.5">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -94,16 +93,6 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:hint="Year (eg. 1st, 2nd, 3rd, 4th)"
-                        android:inputType="text"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/alphaBlack" />
-
-                    <EditText
-                        android:id="@+id/courseET"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="Course (eg. BCA, BBA, MCA etc."
                         android:inputType="text"
                         android:textColor="@color/black"
                         android:textColorHint="@color/alphaBlack" />
@@ -207,7 +196,7 @@
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp"
         android:backgroundTint="@color/BG_COLOR"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:cardCornerRadius="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -396,7 +385,7 @@
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp"
         android:backgroundTint="@color/BG_COLOR"
-        android:visibility="visible"
+        android:visibility="gone"
         app:cardCornerRadius="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

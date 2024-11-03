@@ -155,7 +155,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="right"
                 android:text="Don't have an account?"
-                android:textColor="@color/alphaBlack" />
+                android:textColor="@color/dark_gray" />
 
 
         </LinearLayout>

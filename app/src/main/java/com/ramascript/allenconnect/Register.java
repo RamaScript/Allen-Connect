@@ -73,7 +73,7 @@ public class Register extends AppCompatActivity {
                     String name = binding.nameET.getText().toString().trim();
                     String crn = binding.crnET.getText().toString().trim();
                     String year = binding.yearET.getText().toString().trim();
-                    String course = binding.courseET.getText().toString().trim();
+                    String course = crn.substring(2, 5);
                     String phone = binding.studentPhoneNoET.getText().toString().trim();
 
                     // Validate input fields
@@ -101,7 +101,6 @@ public class Register extends AppCompatActivity {
 
                         // Course validation
                         if (course.isEmpty()) {
-                            binding.courseET.setError("Course is required");
                             isValid = false;
                         }
 
