@@ -54,6 +54,6 @@ public class WebRamaPortfolioActivity extends AppCompatActivity {
 
         // Load a URL in the WebView
         webView.setWebViewClient(new WebViewClient()); // Keeps navigation within the WebView
-        webView.loadUrl("https://ramascript.github.io/portfolio");
+        webView.loadUrl("https://ramascript.github.io");
     }
 }

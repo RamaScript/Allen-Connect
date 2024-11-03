@@ -26,7 +26,6 @@ public class Splash extends AppCompatActivity {
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
-
         new Handler().postDelayed(() -> {
             Intent intent = new Intent(Splash.this, LoginAs.class);
             startActivity(intent);

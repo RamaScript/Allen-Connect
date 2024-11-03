@@ -2,16 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:diagonal="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingStart="@dimen/_8mdp"
-    android:paddingEnd="@dimen/_8mdp"
-    >
+    android:paddingEnd="@dimen/_8mdp">
 
     <LinearLayout
-        diagonal:layout_constraintEnd_toEndOf="parent"
-        diagonal:layout_constraintStart_toStartOf="parent"
-        diagonal:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -23,11 +21,11 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/studentPic"
-            app:civ_border_color="@color/gray"
+            app:civ_border_color="@color/dark_gray"
             app:civ_border_width="2dp"
             android:layout_width="@dimen/_40mdp"
             android:layout_height="@dimen/_40mdp"
-            android:src="@drawable/p7" />
+            android:src="@drawable/ic_avatar" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="-4dp"
                 android:fontFamily="@font/poppins_semibold"
-                android:text="Ramanand Kumar"
+                android:text=" "
                 android:textSize="18dp" />
 
             <LinearLayout
@@ -57,7 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins"
-                    android:text="BCA"
+                    android:text=" "
                     android:textSize="12dp" />
 
             </LinearLayout>

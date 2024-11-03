@@ -41,12 +41,12 @@ public class ActivityNotificationFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.notificationRV);
         list = new ArrayList<>();
-        list.add(new NotificationModel(R.drawable.p3, "<b>Ramanand</b> mentioned u in comment", "Just Now"));
-        list.add(new NotificationModel(R.drawable.p1, "<b>Raju</b> mentioned u in Story", "kal "));
-        list.add(new NotificationModel(R.drawable.p2, "<b>shadow </b>mentioned u in comment", "parso"));
-        list.add(new NotificationModel(R.drawable.p5, "<b>yashraj </b>mentioned u in comment", " 1 oct"));
-        list.add(new NotificationModel(R.drawable.p6, "<b>arvind</b> mentioned u in comment", "1 oct"));
-        list.add(new NotificationModel(R.drawable.p7, "<b>aman </b>mentioned u in comment", "1 oct"));
+        list.add(new NotificationModel(R.drawable.ic_avatar, "<b>Ramanand</b> mentioned u in comment", "Just Now"));
+        list.add(new NotificationModel(R.drawable.ic_avatar, "<b>Raju</b> mentioned u in Story", "kal "));
+        list.add(new NotificationModel(R.drawable.ic_avatar, "<b>shadow </b>mentioned u in comment", "parso"));
+        list.add(new NotificationModel(R.drawable.ic_avatar, "<b>yashraj </b>mentioned u in comment", " 1 oct"));
+        list.add(new NotificationModel(R.drawable.ic_avatar, "<b>arvind</b> mentioned u in comment", "1 oct"));
+        list.add(new NotificationModel(R.drawable.ic_avatar, "<b>aman </b>mentioned u in comment", "1 oct"));
 
         adapter = new NotificationAdapter(list, getContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);

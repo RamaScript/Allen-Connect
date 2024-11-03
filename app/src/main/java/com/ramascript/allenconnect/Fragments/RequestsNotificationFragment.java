@@ -30,14 +30,12 @@ public class RequestsNotificationFragment extends Fragment {
 
     public static RequestsNotificationFragment newInstance(String param1, String param2) {
         RequestsNotificationFragment fragment = new RequestsNotificationFragment();
-
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -48,12 +46,12 @@ public class RequestsNotificationFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.requestNotificationRV);
         list = new ArrayList<>();
-        list.add(new NotificationModel(R.drawable.p3, "<b>Ramanand</b> Sent you a request", "Just Now"));
-        list.add(new NotificationModel(R.drawable.p1, "<b>Raju</b> Sent you a request ", "kal "));
-        list.add(new NotificationModel(R.drawable.p2, "<b>shadow </b> Sent you a request", "parso"));
-        list.add(new NotificationModel(R.drawable.p5, "<b>yashraj </b> Sent you a request", " 1 oct"));
-        list.add(new NotificationModel(R.drawable.p6, "<b>arvind</b> Sent you a request", "1 oct"));
-        list.add(new NotificationModel(R.drawable.p7, "<b>aman </b> Sent you a request", "1 oct"));
+        list.add(new NotificationModel(R.drawable.ic_avatar, "<b>Ramanand</b> Sent you a request", "Just Now"));
+        list.add(new NotificationModel(R.drawable.ic_avatar, "<b>Raju</b> Sent you a request ", "kal "));
+        list.add(new NotificationModel(R.drawable.ic_avatar, "<b>shadow </b> Sent you a request", "parso"));
+        list.add(new NotificationModel(R.drawable.ic_avatar, "<b>yashraj </b> Sent you a request", " 1 oct"));
+        list.add(new NotificationModel(R.drawable.ic_avatar, "<b>arvind</b> Sent you a request", "1 oct"));
+        list.add(new NotificationModel(R.drawable.ic_avatar, "<b>aman </b> Sent you a request", "1 oct"));
 
         adapter = new NotificationAdapter(list, getContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);

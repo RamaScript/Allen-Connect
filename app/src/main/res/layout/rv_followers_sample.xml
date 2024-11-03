@@ -11,7 +11,7 @@
         android:id="@+id/friendImg"
         android:layout_width="@dimen/_52mdp"
         android:layout_height="@dimen/_52mdp"
-        android:src="@drawable/p3"
+        android:src="@drawable/ic_avatar"
       app:civ_border_color="@color/black"
         app:civ_border_width="2dp"
         app:layout_constraintStart_toStartOf="parent"

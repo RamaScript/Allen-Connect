@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.Toast;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -31,7 +33,9 @@ import com.ramascript.allenconnect.Models.FollowerModel;
 import com.ramascript.allenconnect.Models.UserModel;
 import com.ramascript.allenconnect.R;
 import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
+
 import com.ramascript.allenconnect.databinding.FragmentProfileBinding;
 
 public class ProfileFragment extends Fragment {
@@ -71,61 +75,61 @@ public class ProfileFragment extends Fragment {
 
         // Fetch the profile photo from Firebase Database
         database.getReference().child("Users").child(auth.getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
+            .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
 
-                    UserModel userModel = snapshot.getValue(UserModel.class);
-                    Picasso.get()
+                        UserModel userModel = snapshot.getValue(UserModel.class);
+                        Picasso.get()
                             .load(userModel.getProfilePhoto())
                             .placeholder(R.drawable.ic_avatar)
                             .into(binding.profileImage); // Using binding
 
 
-                    binding.name.setText(userModel.getName());
+                        binding.name.setText(userModel.getName());
 
-                    if(!snapshot.getChildren().equals(auth.getUid()) && "Student".equals(userModel.getUserType())){
+                        if (!snapshot.getChildren().equals(auth.getUid()) && "Student".equals(userModel.getUserType())) {
 
-                        binding.professionTV.setText(userModel.getCourse()+"("+ userModel.getYear()+" year)");
-                        binding.BioTV.setText("Hi, I am "+ userModel.getName()+" and i am a "+ userModel.getCourse()+" ("+ userModel.getYear()+" year) student.");
+                            binding.professionTV.setText(userModel.getCourse() + "(" + userModel.getYear() + " year)");
+                            binding.BioTV.setText("Hi, I am " + userModel.getName() + " and i am a " + userModel.getCourse() + " (" + userModel.getYear() + " year) student.");
 
-                    } else if (!snapshot.getChildren().equals(auth.getUid()) && "Alumni".equals(userModel.getUserType())) {
+                        } else if (!snapshot.getChildren().equals(auth.getUid()) && "Alumni".equals(userModel.getUserType())) {
 
-                        binding.professionTV.setText(userModel.getJobRole()+" at "+ userModel.getCompany());
-                        binding.BioTV.setText("Hi, I am "+ userModel.getName()+" and i am a "+ userModel.getCourse()+" ("+ userModel.getPassingYear()+") passout. currently working at "+ userModel.getCompany()+" as "+ userModel.getJobRole());
+                            binding.professionTV.setText(userModel.getJobRole() + " at " + userModel.getCompany());
+                            binding.BioTV.setText("Hi, I am " + userModel.getName() + " and i am a " + userModel.getCourse() + " (" + userModel.getPassingYear() + ") passout. currently working at " + userModel.getCompany() + " as " + userModel.getJobRole());
 
-                    } else if (!snapshot.getChildren().equals(auth.getUid()) && "Professor".equals(userModel.getUserType())) {
+                        } else if (!snapshot.getChildren().equals(auth.getUid()) && "Professor".equals(userModel.getUserType())) {
 
-                        binding.professionTV.setText("Professor at AGOI");
-                        binding.BioTV.setText("Hi, I am "+ userModel.getName()+" and i am a professor you can ask me about my subject in my DM or call me at "+userModel.getPhoneNo());
+                            binding.professionTV.setText("Professor at AGOI");
+                            binding.BioTV.setText("Hi, I am " + userModel.getName() + " and i am a professor you can ask me about my subject in my DM or call me at " + userModel.getPhoneNo());
 
-                    }
-                    binding.followersCountTV.setText(userModel.getFollowersCount()+"");
+                        }
+                        binding.followersCountTV.setText(userModel.getFollowersCount() + "");
 
-                    // Fetch the number of posts made by the user and display in postsCountTV
-                    database.getReference().child("Posts")
+                        // Fetch the number of posts made by the user and display in postsCountTV
+                        database.getReference().child("Posts")
                             .orderByChild("postedBy")
                             .equalTo(auth.getUid())
                             .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            int postCount = (int) snapshot.getChildrenCount();  // Count the number of posts
-                            binding.postsCountTV.setText(String.valueOf(postCount));  // Set the post count in the TextView
-                        }
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    int postCount = (int) snapshot.getChildrenCount();  // Count the number of posts
+                                    binding.postsCountTV.setText(String.valueOf(postCount));  // Set the post count in the TextView
+                                }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
 
-                        }
-                    });
+                                }
+                            });
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
 
         list = new ArrayList<>();
 
@@ -135,25 +139,37 @@ public class ProfileFragment extends Fragment {
         binding.friendRV.setAdapter(adapter);  // Using binding
 
         database.getReference().child("Users")
-                        .child(auth.getUid())
-                                .child("Followers").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        list.clear();
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                            FollowerModel followerModel = dataSnapshot.getValue(FollowerModel.class);
-                            long followerCount = snapshot.getChildrenCount();
-                            binding.followersCountTV.setText(String.valueOf(followerCount));
-                            list.add(followerModel);
-                        }
-                        adapter.notifyDataSetChanged();
+            .child(auth.getUid())
+            .child("Followers").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    list.clear();
+                    long followerCount = snapshot.getChildrenCount();
+
+                    if (followerCount == 0) {
+                        // Hide "My Followers" TextView if there are no followers
+                        binding.myFollowersTV.setVisibility(View.GONE);
+                        binding.friendRV.setVisibility(View.GONE);
+                    } else {
+                        // Show "My Followers" TextView if there are followers
+                        binding.myFollowersTV.setVisibility(View.VISIBLE);
+                        binding.friendRV.setVisibility(View.VISIBLE);
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                    binding.followersCountTV.setText(String.valueOf(followerCount));
 
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        FollowerModel followerModel = dataSnapshot.getValue(FollowerModel.class);
+                        list.add(followerModel);
                     }
-                });
+                    adapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
 
         // Profile settings menu button click event
         binding.profileSettingsMenuBtn.setOnClickListener(new View.OnClickListener() {
@@ -165,19 +181,22 @@ public class ProfileFragment extends Fragment {
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getItemId() == R.id.action_edit_profile) {
-                            Toast.makeText(getContext(), "in Developement phase...", Toast.LENGTH_SHORT).show();
-                            return true;
-                        } else if (item.getItemId() == R.id.action_change_profile_picture) {
+//                        if (item.getItemId() == R.id.action_edit_profile) {
+//                            Toast.makeText(getContext(), "in Developement phase...", Toast.LENGTH_SHORT).show();
+//                            return true;
+//                        } else
+                        if (item.getItemId() == R.id.action_change_profile_picture) {
                             Intent intent = new Intent();
                             intent.setAction(Intent.ACTION_GET_CONTENT);
                             intent.setType("image/*");
                             startActivityForResult(intent, 11);
                             return true;
-                        } else if (item.getItemId() == R.id.action_settings) {
-                            Toast.makeText(getContext(), "in Developement Phase...", Toast.LENGTH_SHORT).show();
-                            return true;
-                        } else if (item.getItemId() == R.id.action_developers) {
+                        }
+//                        else if (item.getItemId() == R.id.action_settings) {
+//                            Toast.makeText(getContext(), "in Developement Phase...", Toast.LENGTH_SHORT).show();
+//                            return true;
+//                        }
+                        else if (item.getItemId() == R.id.action_developers) {
                             Intent i = new Intent(getContext(), MeetDevsActivity.class);
                             startActivity(i);
                             return true;
@@ -190,42 +209,42 @@ public class ProfileFragment extends Fragment {
                         } else {
                             return false;
                         }
-                    }
-                });
-                popupMenu.show();
-            }
-        });
-        return view;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (data != null && data.getData() != null) {
-            Uri uri = data.getData();
-            binding.profileImage.setImageURI(uri); // Using binding
-
-            // Show the dialog after the image is selected
-            dialog.show();
-
-            final StorageReference reference = storage.getReference().child("profile_pictures")
-                    .child(FirebaseAuth.getInstance().getUid());
-
-            reference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(getContext(), "Profile photo changed", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                    reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            database.getReference().child("Users")
-                                    .child(auth.getUid()).child("profilePhoto").setValue(uri.toString());
                         }
                     });
+                popupMenu.show();
                 }
             });
+        return view;
         }
-    }
 
-}
+        @Override
+        public void onActivityResult ( int requestCode, int resultCode, @Nullable Intent data){
+            super.onActivityResult(requestCode, resultCode, data);
+            if (data != null && data.getData() != null) {
+                Uri uri = data.getData();
+                binding.profileImage.setImageURI(uri); // Using binding
+
+                // Show the dialog after the image is selected
+                dialog.show();
+
+                final StorageReference reference = storage.getReference().child("profile_pictures")
+                    .child(FirebaseAuth.getInstance().getUid());
+
+                reference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(getContext(), "Profile photo changed", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                database.getReference().child("Users")
+                                    .child(auth.getUid()).child("profilePhoto").setValue(uri.toString());
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+    }

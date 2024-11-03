@@ -83,9 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Avoid duplicate fragments by checking if ProfileFragment is already loaded
             if (getSupportFragmentManager().findFragmentByTag("ProfileFragment") == null) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, new ProfileFragment(), "ProfileFragment")
-                        .commit();
+                loadFragment(new ProfileFragment(),true);
             }
         }
     }

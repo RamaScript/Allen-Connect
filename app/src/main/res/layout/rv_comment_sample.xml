@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/_8mdp"
+    android:paddingEnd="8dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -24,7 +25,7 @@
         android:layout_marginStart="@dimen/_8mdp"
         android:fontFamily="@font/poppins_regular"
         android:inputType="textMultiLine"
-        android:text="name and comment"
+        android:text=" "
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/profile_image"
         app:layout_constraintTop_toTopOf="@+id/profile_image" />
@@ -35,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:fontFamily="@font/poppins"
-        android:text="TextView"
+        android:text=" "
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/commenterName"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,12 +45,13 @@
 
     <TextView
         android:id="@+id/commentBody"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins"
-        android:text="TextView"
+        android:inputType="textMultiLine"
+        android:text=" "
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@id/commenterName"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/commenterName"
         app:layout_constraintTop_toBottomOf="@+id/commenterName" />
