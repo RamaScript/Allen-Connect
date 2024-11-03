@@ -90,6 +90,7 @@ public class PostFragment extends Fragment {
                         binding.title.setText(userModel.getCourse() + " (" + userModel.getYear() + " year)");
                     } else if ("Alumni".equals(userModel.getUserType())) {
                         binding.title.setText(userModel.getJobRole() + " at " + userModel.getCompany());
+                        binding.pageTitle.setText("Create Post / Job Posting");
                     } else if ("Professor".equals(userModel.getUserType())) {
                         binding.title.setText("Professor at AGOI");
                     }
@@ -181,7 +182,6 @@ public class PostFragment extends Fragment {
                 });
             }
         });
-
         return binding.getRoot();
     }
 
