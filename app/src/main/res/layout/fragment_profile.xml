@@ -7,298 +7,307 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Fragments.ProfileFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_100mdp"
-        android:orientation="vertical"
-        diagonal:layout_constraintEnd_toEndOf="parent"
-        diagonal:layout_constraintStart_toStartOf="parent"
-        diagonal:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/imageView7"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/bg_register_login"
-            diagonal:layout_constraintBottom_toBottomOf="parent"
-            diagonal:layout_constraintEnd_toEndOf="parent"
-            diagonal:layout_constraintHorizontal_bias="0.5"
-            diagonal:layout_constraintStart_toStartOf="parent"
-            diagonal:layout_constraintTop_toTopOf="parent"
-            diagonal:layout_constraintVertical_bias="0.5" />
+            android:layout_height="wrap_content" >
 
-        <View
-            android:id="@+id/view2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/alphaBlack"
-            diagonal:layout_constraintBottom_toBottomOf="parent"
-            diagonal:layout_constraintEnd_toEndOf="parent"
-            diagonal:layout_constraintHorizontal_bias="0.0"
-            diagonal:layout_constraintStart_toStartOf="parent"
-            diagonal:layout_constraintTop_toTopOf="parent"
-            diagonal:layout_constraintVertical_bias="1.0" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_100mdp"
+                android:orientation="vertical"
+                diagonal:layout_constraintEnd_toEndOf="parent"
+                diagonal:layout_constraintStart_toStartOf="parent"
+                diagonal:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/poppins_semibold"
-            android:text="My Profile"
-            android:textColor="@color/white_my"
-            android:textSize="18dp"
-            diagonal:layout_constraintStart_toStartOf="parent"
-            diagonal:layout_constraintTop_toTopOf="parent" />
+                <ImageView
+                    android:id="@+id/imageView7"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/bg_register_login"
+                    diagonal:layout_constraintBottom_toBottomOf="parent"
+                    diagonal:layout_constraintEnd_toEndOf="parent"
+                    diagonal:layout_constraintHorizontal_bias="0.5"
+                    diagonal:layout_constraintStart_toStartOf="parent"
+                    diagonal:layout_constraintTop_toTopOf="parent"
+                    diagonal:layout_constraintVertical_bias="0.5" />
 
-        <ImageView
-            android:id="@+id/profileSettingsMenuBtn"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="24dp"
-            android:src="@drawable/ic_more"
-            diagonal:layout_constraintEnd_toEndOf="parent"
-            diagonal:layout_constraintTop_toTopOf="parent"
-            diagonal:tint="@color/white_my" />
+                <View
+                    android:id="@+id/view2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/alphaBlack"
+                    diagonal:layout_constraintBottom_toBottomOf="parent"
+                    diagonal:layout_constraintEnd_toEndOf="parent"
+                    diagonal:layout_constraintHorizontal_bias="0.0"
+                    diagonal:layout_constraintStart_toStartOf="parent"
+                    diagonal:layout_constraintTop_toTopOf="parent"
+                    diagonal:layout_constraintVertical_bias="1.0" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="My Profile"
+                    android:textColor="@color/white_my"
+                    android:textSize="18dp"
+                    diagonal:layout_constraintStart_toStartOf="parent"
+                    diagonal:layout_constraintTop_toTopOf="parent" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_image"
-        android:layout_width="@dimen/_90mdp"
-        android:layout_height="@dimen/_90mdp"
-        android:layout_marginBottom="-56dp"
-        android:src="@drawable/ic_avatar"
-        app:civ_border_color="@color/white_my"
-        app:civ_border_width="5dp"
-        diagonal:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
-        diagonal:layout_constraintEnd_toEndOf="parent"
-        diagonal:layout_constraintHorizontal_bias="0.08"
-        diagonal:layout_constraintStart_toStartOf="parent"
-        diagonal:layout_constraintTop_toTopOf="parent"
-        diagonal:layout_constraintVertical_bias="1.0" />
+                <ImageView
+                    android:id="@+id/profileSettingsMenuBtn"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="24dp"
+                    android:src="@drawable/ic_more"
+                    diagonal:layout_constraintEnd_toEndOf="parent"
+                    diagonal:layout_constraintTop_toTopOf="parent"
+                    diagonal:tint="@color/white_my" />
 
-    <ImageView
-        android:id="@+id/imageView8"
-        android:layout_width="@dimen/_30mdp"
-        android:layout_height="@dimen/_30mdp"
-        android:layout_marginBottom="-56dp"
-        android:src="@drawable/ic_verify"
-        diagonal:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
-        diagonal:layout_constraintEnd_toEndOf="@+id/profile_image"
-        diagonal:layout_constraintHorizontal_bias="1.0"
-        diagonal:layout_constraintStart_toStartOf="@+id/profile_image"
-        diagonal:layout_constraintTop_toTopOf="@+id/profile_image"
-        diagonal:layout_constraintVertical_bias="1.0" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/poppins_semibold"
-        android:text=" "
-        android:textColor="@color/black"
-        android:textSize="18dp"
-        diagonal:layout_constraintEnd_toEndOf="@+id/profile_image"
-        diagonal:layout_constraintHorizontal_bias="0.0"
-        diagonal:layout_constraintStart_toStartOf="@+id/profile_image"
-        diagonal:layout_constraintTop_toBottomOf="@+id/profile_image" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_image"
+                android:layout_width="@dimen/_90mdp"
+                android:layout_height="@dimen/_90mdp"
+                android:layout_marginBottom="-56dp"
+                android:src="@drawable/ic_avatar"
+                app:civ_border_color="@color/white_my"
+                app:civ_border_width="5dp"
+                diagonal:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
+                diagonal:layout_constraintEnd_toEndOf="parent"
+                diagonal:layout_constraintHorizontal_bias="0.08"
+                diagonal:layout_constraintStart_toStartOf="parent"
+                diagonal:layout_constraintTop_toTopOf="parent"
+                diagonal:layout_constraintVertical_bias="1.0" />
 
-    <TextView
-        android:id="@+id/professionTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/poppins"
-        android:text=" "
-        android:textColor="@color/black"
-        diagonal:layout_constraintEnd_toEndOf="@+id/name"
-        diagonal:layout_constraintHorizontal_bias="0.0"
-        diagonal:layout_constraintStart_toStartOf="@+id/name"
-        diagonal:layout_constraintTop_toBottomOf="@+id/name" />
+            <ImageView
+                android:id="@+id/imageView8"
+                android:layout_width="@dimen/_30mdp"
+                android:layout_height="@dimen/_30mdp"
+                android:layout_marginBottom="-56dp"
+                android:src="@drawable/ic_verify"
+                diagonal:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
+                diagonal:layout_constraintEnd_toEndOf="@+id/profile_image"
+                diagonal:layout_constraintHorizontal_bias="1.0"
+                diagonal:layout_constraintStart_toStartOf="@+id/profile_image"
+                diagonal:layout_constraintTop_toTopOf="@+id/profile_image"
+                diagonal:layout_constraintVertical_bias="1.0" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        diagonal:layout_constraintEnd_toEndOf="parent"
-        diagonal:layout_constraintHorizontal_bias="0.8"
-        diagonal:layout_constraintStart_toEndOf="@+id/name"
-        diagonal:layout_constraintTop_toTopOf="@+id/name">
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:text=" "
+                android:textColor="@color/black"
+                android:textSize="18dp"
+                diagonal:layout_constraintEnd_toEndOf="@+id/profile_image"
+                diagonal:layout_constraintHorizontal_bias="0.0"
+                diagonal:layout_constraintStart_toStartOf="@+id/profile_image"
+                diagonal:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
-        <ImageView
-            android:id="@+id/addUser"
-            android:layout_width="@dimen/_24mdp"
-            android:layout_height="@dimen/_24mdp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="@dimen/_8mdp"
-            android:src="@drawable/ic_add_user"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/imageView10"
-            android:layout_width="@dimen/_24mdp"
-            android:layout_height="@dimen/_24mdp"
-            android:layout_marginEnd="@dimen/_8mdp"
-            android:src="@drawable/ic_message"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/imageView11"
-            android:layout_width="@dimen/_24mdp"
-            android:layout_height="@dimen/_24mdp"
-            android:src="@drawable/ic_call_vector"
-            android:visibility="invisible" />
-    </LinearLayout>
-
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:padding="@dimen/_8mdp"
-        diagonal:cardCornerRadius="8dp"
-        diagonal:layout_constraintEnd_toEndOf="parent"
-        diagonal:layout_constraintStart_toStartOf="parent"
-        diagonal:layout_constraintTop_toBottomOf="@+id/professionTV">
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/professionTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text=" "
+                android:textColor="@color/black"
+                diagonal:layout_constraintEnd_toEndOf="@+id/name"
+                diagonal:layout_constraintHorizontal_bias="0.0"
+                diagonal:layout_constraintStart_toStartOf="@+id/name"
+                diagonal:layout_constraintTop_toBottomOf="@+id/name" />
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:padding="8dp">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                diagonal:layout_constraintEnd_toEndOf="parent"
+                diagonal:layout_constraintHorizontal_bias="0.8"
+                diagonal:layout_constraintStart_toEndOf="@+id/name"
+                diagonal:layout_constraintTop_toTopOf="@+id/name">
 
-                <TextView
-                    android:id="@+id/followersTV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:gravity="center"
-                    android:text="Followers" />
+                <ImageView
+                    android:id="@+id/addUser"
+                    android:layout_width="@dimen/_24mdp"
+                    android:layout_height="@dimen/_24mdp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="@dimen/_8mdp"
+                    android:src="@drawable/ic_add_user"
+                    android:visibility="invisible" />
 
-                <TextView
-                    android:id="@+id/followersCountTV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:gravity="center"
-                    android:text="0"
-                    android:textColor="@color/black"
-                    android:textSize="24dp" />
+                <ImageView
+                    android:id="@+id/imageView10"
+                    android:layout_width="@dimen/_24mdp"
+                    android:layout_height="@dimen/_24mdp"
+                    android:layout_marginEnd="@dimen/_8mdp"
+                    android:src="@drawable/ic_message"
+                    android:visibility="invisible" />
+
+                <ImageView
+                    android:id="@+id/imageView11"
+                    android:layout_width="@dimen/_24mdp"
+                    android:layout_height="@dimen/_24mdp"
+                    android:src="@drawable/ic_call_vector"
+                    android:visibility="invisible" />
             </LinearLayout>
 
-            <LinearLayout
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:padding="8dp"
-                android:visibility="gone">
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:padding="@dimen/_8mdp"
+                diagonal:cardCornerRadius="8dp"
+                diagonal:layout_constraintEnd_toEndOf="parent"
+                diagonal:layout_constraintStart_toStartOf="parent"
+                diagonal:layout_constraintTop_toBottomOf="@+id/professionTV">
 
-                <TextView
-                    android:id="@+id/followingTV"
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:gravity="center"
-                    android:text="Following" />
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/followingCountTV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:gravity="center"
-                    android:text="0"
-                    android:textColor="@color/black"
-                    android:textSize="24dp" />
-            </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="8dp">
 
-            <LinearLayout
+                        <TextView
+                            android:id="@+id/followersTV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:gravity="center"
+                            android:text="Followers" />
+
+                        <TextView
+                            android:id="@+id/followersCountTV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:gravity="center"
+                            android:text="0"
+                            android:textColor="@color/black"
+                            android:textSize="24dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="8dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/followingTV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:gravity="center"
+                            android:text="Following" />
+
+                        <TextView
+                            android:id="@+id/followingCountTV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:gravity="center"
+                            android:text="0"
+                            android:textColor="@color/black"
+                            android:textSize="24dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:id="@+id/postsTV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:gravity="center"
+                            android:text="Posts" />
+
+                        <TextView
+                            android:id="@+id/postsCountTV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:gravity="center"
+                            android:text="0"
+                            android:textColor="@color/black"
+                            android:textSize="24dp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/BioTV"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:padding="8dp">
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:fontFamily="@font/poppins"
+                android:text=" "
+                android:textColor="@color/black"
+                diagonal:layout_constraintEnd_toEndOf="parent"
+                diagonal:layout_constraintStart_toStartOf="parent"
+                diagonal:layout_constraintTop_toBottomOf="@+id/cardView" />
 
-                <TextView
-                    android:id="@+id/postsTV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:gravity="center"
-                    android:text="Posts" />
+            <TextView
+                android:id="@+id/myFollowersTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="my Followers"
+                android:textColor="@color/black"
+                android:textSize="18dp"
+                diagonal:layout_constraintEnd_toEndOf="@+id/BioTV"
+                diagonal:layout_constraintHorizontal_bias="0.0"
+                diagonal:layout_constraintStart_toStartOf="@+id/BioTV"
+                diagonal:layout_constraintTop_toBottomOf="@+id/BioTV" />
 
-                <TextView
-                    android:id="@+id/postsCountTV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:gravity="center"
-                    android:text="0"
-                    android:textColor="@color/black"
-                    android:textSize="24dp" />
-            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/friendRV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                diagonal:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                diagonal:layout_constraintEnd_toEndOf="@+id/myFollowersTV"
+                diagonal:layout_constraintHorizontal_bias="0.0"
+                diagonal:layout_constraintStart_toStartOf="@+id/myFollowersTV"
+                diagonal:layout_constraintTop_toBottomOf="@+id/myFollowersTV"
+                tools:listitem="@layout/rv_followers_sample" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:id="@+id/BioTV"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
-        android:fontFamily="@font/poppins"
-        android:text=" "
-        android:textColor="@color/black"
-        diagonal:layout_constraintEnd_toEndOf="parent"
-        diagonal:layout_constraintStart_toStartOf="parent"
-        diagonal:layout_constraintTop_toBottomOf="@+id/cardView" />
-
-    <TextView
-        android:id="@+id/myFollowersTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/poppins_semibold"
-        android:text="my Followers"
-        android:textColor="@color/black"
-        android:textSize="18dp"
-        diagonal:layout_constraintEnd_toEndOf="@+id/BioTV"
-        diagonal:layout_constraintHorizontal_bias="0.0"
-        diagonal:layout_constraintStart_toStartOf="@+id/BioTV"
-        diagonal:layout_constraintTop_toBottomOf="@+id/BioTV" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/friendRV"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        diagonal:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        diagonal:layout_constraintEnd_toEndOf="@+id/myFollowersTV"
-        diagonal:layout_constraintHorizontal_bias="0.0"
-        diagonal:layout_constraintStart_toStartOf="@+id/myFollowersTV"
-        diagonal:layout_constraintTop_toBottomOf="@+id/myFollowersTV"
-        tools:listitem="@layout/rv_followers_sample" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

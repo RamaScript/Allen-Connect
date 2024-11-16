@@ -18,6 +18,7 @@
         android:paddingEnd="8dp"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
+        android:layout_marginEnd="8dp"
         >
 
         <ScrollView
@@ -35,6 +36,7 @@
                 android:ellipsize="none"
                 android:layout_marginEnd="8dp"
                 android:inputType="textMultiLine"
+                tools:ignore="HardcodedText"
                 android:maxLines="1000000000"
                 android:minLines="1"
                 android:text="Ramanand"
@@ -51,6 +53,7 @@
             android:text="1:10 PM"
             android:textColor="@color/gray"
             android:textSize="10sp"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

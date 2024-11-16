@@ -65,7 +65,7 @@
             android:layout_marginEnd="@dimen/_6mdp"
             android:layout_weight="1"
             android:src="@drawable/ic_avatar"
-            app:civ_border_color="@color/gray"
+            app:civ_border_color="@color/dark_gray"
             app:civ_border_width="2dp" />
 
         <LinearLayout
@@ -98,34 +98,37 @@
     <EditText
         android:id="@+id/caption"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        android:maxHeight="132dp"
         android:gravity="top"
         android:layout_marginStart="@dimen/_12mdp"
-        android:layout_marginTop="@dimen/_4mdp"
         android:layout_marginEnd="@dimen/_12mdp"
-        android:background="@color/transparent"
+        android:layout_marginTop="@dimen/_4mdp"
+        android:background="@drawable/border_white_my"
+        android:padding="@dimen/_4mdp"
+        android:paddingStart="@dimen/_8mdp"
         android:ems="10"
         android:hint="what's on your mind..."
-        android:inputType="text"
+        android:inputType="textMultiLine"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/postImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
 
     <ImageView
         android:id="@+id/postImage"
-        android:layout_width="wrap_content"
-        android:layout_height="220dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginTop="@dimen/_8mdp"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_avatar"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/view3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+        app:layout_constraintTop_toBottomOf="@+id/caption" />
 
     <ImageView
         android:id="@+id/addImg"
@@ -152,7 +155,7 @@
         android:id="@+id/view3"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@color/gray"
+        android:background="@color/dark_gray"
         android:layout_marginBottom="@dimen/_8mdp"
         app:layout_constraintBottom_toTopOf="@+id/textView5"
         app:layout_constraintEnd_toEndOf="parent"

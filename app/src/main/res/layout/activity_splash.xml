@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:background="@color/white_my"
     android:layout_height="match_parent"
-    android:backgroundTint="@color/BG_COLOR"
+    android:backgroundTint="@color/white"
     tools:context=".Splash">
 
     <ImageView
