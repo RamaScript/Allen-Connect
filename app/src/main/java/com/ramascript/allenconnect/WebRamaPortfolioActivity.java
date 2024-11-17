@@ -31,6 +31,9 @@ public class WebRamaPortfolioActivity extends AppCompatActivity {
             return insets;
         });
 
+        //get portfolio link from Meet Devs Activity Intent
+        String portfolioLink = getIntent().getStringExtra("PortfolioLink");
+
         // Set up the WebView
         WebView webView = binding.webview;
         webView.setWebViewClient(new WebViewClient()); // Keeps navigation within the WebView
@@ -54,6 +57,6 @@ public class WebRamaPortfolioActivity extends AppCompatActivity {
 
         // Load a URL in the WebView
         webView.setWebViewClient(new WebViewClient()); // Keeps navigation within the WebView
-        webView.loadUrl("https://ramascript.github.io");
+        webView.loadUrl(portfolioLink);
     }
 }

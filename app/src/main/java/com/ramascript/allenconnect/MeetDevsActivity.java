@@ -44,6 +44,25 @@ public class MeetDevsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MeetDevsActivity.this, WebRamaPortfolioActivity.class);
+                intent.putExtra("PortfolioLink", "https://ramascript.github.io");
+                startActivity(intent);
+            }
+        });
+
+        binding.portfolioYashIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MeetDevsActivity.this, WebRamaPortfolioActivity.class);
+                intent.putExtra("PortfolioLink", "https://yashraj63929.github.io/portfolio/");
+                startActivity(intent);
+            }
+        });
+
+        binding.portfolioPriyanshiIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MeetDevsActivity.this, WebRamaPortfolioActivity.class);
+                intent.putExtra("PortfolioLink", "https://shadowpriyanshi.github.io/");
                 startActivity(intent);
             }
         });

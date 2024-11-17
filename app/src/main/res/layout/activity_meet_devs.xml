@@ -327,6 +327,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center_vertical"
+                            android:layout_weight="1"
                             android:orientation="vertical">
 
                             <TextView
@@ -344,6 +345,11 @@
                                 android:textColor="@color/black" />
                         </LinearLayout>
 
+                        <ImageView
+                            android:id="@+id/portfolioPriyanshiIV"
+                            android:layout_width="@dimen/_24mdp"
+                            android:layout_height="@dimen/_30mdp"
+                            app:srcCompat="@drawable/ic_portfolio" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -368,6 +374,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center_vertical"
+                            android:layout_weight="1"
                             android:orientation="vertical">
 
                             <TextView
@@ -384,6 +391,12 @@
                                 android:text="BCA student at ABS"
                                 android:textColor="@color/black" />
                         </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/portfolioYashIV"
+                            android:layout_width="@dimen/_24mdp"
+                            android:layout_height="@dimen/_30mdp"
+                            app:srcCompat="@drawable/ic_portfolio" />
 
                     </LinearLayout>
 
