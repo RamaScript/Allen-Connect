@@ -15,6 +15,12 @@
         android:theme="@style/Theme.AllenConnect"
         tools:targetApi="31">
         <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+        <activity
             android:name=".WebRamaPortfolioActivity"
             android:exported="false" />
         <activity
