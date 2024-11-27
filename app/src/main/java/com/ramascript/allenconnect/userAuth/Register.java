@@ -1,4 +1,4 @@
-package com.ramascript.allenconnect;
+package com.ramascript.allenconnect.userAuth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,13 +16,21 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthOptions;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.ramascript.allenconnect.MainActivity;
 import com.ramascript.allenconnect.Models.UserModel;
+import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.ActivityRegisterBinding;
+
+import java.util.concurrent.TimeUnit;
 
 public class Register extends AppCompatActivity {
 
@@ -31,6 +39,11 @@ public class Register extends AppCompatActivity {
     FirebaseStorage storage;
 
     ActivityRegisterBinding binding;
+
+    String verificationCode;
+    PhoneAuthProvider.ForceResendingToken resendingToken;
+
+    boolean phoneVerified = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +77,22 @@ public class Register extends AppCompatActivity {
             binding.studentCV.setVisibility(View.VISIBLE);
             binding.alumniCV.setVisibility(View.GONE);
             binding.professorCV.setVisibility(View.GONE);
+
+
+            binding.sendOtpBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String phone = binding.studentPhoneNoET.getText().toString().trim();
+
+                    if (phone.isEmpty()) {
+                        binding.studentPhoneNoET.setError("Phone number is required");
+                    } else if (!phone.matches("^\\d{10}$")) {  // Regex for exactly 10 digits
+                        binding.studentPhoneNoET.setError("Please enter exactly 10 digits");
+                    } else {
+                        sendOTP("+91" + phone, false);
+                    }
+                }
+            });
 
             binding.studentRegisterBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -110,6 +139,9 @@ public class Register extends AppCompatActivity {
                             isValid = false;
                         } else if (!phone.matches("^\\d{10}$")) {  // Regex for exactly 10 digits
                             binding.studentPhoneNoET.setError("Please enter exactly 10 digits");
+                            isValid = false;
+                        } else if (!phoneVerified) {
+                            binding.studentPhoneNoET.setError("Please verify your phone number");
                             isValid = false;
                         }
 
@@ -165,8 +197,9 @@ public class Register extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             Intent i = new Intent(Register.this, MainActivity.class);
-                                            startActivity(i);
+                                             
                                             finish();
+                                            startActivity(i);
                                         }
                                     }, 500);
                                 } else if (task.getException() != null) {
@@ -296,8 +329,9 @@ public class Register extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             Intent i = new Intent(Register.this, MainActivity.class);
-                                            startActivity(i);
+
                                             finish();
+                                            startActivity(i);
                                         }
                                     }, 1000);
                                 } else if (task.getException() != null) {
@@ -396,8 +430,9 @@ public class Register extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             Intent i = new Intent(Register.this, MainActivity.class);
-                                            startActivity(i);
+                                             
                                             finish();
+                                            startActivity(i);
                                         }
                                     }, 1000);
                                 } else if (task.getException() != null) {
@@ -414,6 +449,52 @@ public class Register extends AppCompatActivity {
             binding.professorCV.setVisibility(View.GONE);
             binding.alumniCV.setVisibility(View.GONE);
             binding.studentCV.setVisibility(View.GONE);
+        }
+    }
+    void sendOTP(String phone, boolean isResend){
+        setInProgress(true);
+        PhoneAuthOptions.Builder builder =
+                    PhoneAuthOptions.newBuilder(auth)
+                    .setPhoneNumber(phone)
+                    .setTimeout(60L, TimeUnit.SECONDS)
+                    .setActivity(this)
+                    .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            @Override
+            public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
+                setInProgress(false);
+                phoneVerified = true;
+            }
+
+            @Override
+            public void onVerificationFailed(@NonNull FirebaseException e) {
+                setInProgress(false);
+                Toast.makeText(Register.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                super.onCodeSent(s, forceResendingToken);
+                verificationCode = s;
+                resendingToken = forceResendingToken;
+                setInProgress(false);
+                Toast.makeText(Register.this, "OTP sent", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        if(isResend){
+            PhoneAuthProvider.verifyPhoneNumber(builder.setForceResendingToken(resendingToken).build());
+        }else{
+            PhoneAuthProvider.verifyPhoneNumber(builder.build());
+        }
+    }
+
+    void setInProgress(boolean inProgress){
+        if(inProgress){
+            binding.sendOtpProgressBar.setVisibility(View.VISIBLE);
+            binding.sendOtpBtn.setVisibility(View.GONE);
+        }else{
+            binding.sendOtpProgressBar.setVisibility(View.GONE);
+            binding.sendOtpBtn.setVisibility(View.VISIBLE);
         }
     }
 }

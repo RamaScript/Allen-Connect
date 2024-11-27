@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -61,5 +62,5 @@ dependencies {
 
     implementation("com.github.marlonlom:timeago:4.0.3")
 
-
+    implementation ("com.google.android.material:material:1.9.0")
 }

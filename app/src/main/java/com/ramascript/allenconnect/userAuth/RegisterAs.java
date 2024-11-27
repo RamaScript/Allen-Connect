@@ -1,4 +1,4 @@
-package com.ramascript.allenconnect;
+package com.ramascript.allenconnect.userAuth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.ramascript.allenconnect.R;
 
 public class RegisterAs extends AppCompatActivity {
 

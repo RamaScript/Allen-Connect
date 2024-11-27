@@ -19,10 +19,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ramascript.allenconnect.Adapters.PostAdapter;
-import com.ramascript.allenconnect.Adapters.StoryAdapter;
-import com.ramascript.allenconnect.Chat;
+import com.ramascript.allenconnect.Chat.Chat;
 import com.ramascript.allenconnect.Models.PostModel;
-import com.ramascript.allenconnect.Models.StoryModel;
 import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.FragmentHomeBinding;
 
@@ -101,7 +99,6 @@ public class HomeFragment extends Fragment {
 //        binding.storyRV.setNestedScrollingEnabled(true);
 //        binding.storyRV.setAdapter(adapter);
 //        adapter.notifyDataSetChanged();
-
 
         //dashboard recycler view
         postList = new ArrayList<>();

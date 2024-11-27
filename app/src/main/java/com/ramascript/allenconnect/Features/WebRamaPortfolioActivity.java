@@ -1,4 +1,4 @@
-package com.ramascript.allenconnect;
+package com.ramascript.allenconnect.Features;
 
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +13,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.ActivityWebRamaPortfolioBinding;
 
 public class WebRamaPortfolioActivity extends AppCompatActivity {

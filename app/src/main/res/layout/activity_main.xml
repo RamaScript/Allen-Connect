@@ -32,16 +32,73 @@
         app:layout_constraintBottom_toBottomOf="@+id/container"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <LinearLayout
+        android:id="@+id/postOptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@drawable/round"
+        android:orientation="vertical"
+        android:elevation="@dimen/_8mdp"
+        android:padding="12dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/createPost"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:fontFamily="@font/poppins_regular"
+            android:letterSpacing="0.01"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="Create Post"
+            android:gravity="center"
+            android:background="@drawable/border_black"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:backgroundTint="@color/black"
+
+            />
+
+        <TextView
+            android:id="@+id/JobPost"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/poppins_regular"
+            android:letterSpacing="0.01"
+            android:padding="2dp"
+            android:gravity="center"
+            android:text="Post Job"
+            android:background="@drawable/border_black"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:backgroundTint="@color/black"
+            />
+
+    </LinearLayout>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavView"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:itemBackground="@color/BG_COLOR"
+        android:background="@drawable/border_nav_bg"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/container"
         app:menu="@menu/bottom_nav_menu"
+
+        app:itemIconTint="@color/dark_gray"
+        app:itemTextColor="@color/dark_gray"
+        app:itemRippleColor="@color/gray"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

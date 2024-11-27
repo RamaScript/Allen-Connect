@@ -1,4 +1,4 @@
-package com.ramascript.allenconnect;
+package com.ramascript.allenconnect.Features;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +10,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.ramascript.allenconnect.databinding.ActivityChatBinding;
+import com.ramascript.allenconnect.MainActivity;
+import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.ActivityMeetDevsBinding;
 
 public class MeetDevsActivity extends AppCompatActivity {

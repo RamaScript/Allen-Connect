@@ -1,4 +1,4 @@
-package com.ramascript.allenconnect;
+package com.ramascript.allenconnect.Features;
 
 import android.Manifest;
 import android.content.Intent;
@@ -20,6 +20,9 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.ramascript.allenconnect.MainActivity;
+import com.ramascript.allenconnect.R;
 
 public class AllenBot extends AppCompatActivity {
 

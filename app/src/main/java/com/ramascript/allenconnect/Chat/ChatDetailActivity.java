@@ -1,9 +1,8 @@
-package com.ramascript.allenconnect;
+package com.ramascript.allenconnect.Chat;
 
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.activity.EdgeToEdge;
@@ -21,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ramascript.allenconnect.Adapters.ChatMsgAdapter;
 import com.ramascript.allenconnect.Models.ChatMsgModel;
+import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.ActivityChatDetailBinding;
 import com.squareup.picasso.Picasso;
 

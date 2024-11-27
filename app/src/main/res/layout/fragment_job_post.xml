@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.JobPostFragment">
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_bottom"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/pageTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_12mdp"
+            android:layout_weight="1"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Post Job"
+            android:textColor="@color/black"
+            android:textSize="24dp"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/postBtn"
+            android:layout_width="@dimen/_46mdp"
+            android:layout_height="@dimen/_28mdp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="@dimen/_12mdp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/btnbg"
+            android:textColor="@color/white"
+            android:fontFamily="@font/poppins_semibold"
+            android:paddingTop="2dp"
+            android:text="Post"
+            android:textAllCaps="false"
+            android:textSize="14dp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_8mdp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImage"
+            android:layout_width="@dimen/_80mdp"
+            android:layout_height="@dimen/_40mdp"
+            android:layout_marginStart="@dimen/_8mdp"
+            android:layout_marginEnd="@dimen/_6mdp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_avatar"
+            app:civ_border_color="@color/dark_gray"
+            app:civ_border_width="2dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_bold"
+                android:text=" Username "
+                android:layout_marginBottom="-2dp"
+                android:textSize="@dimen/_16font_mdp" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text=" User Title"
+                android:layout_marginStart="2dp"
+                android:textSize="@dimen/_12font_mdp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:orientation="vertical">
+
+            <!-- Job Title -->
+
+            <EditText
+                android:id="@+id/job_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Job Title"
+                android:fontFamily="@font/poppins"
+                android:background="@drawable/et_bg"
+                android:layout_marginBottom="8dp"
+                android:inputType="text" />
+
+            <!-- Company Name -->
+            <EditText
+                android:id="@+id/company_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Company Name"
+                android:fontFamily="@font/poppins"
+                android:background="@drawable/et_bg"
+                android:layout_marginBottom="8dp"
+                android:inputType="text" />
+
+            <!-- Job Type -->
+            <Spinner
+                android:id="@+id/job_type"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:entries="@array/job_types"
+                android:fontFamily="@font/poppins"
+                android:background="@drawable/spinner_bg"
+                android:layout_marginBottom="8dp"
+                android:paddingStart="0dp"
+                />
+
+            <!-- Experience Required -->
+            <Spinner
+                android:id="@+id/experience_required"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:entries="@array/experience_levels"
+                android:fontFamily="@font/poppins"
+                android:background="@drawable/spinner_bg"
+                android:layout_marginBottom="8dp"
+                android:paddingStart="0dp"
+                />
+
+            <!-- Courses Eligible -->
+            <MultiAutoCompleteTextView
+                android:id="@+id/coursesEligible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Courses Eligible"
+                android:inputType="text"
+                android:fontFamily="@font/poppins"
+                android:background="@drawable/et_bg"
+                android:layout_marginBottom="8dp"
+                 />
+
+            <!-- Skills Required -->
+            <MultiAutoCompleteTextView
+                android:id="@+id/skills_required"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Skills Required "
+                android:inputType="text"
+                android:fontFamily="@font/poppins"
+                android:background="@drawable/et_bg"
+                android:layout_marginBottom="8dp"
+                />
+
+            <!-- Salary -->
+            <EditText
+                android:id="@+id/job_salary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Salary (Optional)"
+                android:fontFamily="@font/poppins"
+                android:background="@drawable/et_bg"
+                android:layout_marginBottom="8dp"
+                android:inputType="textNoSuggestions" />
+
+            <!-- Description -->
+            <EditText
+                android:id="@+id/job_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:hint="Job Description"
+                android:inputType="textMultiLine"
+                android:fontFamily="@font/poppins"
+                android:background="@drawable/et_bg"
+                android:layout_marginBottom="8dp"
+                android:lines="3" />
+
+            <!-- Contact Email -->
+            <EditText
+                android:id="@+id/contact_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Contact Email"
+                android:fontFamily="@font/poppins"
+                android:background="@drawable/et_bg"
+                android:layout_marginBottom="8dp"
+                android:inputType="textEmailAddress" />
+
+            <!-- Contact Phone (Optional) -->
+            <EditText
+                android:id="@+id/contact_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Contact Phone (Optional)"
+                android:fontFamily="@font/poppins"
+                android:background="@drawable/et_bg"
+                android:layout_marginBottom="8dp"
+                android:maxLength="10"
+                android:inputType="phone" />
+
+            <!-- Application Deadline -->
+
+            <LinearLayout
+                android:id="@+id/application_deadlineLL"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_vertical"
+                android:background="@drawable/et_bg"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/applicationDeadlineET"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Application Deadline"
+                    android:background="@color/transparent"
+                    android:fontFamily="@font/poppins"
+                    android:layout_weight="1"
+                    android:textColor="@color/black"
+                     />
+
+                <ImageView
+                    android:id="@+id/applicationDeadlinePickerIcon"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/calender" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/upload_logo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:gravity="center_vertical"
+                android:paddingEnd="12dp"
+                android:paddingStart="12dp"
+                android:layout_marginBottom="142dp"
+                android:background="@drawable/et_bg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/uploadLogoIV"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/rama"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/uploadLogoIcIV"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_upload"
+                    app:tint="@color/black" />
+
+                <TextView
+                    android:id="@+id/uploadLogoTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="Company Logo"
+                    android:textColor="@color/black"
+                    android:textSize="18dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

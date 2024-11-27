@@ -5,15 +5,11 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.contentcapture.ContentCaptureCondition;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.firestore.auth.User;
-import com.ramascript.allenconnect.ChatDetailActivity;
-import com.ramascript.allenconnect.Fragments.ChatsFragment;
+import com.ramascript.allenconnect.Chat.ChatDetailActivity;
 import com.ramascript.allenconnect.Models.UserModel;
 import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.RvChatsBinding;

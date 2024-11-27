@@ -1,6 +1,7 @@
 package com.ramascript.allenconnect.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ramascript.allenconnect.JobDetailActivity;
 import com.ramascript.allenconnect.Models.JobModel;
 import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.RvJobsBinding;
@@ -42,11 +44,20 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.viewHolder> {
         JobModel jobModel = list.get(position);
 //        holder.companyLogo.setImageResource(jobModel.getCompanyLogo());
         Picasso.get()
-                .load(jobModel.getCompanyLogo())
+                .load(jobModel.getLogoImgPath())
                 .placeholder(R.drawable.ic_avatar)
                 .into(holder.companyLogo);
-        holder.companyName.setText(jobModel.getComapanyName());
+        holder.companyName.setText(jobModel.getCompanyName());
         holder.jobTitle.setText(jobModel.getJobTitle());
+
+        holder.binding.jobViewDetailsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, JobDetailActivity.class);
+                intent.putExtra("jobID",jobModel.getJobID());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -60,7 +71,6 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.viewHolder> {
 
         ImageView companyLogo;
         TextView jobTitle,companyName;
-
 
         public viewHolder(@NonNull View itemView) {
             super(itemView);

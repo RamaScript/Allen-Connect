@@ -1,4 +1,4 @@
-package com.ramascript.allenconnect;
+package com.ramascript.allenconnect.Chat;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,11 +9,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.tabs.TabLayout;
-import com.ramascript.allenconnect.Adapters.NotificationViewPagerAdapter;
 import com.ramascript.allenconnect.Adapters.chatTabViewpagerAdapter;
+import com.ramascript.allenconnect.MainActivity;
+import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.ActivityChatBinding;
 
 public class Chat extends AppCompatActivity {

@@ -1,10 +1,9 @@
-package com.ramascript.allenconnect;
+package com.ramascript.allenconnect.Features;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -21,10 +20,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ramascript.allenconnect.Adapters.CommentAdapter;
-import com.ramascript.allenconnect.Fragments.HomeFragment;
+import com.ramascript.allenconnect.MainActivity;
 import com.ramascript.allenconnect.Models.CommentModel;
 import com.ramascript.allenconnect.Models.PostModel;
 import com.ramascript.allenconnect.Models.UserModel;
+import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.ActivityCommentBinding;
 import com.squareup.picasso.Picasso;
 

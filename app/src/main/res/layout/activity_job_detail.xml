@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".JobDetailActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_bottom"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="8dp"
+        android:paddingRight="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/backBtnIV"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="8dp"
+            android:src="@drawable/arrow_back"
+            app:tint="@color/black" />
+
+        <TextView
+            android:id="@+id/JobDetailsHeading"
+            android:layout_width="24dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Job Details"
+            android:textColor="@color/black"
+            android:textSize="24dp" />
+
+        <ImageView
+            android:id="@+id/notificationMenuIV"
+            android:layout_width="@dimen/_8mdp"
+            android:layout_height="@dimen/_28mdp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_more"
+            android:visibility="invisible" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white_my"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical">
+            <!-- Company Logo -->
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/companyLogo"
+                android:layout_width="@dimen/_60mdp"
+                android:layout_height="@dimen/_60mdp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/white"
+                android:contentDescription="Comapany Logo"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_avatar"
+                app:civ_border_color="@color/black"
+                app:civ_border_width="2dp" />
+
+            <!-- Job Title -->
+            <TextView
+                android:id="@+id/jobTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Job Title"
+                android:textColor="@color/dark_gray"
+                android:fontFamily="@font/poppins"
+                android:textSize="20sp"
+                />
+
+            <!-- Company Name -->
+            <TextView
+                android:id="@+id/companyName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Company Name"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/dark_gray"
+                android:textSize="14sp" />
+
+            <!-- Job type -->
+            <TextView
+                android:id="@+id/jobType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Job Type."
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <!-- Experience Level -->
+            <TextView
+                android:id="@+id/experienceLevel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Experience Level: 2-5 years"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <!-- Eligible Courses -->
+            <TextView
+                android:id="@+id/courseEligibility"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Eligible Courses: B.Tech, MCA"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <!-- Skills Required -->
+            <TextView
+                android:id="@+id/skillsRequired"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Skills Required: Java, Android, SQL"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <!-- Salary -->
+            <TextView
+                android:id="@+id/salary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Salary: ₹5,00,000 - ₹8,00,000 per annum"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <!-- Contact Email -->
+            <TextView
+                android:id="@+id/contactEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Contact Email: hr@company.com"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <!-- Contact Phone -->
+            <TextView
+                android:id="@+id/contactPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Contact Phone: +91 1234567890"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <!-- Job Description -->
+            <TextView
+                android:id="@+id/jobDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:lineSpacingExtra="4dp"
+                android:text="Job Description will be displayed here."
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <!-- Application Deadline -->
+            <TextView
+                android:id="@+id/applicationDeadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Application Deadline: 30th November 2024"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <!-- Apply Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/applyButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/btnbg"
+                android:fontFamily="@font/poppins_bold"
+                android:padding="12dp"
+                android:text="Apply Now"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="------x------" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout9"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/dark_gray"
+        android:orientation="vertical"
+        android:padding="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_regular"
+            android:background="@drawable/border_dark_black"
+            android:gravity="center"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="This Job is Posted by"
+            android:textColor="@color/dark_gray"
+            android:textSize="18dp" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/jobPosterProfilePic"
+                android:layout_width="@dimen/_80mdp"
+                android:layout_height="match_parent"
+
+                android:layout_weight="1"
+                android:src="@drawable/ic_avatar"
+                app:civ_border_color="@color/white_my"
+                app:civ_border_width="2dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/jobPosterName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="-4dp"
+                    android:fontFamily="@font/poppins_bold"
+                    android:text="Posted By Name"
+                    android:textColor="@color/white_my"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/jobPosterTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins"
+                    android:text="Poseted By title"
+                    android:textColor="@color/white_my"
+                    android:textSize="12dp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

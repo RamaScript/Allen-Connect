@@ -9,9 +9,8 @@
     <color name="transparent_black">#1A303030</color>
     <color name="textColor">#171717</color>
     <color name="alphaBlack">#99000000</color>
-    <color name="white_my">#f8f8f8</color>
+    <color name="white_my">#F8F9FA</color>
     <color name="white">#FFFFFF</color>
-
     <color name="BG_COLOR">#B3F5FEFD</color>
     <color name="red">#B3FF0000</color>
     <color name="green">#B3006200</color>

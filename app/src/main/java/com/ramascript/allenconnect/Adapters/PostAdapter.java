@@ -16,7 +16,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ramascript.allenconnect.CommentActivity;
+import com.ramascript.allenconnect.Features.CommentActivity;
 import com.ramascript.allenconnect.Models.PostModel;
 import com.ramascript.allenconnect.Models.UserModel;
 import com.ramascript.allenconnect.R;
