@@ -27,6 +27,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.ramascript.allenconnect.Adapters.FollowerAdapter;
+import com.ramascript.allenconnect.Chat.ChatDetailActivity;
 import com.ramascript.allenconnect.userAuth.LoginAs;
 import com.ramascript.allenconnect.Features.MeetDevsActivity;
 import com.ramascript.allenconnect.Models.FollowerModel;
@@ -116,6 +117,17 @@ public class ProfileFragment extends Fragment {
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     int postCount = (int) snapshot.getChildrenCount();  // Count the number of posts
                                     binding.postsCountTV.setText(String.valueOf(postCount));  // Set the post count in the TextView
+
+                                    binding.msgIcon.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent intent = new Intent(getContext(), ChatDetailActivity.class);
+                                            intent.putExtra("userId", userModel.getID());
+                                            intent.putExtra("profilePicture", userModel.getProfilePhoto());
+                                            intent.putExtra("userName", userModel.getName());
+                                            getContext().startActivity(intent);
+                                        }
+                                    });
                                 }
 
                                 @Override
@@ -214,6 +226,7 @@ public class ProfileFragment extends Fragment {
                 popupMenu.show();
                 }
             });
+
         return view;
         }
 

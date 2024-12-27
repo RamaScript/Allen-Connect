@@ -40,10 +40,10 @@ public class Register extends AppCompatActivity {
 
     ActivityRegisterBinding binding;
 
-    String verificationCode;
-    PhoneAuthProvider.ForceResendingToken resendingToken;
-
-    boolean phoneVerified = false;
+//    String verificationCode;
+//    PhoneAuthProvider.ForceResendingToken resendingToken;
+//
+//    boolean phoneVerified = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,21 +78,20 @@ public class Register extends AppCompatActivity {
             binding.alumniCV.setVisibility(View.GONE);
             binding.professorCV.setVisibility(View.GONE);
 
-
-            binding.sendOtpBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String phone = binding.studentPhoneNoET.getText().toString().trim();
-
-                    if (phone.isEmpty()) {
-                        binding.studentPhoneNoET.setError("Phone number is required");
-                    } else if (!phone.matches("^\\d{10}$")) {  // Regex for exactly 10 digits
-                        binding.studentPhoneNoET.setError("Please enter exactly 10 digits");
-                    } else {
-                        sendOTP("+91" + phone, false);
-                    }
-                }
-            });
+//            binding.sendOtpBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    String phone = binding.studentPhoneNoET.getText().toString().trim();
+//
+//                    if (phone.isEmpty()) {
+//                        binding.studentPhoneNoET.setError("Phone number is required");
+//                    } else if (!phone.matches("^\\d{10}$")) {  // Regex for exactly 10 digits
+//                        binding.studentPhoneNoET.setError("Please enter exactly 10 digits");
+//                    } else {
+//                        sendOTP("+91" + phone, false);
+//                    }
+//                }
+//            });
 
             binding.studentRegisterBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -140,10 +139,11 @@ public class Register extends AppCompatActivity {
                         } else if (!phone.matches("^\\d{10}$")) {  // Regex for exactly 10 digits
                             binding.studentPhoneNoET.setError("Please enter exactly 10 digits");
                             isValid = false;
-                        } else if (!phoneVerified) {
-                            binding.studentPhoneNoET.setError("Please verify your phone number");
-                            isValid = false;
                         }
+//                        else if (!phoneVerified) {
+//                            binding.studentPhoneNoET.setError("Please verify your phone number");
+//                            isValid = false;
+//                        }
 
                         // Email validation
                         if (email.isEmpty()) {
@@ -445,56 +445,57 @@ public class Register extends AppCompatActivity {
                     }
                 }
             });
-        } else {
+        }
+        else {
             binding.professorCV.setVisibility(View.GONE);
             binding.alumniCV.setVisibility(View.GONE);
             binding.studentCV.setVisibility(View.GONE);
         }
     }
-    void sendOTP(String phone, boolean isResend){
-        setInProgress(true);
-        PhoneAuthOptions.Builder builder =
-                    PhoneAuthOptions.newBuilder(auth)
-                    .setPhoneNumber(phone)
-                    .setTimeout(60L, TimeUnit.SECONDS)
-                    .setActivity(this)
-                    .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            @Override
-            public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-                setInProgress(false);
-                phoneVerified = true;
-            }
+//    void sendOTP(String phone, boolean isResend){
+//        setInProgress(true);
+//        PhoneAuthOptions.Builder builder =
+//                    PhoneAuthOptions.newBuilder(auth)
+//                    .setPhoneNumber(phone)
+//                    .setTimeout(60L, TimeUnit.SECONDS)
+//                    .setActivity(this)
+//                    .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+//            @Override
+//            public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
+//                setInProgress(false);
+//                phoneVerified = true;
+//            }
+//
+//            @Override
+//            public void onVerificationFailed(@NonNull FirebaseException e) {
+//                setInProgress(false);
+//                Toast.makeText(Register.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+//                super.onCodeSent(s, forceResendingToken);
+//                verificationCode = s;
+//                resendingToken = forceResendingToken;
+//                setInProgress(false);
+//                Toast.makeText(Register.this, "OTP sent", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//
+//        if(isResend){
+//            PhoneAuthProvider.verifyPhoneNumber(builder.setForceResendingToken(resendingToken).build());
+//        }else{
+//            PhoneAuthProvider.verifyPhoneNumber(builder.build());
+//        }
+//    }
 
-            @Override
-            public void onVerificationFailed(@NonNull FirebaseException e) {
-                setInProgress(false);
-                Toast.makeText(Register.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                super.onCodeSent(s, forceResendingToken);
-                verificationCode = s;
-                resendingToken = forceResendingToken;
-                setInProgress(false);
-                Toast.makeText(Register.this, "OTP sent", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        if(isResend){
-            PhoneAuthProvider.verifyPhoneNumber(builder.setForceResendingToken(resendingToken).build());
-        }else{
-            PhoneAuthProvider.verifyPhoneNumber(builder.build());
-        }
-    }
-
-    void setInProgress(boolean inProgress){
-        if(inProgress){
-            binding.sendOtpProgressBar.setVisibility(View.VISIBLE);
-            binding.sendOtpBtn.setVisibility(View.GONE);
-        }else{
-            binding.sendOtpProgressBar.setVisibility(View.GONE);
-            binding.sendOtpBtn.setVisibility(View.VISIBLE);
-        }
-    }
+//    void setInProgress(boolean inProgress){
+//        if(inProgress){
+//            binding.sendOtpProgressBar.setVisibility(View.VISIBLE);
+//            binding.sendOtpBtn.setVisibility(View.GONE);
+//        }else{
+//            binding.sendOtpProgressBar.setVisibility(View.GONE);
+//            binding.sendOtpBtn.setVisibility(View.VISIBLE);
+//        }
+//    }
 }

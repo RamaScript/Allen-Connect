@@ -26,7 +26,6 @@ import java.util.ArrayList;
 
 public class JobsFragment extends Fragment {
 
-
     private FragmentJobsBinding binding;
     ArrayList<JobModel> list;
 

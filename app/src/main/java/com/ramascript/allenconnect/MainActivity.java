@@ -129,7 +129,8 @@ public class MainActivity extends AppCompatActivity {
                 loadFragment(new ProfileFragment(), true); // Open ProfileFragment
                 binding.bottomNavView.setSelectedItemId(R.id.navigation_profile); // Highlight correct tab
             }
-        } else {
+        }
+        else {
             // Default fragment when no intent specifies a fragment
             loadFragment(new HomeFragment(), true);
         }

@@ -107,11 +107,11 @@
                             android:id="@+id/studentPhoneNoET"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:ems="10"
                             android:hint="Phone No."
                             android:inputType="phone"
                             android:maxLength="10"
-                            android:layout_weight="1"
                             android:textColor="@color/black"
                             android:textColorHint="@color/alphaBlack" />
 
@@ -121,7 +121,8 @@
                             android:background="@drawable/round"
                             android:backgroundTint="@color/btn_color"
                             android:gravity="center"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:visibility="gone">
 
                             <androidx.appcompat.widget.AppCompatButton
                                 android:id="@+id/sendOtpBtn"
@@ -131,8 +132,7 @@
                                 android:fontFamily="@font/poppins_semibold"
                                 android:text="Send OTP"
                                 android:textColor="@color/white_my"
-                                android:textSize="14dp"
-                                android:visibility="visible" />
+                                android:textSize="14dp" />
 
                             <ProgressBar
                                 android:id="@+id/sendOtpProgressBar"
@@ -148,17 +148,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
                         <EditText
                             android:id="@+id/studentOTPET"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:ems="10"
                             android:hint="OTP"
                             android:inputType="phone"
                             android:maxLength="10"
-                            android:layout_weight="1"
                             android:textColor="@color/black"
                             android:textColorHint="@color/alphaBlack" />
 
