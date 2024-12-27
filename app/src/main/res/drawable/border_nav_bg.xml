@@ -10,7 +10,7 @@
         android:bottomRightRadius="0dp"/>
 
     <stroke
-        android:width="2dp"
+        android:width="0.75dp"
         android:color="@color/gray"/> <!-- Border color and width -->
 
 </shape>

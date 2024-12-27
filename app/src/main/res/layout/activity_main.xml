@@ -95,7 +95,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/container"
         app:menu="@menu/bottom_nav_menu"
-
+        android:elevation="120dp"
         app:itemIconTint="@color/dark_gray"
         app:itemTextColor="@color/dark_gray"
         app:itemRippleColor="@color/gray"
