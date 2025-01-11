@@ -1,8 +1,11 @@
 package com.ramascript.allenconnect.Fragments;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -75,6 +78,24 @@ public class JobsFragment extends Fragment {
             }
         });
 
+        // Handle back button press
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Show the confirmation dialog
+                new AlertDialog.Builder(getContext())
+                    .setMessage("Do you want to leave the app?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Finish the activity, closing the app
+                            requireActivity().finish();
+                        }
+                    })
+                    .setNegativeButton("No", null) // Just dismiss the dialog
+                    .show();
+            }
+        });
 
 
         return binding.getRoot();

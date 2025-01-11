@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:state_checked="true"
+        android:drawable="@drawable/ic_job_search_selected" />  <!-- Icon for selected state -->
+
+    <item
+        android:drawable="@drawable/ic_job_search"
+        />  <!-- Icon for default (unselected) state -->
+</selector>

@@ -56,10 +56,7 @@ public class ChatDetailActivity extends AppCompatActivity {
         String profilePicture = getIntent().getStringExtra("profilePicture");
 
         binding.userName.setText(userName);
-        Picasso.get()
-                .load(profilePicture)
-                .placeholder(R.drawable.ic_avatar)
-                .into(binding.profileImage);
+        Picasso.get().load(profilePicture).placeholder(R.drawable.ic_avatar).into(binding.profileImage);
 
         binding.backBtnIV.setOnClickListener(v -> {
             Intent intent = new Intent(ChatDetailActivity.this, Chat.class);

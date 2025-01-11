@@ -11,8 +11,8 @@ android {
         applicationId = "com.ramascript.allenconnect"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -63,4 +63,5 @@ dependencies {
     implementation("com.github.marlonlom:timeago:4.0.3")
 
     implementation ("com.google.android.material:material:1.9.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }

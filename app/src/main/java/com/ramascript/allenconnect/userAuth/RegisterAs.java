@@ -37,6 +37,7 @@ public class RegisterAs extends AppCompatActivity {
                 Intent i = new Intent(RegisterAs.this, Register.class);
                 i.putExtra("userType", "Student");
                 startActivity(i);
+                finish();
             }
         });
 
@@ -46,6 +47,7 @@ public class RegisterAs extends AppCompatActivity {
                 Intent i = new Intent(RegisterAs.this, Register.class);
                 i.putExtra("userType", "Alumni");
                 startActivity(i);
+                finish();
             }
         });
 
@@ -55,6 +57,7 @@ public class RegisterAs extends AppCompatActivity {
                 Intent i = new Intent(RegisterAs.this, Register.class);
                 i.putExtra("userType", "Professor");
                 startActivity(i);
+                finish();
             }
         });
 
@@ -69,5 +72,12 @@ public class RegisterAs extends AppCompatActivity {
                 finish();
             }
         });
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(RegisterAs.this, LoginAs.class);
+        startActivity(intent);
+        finish(); // Close the current activity
     }
 }

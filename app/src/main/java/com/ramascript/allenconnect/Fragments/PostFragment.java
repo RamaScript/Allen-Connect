@@ -1,15 +1,10 @@
 package com.ramascript.allenconnect.Fragments;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -17,7 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,7 +26,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.ramascript.allenconnect.Models.PostModel;
 import com.ramascript.allenconnect.Models.UserModel;
 import com.ramascript.allenconnect.R;
@@ -59,11 +59,10 @@ public class PostFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        binding = FragmentPostBinding.inflate(inflater,container,false);
+        binding = FragmentPostBinding.inflate(inflater, container, false);
 
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setTitle("Post Uploading");
@@ -72,23 +71,17 @@ public class PostFragment extends Fragment {
         dialog.setCanceledOnTouchOutside(false);
 
         // here i am fetching user data from db and showing in post fragment
-        database.getReference()
-            .child("Users")
-            .child(auth.getUid())
-            .addListenerForSingleValueEvent(new ValueEventListener() {
+        database.getReference().child("Users").child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
+                if (snapshot.exists()) {
                     UserModel userModel = snapshot.getValue(UserModel.class);
-                    Picasso.get()
-                            .load(userModel.getProfilePhoto())
-                            .placeholder(R.drawable.ic_avatar)
-                            .into(binding.profileImage);
+                    Picasso.get().load(userModel.getProfilePhoto()).placeholder(R.drawable.ic_avatar).into(binding.profileImage);
                     binding.name.setText(userModel.getName());
 
                     // Set the text based on user type
-                    if ( "Student".equals(userModel.getUserType())) {
-                        binding.title.setText(userModel.getCourse() + " (" + userModel.getYear() + " year)");
+                    if ("Student".equals(userModel.getUserType())) {
+                        binding.title.setText(String.format("%s (%s year)", userModel.getCourse(), userModel.getYear()));
                     } else if ("Alumni".equals(userModel.getUserType())) {
                         binding.title.setText(userModel.getJobRole() + " at " + userModel.getCompany());
                     } else if ("Professor".equals(userModel.getUserType())) {
@@ -112,12 +105,12 @@ public class PostFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String caption = binding.caption.getText().toString();
-                if(!caption.isEmpty()){
-                    binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(getContext(),R.drawable.btnbg));
+                if (!caption.isEmpty()) {
+                    binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.btnbg));
                     binding.postBtn.setEnabled(true);
                     binding.postBtn.setTextColor(getContext().getResources().getColor(R.color.white_my));
-                }else {
-                    binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(getContext(),R.drawable.border_black));
+                } else {
+                    binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_black));
                     binding.postBtn.setEnabled(false);
                     binding.postBtn.setTextColor(getContext().getResources().getColor(R.color.gray));
                 }
@@ -129,74 +122,126 @@ public class PostFragment extends Fragment {
             }
         });
 
-        binding.addImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                startActivityForResult(intent,10);
-            }
+        binding.addImg.setOnClickListener(v -> {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(intent, 10);
         });
 
-        binding.postBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.show();
+        binding.postBtn.setOnClickListener(v -> {
+            // Show loading dialog
+            dialog.show();
 
-                final StorageReference reference = storage.getReference().child("Posts")
-                        .child(auth.getUid())
-                        .child(new Date().getTime()+" ");
-                reference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                PostModel postModel = new PostModel();
-                                postModel.setPostImage(uri.toString());
-                                postModel.setPostedBy(auth.getUid());
-                                postModel.setPostCaption(binding.caption.getText().toString());
-                                postModel.setPostedAt(new Date().getTime());
+            // Get caption
+            String caption = binding.caption.getText().toString().trim();
 
-                                database.getReference().child("Posts")
-                                        .push()
-                                        .setValue(postModel).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        dialog.dismiss();
-                                        Toast.makeText(getContext(), "Posted Sucessfully", Toast.LENGTH_SHORT).show();
+            // Check if both caption and image are empty
+            if (caption.isEmpty() && uri == null) {
+                dialog.dismiss();
+                Toast.makeText(getContext(), "Please provide a caption or select an image", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                                        // Replace PostFragment with HomeFragment
-                                        Fragment homeFragment = new HomeFragment();
-                                        getActivity().getSupportFragmentManager()
-                                                .beginTransaction()
-                                                .replace(R.id.container, homeFragment) // Replace with your container's id
-                                                .addToBackStack(null) // Optional, if you want to add it to the back stack
-                                                .commit();
-                                    }
-                                });
-                            }
-                        });
-                    }
+            // Initialize post model
+            PostModel postModel = new PostModel();
+            postModel.setPostedBy(auth.getUid());
+            postModel.setPostedAt(new Date().getTime());
+
+            // Set caption if it exists
+            if (!caption.isEmpty()) {
+                postModel.setPostCaption(caption);
+            }
+
+            // Handle image upload if URI is not null
+            if (uri != null) {
+                final StorageReference reference = storage.getReference()
+                    .child("Posts")
+                    .child(auth.getUid())
+                    .child(new Date().getTime() + " ");
+
+                reference.putFile(uri).addOnSuccessListener(taskSnapshot -> reference.getDownloadUrl()
+                    .addOnSuccessListener(downloadUri -> {
+                        // Set image URL
+                        postModel.setPostImage(downloadUri.toString());
+
+                        // Save post to database
+                        savePostToDatabase(postModel);
+                    })
+                    .addOnFailureListener(e -> {
+                        dialog.dismiss();
+                    }))
+                .addOnFailureListener(e -> {
+                    dialog.dismiss();
+                    Toast.makeText(getContext(), "Failed to upload image", Toast.LENGTH_SHORT).show();
                 });
+            } else {
+                // If no image, directly save the post
+                savePostToDatabase(postModel);
             }
         });
+
+        // Handle back button press
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Show the confirmation dialog
+                new AlertDialog.Builder(getContext())
+                    .setMessage("Do you want to leave the app?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", (dialog, id) -> {
+                        // Finish the activity, closing the app
+                        requireActivity().finish();
+                    })
+                    .setNegativeButton("No", null) // Just dismiss the dialog
+                    .show();
+            }
+        });
+
         return binding.getRoot();
     }
+
+    private void savePostToDatabase(PostModel postModel) {
+        database.getReference().child("Posts").push()
+            .setValue(postModel)
+            .addOnSuccessListener(unused -> {
+                dialog.dismiss();
+                Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+
+                // Replace PostFragment with HomeFragment
+                if (getActivity() != null) {
+                    Fragment homeFragment = new HomeFragment();
+                    getActivity()
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container, homeFragment)
+                        .addToBackStack(null)
+                        .commit();
+                }
+            })
+            .addOnFailureListener(e -> {
+                dialog.dismiss();
+                Toast.makeText(getContext(), "Failed to save post", Toast.LENGTH_SHORT).show();
+            });
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(data.getData()!=null){
+
+        // Check if data is null
+        if (data != null && data.getData() != null) {
             uri = data.getData();
             binding.postImage.setImageURI(uri);
             binding.postImage.setVisibility(View.VISIBLE);
 
-            binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(getContext(),R.drawable.btnbg));
+            binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.btnbg));
             binding.postBtn.setEnabled(true);
             binding.postBtn.setTextColor(getContext().getResources().getColor(R.color.white_my));
+        } else {
+            Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
         }
-
     }
+
 }

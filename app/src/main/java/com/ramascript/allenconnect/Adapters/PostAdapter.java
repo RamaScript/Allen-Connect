@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,176 +22,150 @@ import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.RvPostSampleBinding;
 import com.squareup.picasso.Picasso;
 
-
 import java.util.ArrayList;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.viewHolder> {
 
-   ArrayList<PostModel> list;
-   Context context;
+    ArrayList<PostModel> list;
+    Context context;
 
-   FirebaseAuth auth;
-   FirebaseDatabase database;
+    FirebaseAuth auth;
+    FirebaseDatabase database;
 
-   public PostAdapter(ArrayList<PostModel> list, Context context) {
-      this.list = list;
-      this.context = context;
-   }
+    public PostAdapter(ArrayList<PostModel> list, Context context) {
+        this.list = list;
+        this.context = context;
+    }
 
-   @NonNull
-   @Override
-   public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-      View view = LayoutInflater.from(context).inflate(R.layout.rv_post_sample, parent, false);
-      return new viewHolder(view);
-   }
+    @NonNull
+    @Override
+    public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.rv_post_sample, parent, false);
+        return new viewHolder(view);
+    }
 
-   @Override
-   public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-      PostModel model = list.get(position);
+    @Override
+    public void onBindViewHolder(@NonNull viewHolder holder, int position) {
+        PostModel model = list.get(position);
 
-      auth = FirebaseAuth.getInstance();
-      database = FirebaseDatabase.getInstance();
+        auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
 
-      Picasso.get()
-         .load(model.getPostImage())
-         .placeholder(R.drawable.ic_post_placeholder)
-         .into(holder.binding.postImg);
+        String postImage = model.getPostImage();
+        if (postImage == null || postImage.isEmpty()) {
+            holder.binding.postImg.setVisibility(View.GONE); // Hide the image if not available
+        } else {
+            holder.binding.postImg.setVisibility(View.VISIBLE); // Show the image if available
+            Picasso.get().load(postImage).placeholder(R.drawable.ic_post_placeholder).into(holder.binding.postImg);
+        }
 
-      holder.binding.commentTV.setText(model.getCommentCount() + "");
-      holder.binding.likeTV.setText(model.getPostLikes() + "");
+        holder.binding.commentTV.setText(model.getCommentCount() + "");
+        holder.binding.likeTV.setText(model.getPostLikes() + "");
 
-      String caption = model.getPostCaption();
-      if (caption.equals("")) {
-         holder.binding.postcaption.setVisibility(View.GONE);
-      } else {
-         holder.binding.postcaption.setText(model.getPostCaption());
-         holder.binding.postcaption.setVisibility(View.VISIBLE);
-      }
+        String caption = model.getPostCaption();
+        if (caption == null || caption.isEmpty()) {
+            holder.binding.postcaption.setVisibility(View.GONE);
+        } else {
+            holder.binding.postcaption.setText(caption);
+            holder.binding.postcaption.setVisibility(View.VISIBLE);
+        }
 
-      database.getReference()
-         .child("Users")
-         .child(model.getPostedBy())
-         .addValueEventListener(new ValueEventListener() {
+        database.getReference().child("Users").child(model.getPostedBy()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-               UserModel userModel = snapshot.getValue(UserModel.class);
-               Picasso.get()
-                  .load(userModel.getProfilePhoto())
-                  .placeholder(R.drawable.ic_avatar)
-                  .into(holder.binding.profileImagePost);
-               holder.binding.userName.setText(userModel.getName());
+                UserModel userModel = snapshot.getValue(UserModel.class);
+                assert userModel != null;
+                Picasso.get().load(userModel.getProfilePhoto()).placeholder(R.drawable.ic_avatar).into(holder.binding.profileImagePost);
+                holder.binding.userName.setText(userModel.getName());
 
-               // Set the text based on user type
-               if ( "Student".equals(userModel.getUserType())) {
-                  holder.binding.about.setText(userModel.getCourse() + " (" + userModel.getYear() + " year)");
-               } else if ("Alumni".equals(userModel.getUserType())) {
-                  holder.binding.about.setText(userModel.getJobRole() + " at " + userModel.getCompany());
-               } else if ("Professor".equals(userModel.getUserType())) {
-                  holder.binding.about.setText("Professor at AGOI");
-               }
+                // Set the text based on user type
+                if ("Student".equals(userModel.getUserType())) {
+                    holder.binding.about.setText(String.format("%s (%s year)", userModel.getCourse(), userModel.getYear()));
+                } else if ("Alumni".equals(userModel.getUserType())) {
+                    holder.binding.about.setText(String.format("%s at %s", userModel.getJobRole(), userModel.getCompany()));
+                } else if ("Professor".equals(userModel.getUserType())) {
+                    holder.binding.about.setText("Professor at AGOI");
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-         });
+        });
 
-      database.getReference()
-         .child("Posts")
-         .child(model.getPostID())
-         .child("Likes")
-         .child(FirebaseAuth.getInstance().getUid())
-         .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-               if (snapshot.exists()) {
-                  holder.binding.likeTV.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_up_blue, 0, 0, 0);
-               } else {
-                  holder.binding.likeTV.setOnClickListener(new View.OnClickListener() {
-                     @Override
-                     public void onClick(View v) {
-                        FirebaseDatabase.getInstance().getReference()
-                           .child("Posts")
-                           .child(model.getPostID())
-                           .child("postLikes")
-                           .addListenerForSingleValueEvent(new ValueEventListener() {
-                              @Override
-                              public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                 long currentLikes = 0;  // Default to 0 likes
-                                 if (snapshot.exists() && snapshot.getValue() != null) {
-                                    currentLikes = snapshot.getValue(Long.class);
-                                 }
+        database.getReference()
+            .child("Posts")
+            .child(model.getPostID())
+            .child("Likes")
+            .child(FirebaseAuth.getInstance().getUid())
+            .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        // User has already liked the post, so update the drawable
+                        holder.binding.likeTV.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_up_blue, 0, 0, 0);
+                    } else {
+                        // User hasn't liked the post, so set the default drawable
+                        holder.binding.likeTV.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_up, 0, 0, 0);
 
-                                 // Increment likes
-                                 FirebaseDatabase.getInstance().getReference()
-                                    .child("Posts")
-                                    .child(model.getPostID())
-                                    .child("postLikes")
-                                    .setValue(currentLikes + 1)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                       @Override
-                                       public void onSuccess(Void unused) {
-                                          FirebaseDatabase.getInstance().getReference()
-                                             .child("Posts")
-                                             .child(model.getPostID())
-                                             .child("Likes")
-                                             .child(FirebaseAuth.getInstance().getUid())
-                                             .setValue(true)
-                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void unused) {
-                                                   holder.binding.likeTV.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_up_blue, 0, 0, 0);
-                                                   holder.binding.likeTV.setEnabled(false);
-                                                }
-                                             });
-                                       }
-                                    });
-                              }
+                        // Set click listener to like the post
+                        holder.binding.likeTV.setOnClickListener(v -> {
+                            // Increment like count in the database
+                            FirebaseDatabase.getInstance().getReference()
+                                .child("Posts")
+                                .child(model.getPostID())
+                                .child("postLikes")
+                                .setValue(model.getPostLikes() + 1)
+                                .addOnSuccessListener(unused -> {
+                                    // Save the user's like status to the database
+                                    FirebaseDatabase.getInstance().getReference()
+                                        .child("Posts")
+                                        .child(model.getPostID())
+                                        .child("Likes")
+                                        .child(FirebaseAuth.getInstance().getUid())
+                                        .setValue(true)
+                                        .addOnSuccessListener(unused1 -> {
+                                            // Change the like button drawable to reflect the like state
+                                            holder.binding.likeTV.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_up_blue, 0, 0, 0);
+                                            holder.binding.likeTV.setEnabled(false);  // Disable the like button after liking
+                                        });
+                                });
+                        });
+                    }
+                }
 
-                              @Override
-                              public void onCancelled(@NonNull DatabaseError error) {
-                                 Log.e("FirebaseError", "Error: " + error.getMessage());
-                              }
-                           });
-                     }
-                  });
-               }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-               Log.e("FirebaseError", "Error: " + error.getMessage());
-            }
-         });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("FirebaseError", "Error: " + error.getMessage());
+                }
+            });
 
 
-      holder.binding.commentTV.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
+
+        holder.binding.commentTV.setOnClickListener(v -> {
             Intent intent = new Intent(context, CommentActivity.class);
             intent.putExtra("postId", model.getPostID());
             intent.putExtra("postedBy", model.getPostedBy());
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
-         }
-      });
-   }
+        });
+    }
 
-   @Override
-   public int getItemCount() {
-      return list.size();
-   }
+    @Override
+    public int getItemCount() {
+        return list.size();
+    }
 
-   public class viewHolder extends RecyclerView.ViewHolder {
+    public static class viewHolder extends RecyclerView.ViewHolder {
 
-      RvPostSampleBinding binding;
+        RvPostSampleBinding binding;
 
-      public viewHolder(@NonNull View itemView) {
-         super(itemView);
+        public viewHolder(@NonNull View itemView) {
+            super(itemView);
 
-         binding = RvPostSampleBinding.bind(itemView);
+            binding = RvPostSampleBinding.bind(itemView);
 
-      }
-   }
+        }
+    }
 }

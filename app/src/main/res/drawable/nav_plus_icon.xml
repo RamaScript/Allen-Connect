@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:state_checked="true"
+        android:drawable="@drawable/ic_plus_selected" />  <!-- Icon for selected state -->
+
+    <item
+        android:drawable="@drawable/ic_add"
+        />  <!-- Icon for default (unselected) state -->
+</selector>

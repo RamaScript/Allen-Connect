@@ -101,8 +101,17 @@ public class Register extends AppCompatActivity {
                     String name = binding.nameET.getText().toString().trim();
                     String crn = binding.crnET.getText().toString().trim();
                     String year = binding.yearET.getText().toString().trim();
-                    String course = crn.substring(2, 5);
+                    String course = "";  // Default value (empty string)
+
+                    if (crn.length() >= 5) {
+                        course = crn.substring(2, 5);  // Extract the substring if the string is long enough
+                    } else {
+                        Toast.makeText(Register.this, "CRN must be at least 5 characters long", Toast.LENGTH_SHORT).show();
+                        // You can choose to keep the default value or handle the error as needed
+                    }
+
                     String phone = binding.studentPhoneNoET.getText().toString().trim();
+
 
                     // Validate input fields
                     boolean isValid = true;
@@ -171,6 +180,7 @@ public class Register extends AppCompatActivity {
                         binding.studentRegisterBtn.setVisibility(View.GONE);
 
                         // Start the Firebase registration process
+                        String finalCourse = course;
                         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -180,7 +190,7 @@ public class Register extends AppCompatActivity {
 
                                 if (task.isSuccessful()) {
                                     // Create a UserModel object and store the user data in Firebase Realtime Database
-                                    UserModel userModel = new UserModel(crn, email, phone, password, name, course, year, reference.getPath(), userType);
+                                    UserModel userModel = new UserModel(crn, email, phone, password, name, finalCourse, year, reference.getPath(), userType);
 
                                     // Get the user's unique Firebase ID
                                     String id = task.getResult().getUser().getUid();
@@ -197,9 +207,8 @@ public class Register extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             Intent i = new Intent(Register.this, MainActivity.class);
-                                             
-                                            finish();
                                             startActivity(i);
+                                            finish();
                                         }
                                     }, 500);
                                 } else if (task.getException() != null) {
@@ -329,9 +338,8 @@ public class Register extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             Intent i = new Intent(Register.this, MainActivity.class);
-
-                                            finish();
                                             startActivity(i);
+                                            finish();
                                         }
                                     }, 1000);
                                 } else if (task.getException() != null) {
@@ -430,9 +438,8 @@ public class Register extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             Intent i = new Intent(Register.this, MainActivity.class);
-                                             
-                                            finish();
                                             startActivity(i);
+                                            finish();
                                         }
                                     }, 1000);
                                 } else if (task.getException() != null) {
@@ -498,4 +505,11 @@ public class Register extends AppCompatActivity {
 //            binding.sendOtpBtn.setVisibility(View.VISIBLE);
 //        }
 //    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(Register.this, RegisterAs.class);
+        startActivity(intent);
+        finish(); // Close the current activity
+    }
 }

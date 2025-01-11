@@ -44,4 +44,11 @@ public class Chat extends AppCompatActivity {
 
         binding.tabLayoutChat.setupWithViewPager(binding.viewPagerChat);
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(Chat.this, MainActivity.class);
+        startActivity(i);
+        finish();
+    }
 }

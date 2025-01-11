@@ -1,17 +1,19 @@
 package com.ramascript.allenconnect.Fragments;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -32,7 +34,7 @@ public class HomeFragment extends Fragment {
 
     FragmentHomeBinding binding;
 
-//    ArrayList<StoryModel> list;
+    //    ArrayList<StoryModel> list;
     ArrayList<PostModel> postList;
 
     FirebaseDatabase database;
@@ -48,8 +50,7 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
@@ -60,28 +61,23 @@ public class HomeFragment extends Fragment {
         database = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        binding.notificationHomeIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Create an instance of the NotificationFragment
-                Fragment notificationFragment = new NotificationFragment();
+        binding.notificationHomeIV.setOnClickListener(v -> {
+            // Create an instance of the NotificationFragment
+            Fragment notificationFragment = new NotificationFragment();
 
-                // Get the FragmentTransaction object and replace the HomeFragment with NotificationFragment
-                FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            // Get the FragmentTransaction object and replace the HomeFragment with NotificationFragment
+            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
 
-                // Replace the fragment container with the new fragment and add it to the backstack
-                transaction.replace(R.id.container, notificationFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
+            // Replace the fragment container with the new fragment and add it to the backstack
+            transaction.replace(R.id.container, notificationFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
         });
 
-        binding.chatHomeIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getContext(), Chat.class);
-                startActivity(i);
-            }
+        binding.chatHomeIV.setOnClickListener(v -> {
+            Intent i = new Intent(getContext(), Chat.class);
+            startActivity(i);
+            getActivity().finish();
         });
 
 //        list = new ArrayList<>();
@@ -114,7 +110,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 postList.clear();
-                for(DataSnapshot dataSnapshot:snapshot.getChildren()){
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     PostModel postModel = dataSnapshot.getValue(PostModel.class);
                     postModel.setPostID(dataSnapshot.getKey());
                     postList.add(postModel);
@@ -133,6 +129,19 @@ public class HomeFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
                 // Hide progress bar if there's an error
                 binding.progressBar.setVisibility(View.GONE);
+            }
+        });
+
+        // Handle back button press
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Show the confirmation dialog
+                new AlertDialog.Builder(getContext()).setMessage("Do you want to leave the app?").setCancelable(false).setPositiveButton("Yes", (dialog, id) -> {
+                    // Finish the activity, closing the app
+                    requireActivity().finish();
+                }).setNegativeButton("No", null) // Just dismiss the dialog
+                    .show();
             }
         });
 

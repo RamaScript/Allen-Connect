@@ -12,6 +12,7 @@
     <color name="white_my">#F8F9FA</color>
     <color name="white">#FFFFFF</color>
     <color name="BG_COLOR">#B3F5FEFD</color>
+    <color name="BG_COLOR2">#F5FEFD</color>
     <color name="red">#B3FF0000</color>
     <color name="green">#B3006200</color>
     <color name="btn_color">#ff5400</color>

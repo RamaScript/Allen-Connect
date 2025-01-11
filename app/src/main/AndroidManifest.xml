@@ -45,6 +45,7 @@
         <activity
             android:name=".Chat.ChatDetailActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.AllenConnect" />
         <activity
             android:name=".Chat.Chat"

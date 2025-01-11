@@ -26,23 +26,21 @@
             android:fontFamily="@font/poppins_semibold"
             android:text="Post Job"
             android:textColor="@color/black"
-            android:textSize="24dp"
+            android:textSize="22dp"
             android:textStyle="bold" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/postBtn"
-            android:layout_width="@dimen/_46mdp"
-            android:layout_height="@dimen/_28mdp"
-            android:layout_marginTop="8dp"
+            android:layout_width="@dimen/_40mdp"
+            android:layout_height="@dimen/_20mdp"
             android:layout_marginEnd="@dimen/_12mdp"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/btnbg"
             android:textColor="@color/white"
             android:fontFamily="@font/poppins_semibold"
             android:paddingTop="2dp"
             android:text="Post"
             android:textAllCaps="false"
-            android:textSize="14dp" />
+            android:textSize="12dp" />
 
 
     </LinearLayout>
