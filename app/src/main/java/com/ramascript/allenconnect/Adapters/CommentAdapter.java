@@ -35,7 +35,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
     @NonNull
     @Override
     public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.rv_comment_sample,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.rv_comment_sample, parent, false);
         return new viewHolder(view);
     }
 
@@ -52,11 +52,16 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         UserModel userModel = snapshot.getValue(UserModel.class);
-                        Picasso.get()
-                                .load(userModel.getProfilePhoto())
-                                .placeholder(R.drawable.ic_avatar)
-                                .into(holder.binding.profileImage);
-                        holder.binding.commenterName.setText(Html.fromHtml("<b>"+userModel.getName()+"</b>" + "  " ));
+                        if (userModel != null && userModel.getProfilePhoto() != null) {
+                            Picasso.get()
+                                    .load(userModel.getProfilePhoto())
+                                    .placeholder(R.drawable.ic_avatar)
+                                    .into(holder.binding.profileImage);
+                        } else {
+                            holder.binding.profileImage.setImageResource(R.drawable.ic_avatar);
+                        }
+                        holder.binding.commenterName
+                                .setText(Html.fromHtml("<b>" + userModel.getName() + "</b>" + "  "));
                         holder.binding.commentBody.setText(commentModel.getCommentBody());
                     }
 
@@ -72,9 +77,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
         return list.size();
     }
 
-    public class viewHolder extends RecyclerView.ViewHolder{
+    public class viewHolder extends RecyclerView.ViewHolder {
 
         RvCommentSampleBinding binding;
+
         public viewHolder(@NonNull View itemView) {
             super(itemView);
             binding = RvCommentSampleBinding.bind(itemView);

@@ -305,6 +305,7 @@
                 diagonal:layout_constraintStart_toStartOf="@+id/myFollowersTV"
                 diagonal:layout_constraintTop_toBottomOf="@+id/myFollowersTV"
                 tools:listitem="@layout/rv_followers_sample" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

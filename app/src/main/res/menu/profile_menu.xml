@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-<!--    <item-->
-<!--        android:id="@+id/action_edit_profile"-->
-<!--        android:title="Edit Profile" />-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/action_edit_profile"
+        android:title="Edit Profile" />
 
     <item
         android:id="@+id/action_change_profile_picture"
         android:title="Change Profile Picture" />
 
-<!--    <item-->
-<!--        android:id="@+id/action_settings"-->
-<!--        android:title="Settings"-->
-<!--        />-->
-
     <item
         android:id="@+id/action_developers"
-        android:title="Meet the Devs."
-        />
+        android:title="Meet Developers" />
 
     <item
         android:id="@+id/action_logout"
-        android:title="Logout"
-         />
+        android:title="Logout" />
 </menu>

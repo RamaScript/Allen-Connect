@@ -24,7 +24,7 @@
             android:name=".JobDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".EditProfileActivity"
+            android:name=".Activities.EditProfileActivity"
             android:exported="false" />
         <activity
             android:name=".SettingsActivity"

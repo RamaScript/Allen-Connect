@@ -21,19 +21,24 @@ public class UserModel {
     private String passingYear;
     private String company;
     private String jobRole;
+    // private String fcmToken; // Stores FCM Token for push notifications
+
+    private Long lastMessageTime; // Added field for message time
+    private int unreadCount; // Added field for unread messages
 
     public UserModel() {
     }
 
-    //for chat purpose
+    // for chat purpose
     public UserModel(String profilePhoto, String name, String lastMsg) {
         this.profilePhoto = profilePhoto;
         this.name = name;
         this.lastMsg = lastMsg;
     }
 
-    //for student
-    public UserModel(String CRN, String email, String phoneNo, String password, String name, String course, String year, String profilePhoto, String userType) {
+    // for student
+    public UserModel(String CRN, String email, String phoneNo, String password, String name, String course, String year,
+            String profilePhoto, String userType) {
         this.CRN = CRN;
         this.email = email;
         this.phoneNo = phoneNo;
@@ -45,8 +50,25 @@ public class UserModel {
         this.userType = userType;
     }
 
-    //for alumni
-    public UserModel(String email, String phoneNo, String password, String name, String course, String passingYear, String company, String jobRole, String profilePhoto,String userType) {
+    // Student Constructor with FCM Token (NEW)
+    // public UserModel(String CRN, String email, String phoneNo, String password,
+    // String name, String course, String year, String profilePhoto, String
+    // userType, String fcmToken) {
+    // this.CRN = CRN;
+    // this.email = email;
+    // this.phoneNo = phoneNo;
+    // this.password = password;
+    // this.name = name;
+    // this.course = course;
+    // this.year = year;
+    // this.profilePhoto = profilePhoto;
+    // this.userType = userType;
+    // this.fcmToken = fcmToken; // NEW FIELD
+    // }
+
+    // for alumni
+    public UserModel(String email, String phoneNo, String password, String name, String course, String passingYear,
+            String company, String jobRole, String profilePhoto, String userType) {
         this.email = email;
         this.phoneNo = phoneNo;
         this.password = password;
@@ -60,8 +82,25 @@ public class UserModel {
 
     }
 
-    //for professor
-    public UserModel(String name, String phoneNo, String email, String password, String profilePhoto,String userType) {
+    // Alumni Constructor with FCM Token (NEW)
+    // public UserModel(String email, String phoneNo, String password, String name,
+    // String course, String passingYear, String company,
+    // String jobRole, String profilePhoto, String userType, String fcmToken) {
+    // this.email = email;
+    // this.phoneNo = phoneNo;
+    // this.password = password;
+    // this.name = name;
+    // this.course = course;
+    // this.passingYear = passingYear;
+    // this.company = company;
+    // this.jobRole = jobRole;
+    // this.profilePhoto = profilePhoto;
+    // this.userType = userType;
+    // this.fcmToken = fcmToken; // NEW FIELD
+    // }
+
+    // for professor
+    public UserModel(String name, String phoneNo, String email, String password, String profilePhoto, String userType) {
         this.name = name;
         this.phoneNo = phoneNo;
         this.email = email;
@@ -70,6 +109,17 @@ public class UserModel {
         this.userType = userType;
 
     }
+
+    // public UserModel(String name, String phoneNo, String email,
+    // String password, String profilePhoto, String userType, String fcmToken) {
+    // this.name = name;
+    // this.phoneNo = phoneNo;
+    // this.email = email;
+    // this.password = password;
+    // this.profilePhoto = profilePhoto;
+    // this.userType = userType;
+    // this.fcmToken = fcmToken; // NEW FIELD
+    // }
 
     public String getJobRole() {
         return jobRole;
@@ -190,4 +240,55 @@ public class UserModel {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    // public String getFcmToken() {
+    // return fcmToken;
+    // }
+    //
+    // public void setFcmToken(String fcmToken) {
+    // this.fcmToken = fcmToken;
+    // }
+
+    // New getters and setters for message time and unread count
+    public Long getLastMessageTime() {
+        return lastMessageTime;
+    }
+
+    public void setLastMessageTime(Long lastMessageTime) {
+        this.lastMessageTime = lastMessageTime;
+    }
+
+    public int getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(int unreadCount) {
+        this.unreadCount = unreadCount;
+    }
+
+    // Helper method to format time
+    public static String getTimeAgo(Long timestamp) {
+        if (timestamp == null)
+            return "";
+
+        long currentTime = System.currentTimeMillis();
+        long timeDiff = currentTime - timestamp;
+
+        // Convert to seconds
+        long seconds = timeDiff / 1000;
+
+        if (seconds < 60) {
+            return "Just now";
+        } else if (seconds < 3600) {
+            long minutes = seconds / 60;
+            return minutes + "m";
+        } else if (seconds < 86400) {
+            long hours = seconds / 3600;
+            return hours + "h";
+        } else {
+            long days = seconds / 86400;
+            return days + "d";
+        }
+    }
+
 }

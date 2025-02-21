@@ -70,78 +70,104 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.viewHolder> {
             holder.binding.postcaption.setVisibility(View.VISIBLE);
         }
 
-        database.getReference().child("Users").child(model.getPostedBy()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                UserModel userModel = snapshot.getValue(UserModel.class);
-                assert userModel != null;
-                Picasso.get().load(userModel.getProfilePhoto()).placeholder(R.drawable.ic_avatar).into(holder.binding.profileImagePost);
-                holder.binding.userName.setText(userModel.getName());
+        database.getReference().child("Users").child(model.getPostedBy())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        UserModel userModel = snapshot.getValue(UserModel.class);
+                        assert userModel != null;
+                        Picasso.get().load(userModel.getProfilePhoto()).placeholder(R.drawable.ic_avatar)
+                                .into(holder.binding.profileImagePost);
+                        holder.binding.userName.setText(userModel.getName());
 
-                // Set the text based on user type
-                if ("Student".equals(userModel.getUserType())) {
-                    holder.binding.about.setText(String.format("%s (%s year)", userModel.getCourse(), userModel.getYear()));
-                } else if ("Alumni".equals(userModel.getUserType())) {
-                    holder.binding.about.setText(String.format("%s at %s", userModel.getJobRole(), userModel.getCompany()));
-                } else if ("Professor".equals(userModel.getUserType())) {
-                    holder.binding.about.setText("Professor at AGOI");
-                }
-            }
+                        // Set the text based on user type
+                        if ("Student".equals(userModel.getUserType())) {
+                            holder.binding.about
+                                    .setText(String.format("%s (%s year)", userModel.getCourse(), userModel.getYear()));
+                        } else if ("Alumni".equals(userModel.getUserType())) {
+                            holder.binding.about
+                                    .setText(String.format("%s at %s", userModel.getJobRole(), userModel.getCompany()));
+                        } else if ("Professor".equals(userModel.getUserType())) {
+                            holder.binding.about.setText("Professor at AGOI");
+                        }
+                    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                    }
+                });
 
+        // Check if the current user has liked the post
         database.getReference()
-            .child("Posts")
-            .child(model.getPostID())
-            .child("Likes")
-            .child(FirebaseAuth.getInstance().getUid())
-            .addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        // User has already liked the post, so update the drawable
-                        holder.binding.likeTV.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_up_blue, 0, 0, 0);
-                    } else {
-                        // User hasn't liked the post, so set the default drawable
-                        holder.binding.likeTV.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_up, 0, 0, 0);
+                .child("Posts")
+                .child(model.getPostID())
+                .child("Likes")
+                .child(FirebaseAuth.getInstance().getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            // User has already liked the post - show filled heart
+                            holder.binding.likeTV.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0,
+                                    0, 0);
 
-                        // Set click listener to like the post
-                        holder.binding.likeTV.setOnClickListener(v -> {
-                            // Increment like count in the database
-                            FirebaseDatabase.getInstance().getReference()
-                                .child("Posts")
-                                .child(model.getPostID())
-                                .child("postLikes")
-                                .setValue(model.getPostLikes() + 1)
-                                .addOnSuccessListener(unused -> {
-                                    // Save the user's like status to the database
-                                    FirebaseDatabase.getInstance().getReference()
+                            // Add click listener for unlike
+                            holder.binding.likeTV.setOnClickListener(v -> {
+                                // Remove like from database
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("Posts")
+                                        .child(model.getPostID())
+                                        .child("Likes")
+                                        .child(FirebaseAuth.getInstance().getUid())
+                                        .removeValue()
+                                        .addOnSuccessListener(unused -> {
+                                            // When unliking, DECREASE the like count
+                                            int newLikeCount = model.getPostLikes() - 1;
+                                            FirebaseDatabase.getInstance().getReference()
+                                                    .child("Posts")
+                                                    .child(model.getPostID())
+                                                    .child("postLikes")
+                                                    .setValue(newLikeCount);
+                                            model.setPostLikes(newLikeCount); // Update local model
+                                            holder.binding.likeTV.setText(String.valueOf(newLikeCount)); // Update UI
+                                                                                                         // count
+                                        });
+                            });
+                        } else {
+                            // User hasn't liked the post - show empty heart
+                            holder.binding.likeTV.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart, 0, 0, 0);
+
+                            // Add click listener for like
+                            holder.binding.likeTV.setOnClickListener(v -> {
+                                // Add like to database
+                                FirebaseDatabase.getInstance().getReference()
                                         .child("Posts")
                                         .child(model.getPostID())
                                         .child("Likes")
                                         .child(FirebaseAuth.getInstance().getUid())
                                         .setValue(true)
-                                        .addOnSuccessListener(unused1 -> {
-                                            // Change the like button drawable to reflect the like state
-                                            holder.binding.likeTV.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_up_blue, 0, 0, 0);
-                                            holder.binding.likeTV.setEnabled(false);  // Disable the like button after liking
+                                        .addOnSuccessListener(unused -> {
+                                            // When liking, INCREASE the like count
+                                            int newLikeCount = model.getPostLikes() + 1;
+                                            FirebaseDatabase.getInstance().getReference()
+                                                    .child("Posts")
+                                                    .child(model.getPostID())
+                                                    .child("postLikes")
+                                                    .setValue(newLikeCount);
+                                            model.setPostLikes(newLikeCount); // Update local model
+                                            holder.binding.likeTV.setText(String.valueOf(newLikeCount)); // Update UI
+                                                                                                         // count
                                         });
-                                });
-                        });
+                            });
+                        }
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("FirebaseError", "Error: " + error.getMessage());
-                }
-            });
-
-
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("FirebaseError", "Error: " + error.getMessage());
+                    }
+                });
 
         holder.binding.commentTV.setOnClickListener(v -> {
             Intent intent = new Intent(context, CommentActivity.class);
