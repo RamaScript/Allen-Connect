@@ -24,16 +24,14 @@ import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.ActivityChatBinding;
 import com.ramascript.allenconnect.Adapters.ChatUsersAdapter;
 import com.ramascript.allenconnect.Models.UserModel;
+import com.ramascript.allenconnect.Fragments.ChatsFragment;
 
 import java.util.ArrayList;
 
-public class Chat extends AppCompatActivity implements ChatUsersAdapter.FilterCallback {
+public class Chat extends AppCompatActivity {
 
-    ActivityChatBinding binding;
-    ChatUsersAdapter adapter;
-    ArrayList<UserModel> usersList;
-    FirebaseDatabase database;
-    FirebaseAuth auth;
+    private ActivityChatBinding binding;
+    private ChatsFragment chatsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,19 +45,14 @@ public class Chat extends AppCompatActivity implements ChatUsersAdapter.FilterCa
             return insets;
         });
 
-        // Initialize Firebase
-        database = FirebaseDatabase.getInstance();
-        auth = FirebaseAuth.getInstance();
+        // Initialize the fragment
+        chatsFragment = new ChatsFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, chatsFragment)
+                .commit();
 
-        // Initialize usersList
-        usersList = new ArrayList<>();
-
-        // Initialize adapter
-        adapter = new ChatUsersAdapter(usersList, this, this);
-        binding.chatRecyclerView.setAdapter(adapter);
-        binding.chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // Setup search functionality
+        // Setup search functionality using the correct ID from your layout
         binding.searchEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -67,8 +60,9 @@ public class Chat extends AppCompatActivity implements ChatUsersAdapter.FilterCa
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (adapter != null) {
-                    adapter.getFilter().filter(s);
+                // Pass search query to fragment
+                if (chatsFragment != null) {
+                    chatsFragment.filterUsers(s.toString());
                 }
             }
 
@@ -76,41 +70,6 @@ public class Chat extends AppCompatActivity implements ChatUsersAdapter.FilterCa
             public void afterTextChanged(Editable s) {
             }
         });
-
-        // Fetch users from Firebase
-        database.getReference().child("Users").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                usersList.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    UserModel user = dataSnapshot.getValue(UserModel.class);
-                    String currentUserId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
-
-                    // Add user only if:
-                    // 1. User object is not null
-                    // 2. User has an ID
-                    // 3. User is not the current user
-                    if (user != null && dataSnapshot.getKey() != null && currentUserId != null
-                            && !dataSnapshot.getKey().equals(currentUserId)) {
-                        user.setID(dataSnapshot.getKey());
-                        usersList.add(user);
-                    }
-                }
-                adapter.updateList(usersList);
-
-                // Show/hide no results view based on list size
-                binding.noResultsView.setVisibility(usersList.isEmpty() ? View.VISIBLE : View.GONE);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Handle error
-                binding.noResultsView.setVisibility(View.VISIBLE);
-            }
-        });
-
-        binding.viewPagerChat.setAdapter(new chatTabViewpagerAdapter(getSupportFragmentManager()));
-        binding.tabLayoutChat.setupWithViewPager(binding.viewPagerChat);
     }
 
     @Override
@@ -119,13 +78,6 @@ public class Chat extends AppCompatActivity implements ChatUsersAdapter.FilterCa
         Intent i = new Intent(Chat.this, MainActivity.class);
         startActivity(i);
         finish();
-    }
-
-    @Override
-    public void onFilterComplete(int size) {
-        if (binding != null) {
-            binding.noResultsView.setVisibility(size == 0 ? View.VISIBLE : View.GONE);
-        }
     }
 
     @Override

@@ -11,9 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -74,20 +76,34 @@ public class EditProfileActivity extends AppCompatActivity {
                                             .into(binding.profileImage);
                                 }
 
-                                // Set basic info
+                                // Set common fields
                                 binding.nameET.setText(user.getName());
+                                binding.profileEmail.setText(user.getEmail());
 
-                                // Show/hide fields based on user type
-                                if ("Student".equals(user.getUserType())) {
-                                    binding.studentFields.setVisibility(View.VISIBLE);
-                                    binding.alumniFields.setVisibility(View.GONE);
-                                    binding.courseET.setText(user.getCourse());
-                                    binding.yearET.setText(user.getYear());
-                                } else if ("Alumni".equals(user.getUserType())) {
-                                    binding.studentFields.setVisibility(View.GONE);
-                                    binding.alumniFields.setVisibility(View.VISIBLE);
-                                    binding.companyET.setText(user.getCompany());
-                                    binding.jobRoleET.setText(user.getJobRole());
+                                // Hide all specific fields first
+                                binding.studentFields.setVisibility(View.GONE);
+                                binding.alumniFields.setVisibility(View.GONE);
+                                binding.professorFields.setVisibility(View.GONE);
+
+                                // Show fields based on user type
+                                switch (user.getUserType()) {
+                                    case "Student":
+                                        binding.studentFields.setVisibility(View.VISIBLE);
+                                        binding.courseET.setText(user.getCourse());
+                                        binding.yearET.setText(user.getYear());
+                                        break;
+
+                                    case "Alumni":
+                                        binding.alumniFields.setVisibility(View.VISIBLE);
+                                        binding.companyET.setText(user.getCompany());
+                                        binding.jobRoleET.setText(user.getJobRole());
+                                        break;
+
+                                    case "Professor":
+                                        binding.professorFields.setVisibility(View.VISIBLE);
+                                        binding.professorEmailET.setText(user.getEmail());
+                                        binding.phoneNoET.setText(user.getPhoneNo());
+                                        break;
                                 }
                             }
                         }
@@ -101,7 +117,8 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void saveUserData() {
-        String name = binding.nameET.getText().toString();
+        // Validate common fields
+        String name = binding.nameET.getText().toString().trim();
         if (name.isEmpty()) {
             binding.nameET.setError("Name cannot be empty");
             return;
@@ -111,6 +128,57 @@ public class EditProfileActivity extends AppCompatActivity {
         binding.saveButton.setEnabled(false);
         binding.saveButton.setText("Saving...");
 
+        // Validate type-specific fields
+        UserModel currentUser = getCurrentUser();
+        if (currentUser != null) {
+            switch (currentUser.getUserType()) {
+                case "Student":
+                    String course = binding.courseET.getText().toString().trim();
+                    String year = binding.yearET.getText().toString().trim();
+                    if (course.isEmpty()) {
+                        binding.courseET.setError("Course cannot be empty");
+                        resetSaveButton();
+                        return;
+                    }
+                    if (year.isEmpty()) {
+                        binding.yearET.setError("Year cannot be empty");
+                        resetSaveButton();
+                        return;
+                    }
+                    break;
+
+                case "Alumni":
+                    String company = binding.companyET.getText().toString().trim();
+                    String jobRole = binding.jobRoleET.getText().toString().trim();
+                    if (company.isEmpty()) {
+                        binding.companyET.setError("Company cannot be empty");
+                        resetSaveButton();
+                        return;
+                    }
+                    if (jobRole.isEmpty()) {
+                        binding.jobRoleET.setError("Job Role cannot be empty");
+                        resetSaveButton();
+                        return;
+                    }
+                    break;
+
+                case "Professor":
+                    String email = binding.professorEmailET.getText().toString().trim();
+                    String phone = binding.phoneNoET.getText().toString().trim();
+                    if (email.isEmpty()) {
+                        binding.professorEmailET.setError("Email cannot be empty");
+                        resetSaveButton();
+                        return;
+                    }
+                    if (phone.isEmpty()) {
+                        binding.phoneNoET.setError("Phone number cannot be empty");
+                        resetSaveButton();
+                        return;
+                    }
+                    break;
+            }
+        }
+
         // If new image is selected, upload it first
         if (selectedImage != null) {
             StorageReference reference = storage.getReference().child("profile_photos")
@@ -119,10 +187,31 @@ public class EditProfileActivity extends AppCompatActivity {
             reference.putFile(selectedImage).addOnSuccessListener(taskSnapshot -> {
                 reference.getDownloadUrl().addOnSuccessListener(uri -> {
                     updateUserData(name, uri.toString());
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(EditProfileActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                    resetSaveButton();
                 });
+            }).addOnFailureListener(e -> {
+                Toast.makeText(EditProfileActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+                resetSaveButton();
             });
         } else {
             updateUserData(name, null);
+        }
+    }
+
+    private void resetSaveButton() {
+        binding.saveButton.setEnabled(true);
+        binding.saveButton.setText("Save Changes");
+    }
+
+    private UserModel getCurrentUser() {
+        try {
+            DatabaseReference userRef = database.getReference().child("Users").child(auth.getUid());
+            DataSnapshot snapshot = Tasks.await(userRef.get());
+            return snapshot.getValue(UserModel.class);
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -133,18 +222,28 @@ public class EditProfileActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         UserModel user = snapshot.getValue(UserModel.class);
                         if (user != null) {
+                            // Update common fields
                             user.setName(name);
                             if (profilePhotoUrl != null) {
                                 user.setProfilePhoto(profilePhotoUrl);
                             }
 
-                            // Update based on user type
-                            if ("Student".equals(user.getUserType())) {
-                                user.setCourse(binding.courseET.getText().toString());
-                                user.setYear(binding.yearET.getText().toString());
-                            } else if ("Alumni".equals(user.getUserType())) {
-                                user.setCompany(binding.companyET.getText().toString());
-                                user.setJobRole(binding.jobRoleET.getText().toString());
+                            // Update specific fields based on user type
+                            switch (user.getUserType()) {
+                                case "Student":
+                                    user.setCourse(binding.courseET.getText().toString());
+                                    user.setYear(binding.yearET.getText().toString());
+                                    break;
+
+                                case "Alumni":
+                                    user.setCompany(binding.companyET.getText().toString());
+                                    user.setJobRole(binding.jobRoleET.getText().toString());
+                                    break;
+
+                                case "Professor":
+                                    user.setEmail(binding.professorEmailET.getText().toString());
+                                    user.setPhoneNo(binding.phoneNoET.getText().toString());
+                                    break;
                             }
 
                             // Save to database
@@ -153,6 +252,11 @@ public class EditProfileActivity extends AppCompatActivity {
                                         Toast.makeText(EditProfileActivity.this, "Profile updated successfully",
                                                 Toast.LENGTH_SHORT).show();
                                         finish();
+                                    }).addOnFailureListener(e -> {
+                                        Toast.makeText(EditProfileActivity.this,
+                                                "Failed to update profile: " + e.getMessage(),
+                                                Toast.LENGTH_SHORT).show();
+                                        resetSaveButton();
                                     });
                         }
                     }
@@ -160,8 +264,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                         Toast.makeText(EditProfileActivity.this, "Error updating profile", Toast.LENGTH_SHORT).show();
-                        binding.saveButton.setEnabled(true);
-                        binding.saveButton.setText("Save Changes");
+                        resetSaveButton();
                     }
                 });
     }

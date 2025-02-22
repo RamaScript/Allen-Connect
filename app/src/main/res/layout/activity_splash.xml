@@ -7,7 +7,7 @@
     android:background="@color/white_my"
     android:layout_height="match_parent"
     android:backgroundTint="@color/white"
-    tools:context=".Splash">
+    tools:context=".Activities.Splash">
 
     <ImageView
         android:id="@+id/imageView2"

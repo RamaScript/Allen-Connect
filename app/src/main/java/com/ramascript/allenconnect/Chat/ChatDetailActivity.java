@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.ViewTreeObserver;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -32,6 +33,8 @@ public class ChatDetailActivity extends AppCompatActivity {
     private ActivityChatDetailBinding binding;
     private FirebaseDatabase database;
     private FirebaseAuth auth;
+    private ValueEventListener messageListener;
+    private String senderRoom, receiverRoom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +58,16 @@ public class ChatDetailActivity extends AppCompatActivity {
         String userName = getIntent().getStringExtra("userName");
         String profilePicture = getIntent().getStringExtra("profilePicture");
 
+        if (receiveId == null || userName == null) {
+            Toast.makeText(this, "Error: Missing user information", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         binding.userName.setText(userName);
         Picasso.get().load(profilePicture).placeholder(R.drawable.ic_avatar).into(binding.profileImage);
 
         binding.backBtnIV.setOnClickListener(v -> {
-            Intent intent = new Intent(ChatDetailActivity.this, Chat.class);
-            startActivity(intent);
             finish();
         });
 
@@ -70,33 +77,34 @@ public class ChatDetailActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         binding.chatRecyclerView.setLayoutManager(layoutManager);
 
-        binding.getRoot().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                binding.getRoot().getWindowVisibleDisplayFrame(r);
-                int screenHeight = binding.getRoot().getRootView().getHeight();
-                int keypadHeight = screenHeight - r.bottom;
+        binding.getRoot().getViewTreeObserver()
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        Rect r = new Rect();
+                        binding.getRoot().getWindowVisibleDisplayFrame(r);
+                        int screenHeight = binding.getRoot().getRootView().getHeight();
+                        int keypadHeight = screenHeight - r.bottom;
 
-                // If the keypad height is more than 200 pixels, consider it open
-                if (keypadHeight > 200) {
-                    // Move the LinearLayout above the keyboard
-                    binding.linear.setTranslationY(-keypadHeight);
-                    // Scroll to the last item in the RecyclerView when the keyboard opens
-                    if (chatMsgAdapter.getItemCount() > 0) {
-                        binding.chatRecyclerView.smoothScrollToPosition(chatMsgAdapter.getItemCount() - 1);
+                        // If the keypad height is more than 200 pixels, consider it open
+                        if (keypadHeight > 200) {
+                            // Move the LinearLayout above the keyboard
+                            binding.linear.setTranslationY(-keypadHeight);
+                            // Scroll to the last item in the RecyclerView when the keyboard opens
+                            if (chatMsgAdapter.getItemCount() > 0) {
+                                binding.chatRecyclerView.smoothScrollToPosition(chatMsgAdapter.getItemCount() - 1);
+                            }
+                        } else {
+                            // Reset the LinearLayout position when the keyboard is hidden
+                            binding.linear.setTranslationY(0);
+                        }
                     }
-                } else {
-                    // Reset the LinearLayout position when the keyboard is hidden
-                    binding.linear.setTranslationY(0);
-                }
-            }
-        });
+                });
 
-        final String senderRoom = senderId + receiveId;
-        final String receiverRoom = receiveId + senderId;
+        senderRoom = senderId + receiveId;
+        receiverRoom = receiveId + senderId;
 
-        ValueEventListener messageListener = new ValueEventListener() {
+        messageListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 chatMsgModel.clear();
@@ -116,24 +124,58 @@ public class ChatDetailActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Handle errors here
+                Toast.makeText(ChatDetailActivity.this, "Error: " + error.getMessage(),
+                        Toast.LENGTH_SHORT).show();
             }
         };
 
-        database.getReference().child("chats").child(senderRoom).addValueEventListener(messageListener);
-        database.getReference().child("chats").child(receiverRoom).addValueEventListener(messageListener);
+        database.getReference().child("chats").child(senderRoom)
+                .addValueEventListener(messageListener);
+        database.getReference().child("chats").child(receiverRoom)
+                .addValueEventListener(messageListener);
 
         binding.send.setOnClickListener(v -> {
-            String message = binding.msgEt.getText().toString();
+            String message = binding.msgEt.getText().toString().trim();
 
             if (!message.isEmpty()) {
+                binding.send.setEnabled(false);
+
                 ChatMsgModel model = new ChatMsgModel(senderId, message);
                 model.setTimestamp(new Date().getTime());
                 binding.msgEt.setText("");
 
-                database.getReference().child("chats").child(senderRoom).push().setValue(model);
-                database.getReference().child("chats").child(receiverRoom).push().setValue(model);
+                database.getReference().child("chats")
+                        .child(senderRoom)
+                        .push()
+                        .setValue(model)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                database.getReference().child("chats")
+                                        .child(receiverRoom)
+                                        .push()
+                                        .setValue(model)
+                                        .addOnCompleteListener(task2 -> {
+                                            binding.send.setEnabled(true);
+                                        });
+                            } else {
+                                Toast.makeText(ChatDetailActivity.this,
+                                        "Failed to send message",
+                                        Toast.LENGTH_SHORT).show();
+                                binding.send.setEnabled(true);
+                            }
+                        });
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (messageListener != null) {
+            database.getReference().child("chats").child(senderRoom)
+                    .removeEventListener(messageListener);
+            database.getReference().child("chats").child(receiverRoom)
+                    .removeEventListener(messageListener);
+        }
     }
 }

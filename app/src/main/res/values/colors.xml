@@ -21,6 +21,7 @@
     <color name="dark_gray">#232323</color>
     <color name="light_gray">#C2C2C2</color>
     <color name="portfolio">#ef6c00</color>
-    <color name="pink">#FF4B8A</color>
-
+    <color name="orange">#FF5722</color>
+    <color name="light_orange">#FFE0B2</color>
+    <color name="chat_background">#FFF</color>
 </resources>

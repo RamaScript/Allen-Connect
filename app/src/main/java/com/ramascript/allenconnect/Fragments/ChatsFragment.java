@@ -25,6 +25,7 @@ public class ChatsFragment extends Fragment implements ChatUsersAdapter.FilterCa
 
     private FragmentChatsBinding binding;
     private ArrayList<UserModel> usersList;
+    private ArrayList<UserModel> filteredList;
     private FirebaseDatabase database;
     private ChatUsersAdapter adapter;
     private FirebaseAuth auth;
@@ -37,11 +38,18 @@ public class ChatsFragment extends Fragment implements ChatUsersAdapter.FilterCa
         database = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
         usersList = new ArrayList<>();
+        filteredList = new ArrayList<>();
 
-        adapter = new ChatUsersAdapter(usersList, getContext(), this);
+        adapter = new ChatUsersAdapter(filteredList, getContext(), this);
         binding.chatRecyclerView.setAdapter(adapter);
         binding.chatRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        loadUsers();
+
+        return binding.getRoot();
+    }
+
+    private void loadUsers() {
         String currentUserId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
 
         if (currentUserId != null) {
@@ -49,6 +57,8 @@ public class ChatsFragment extends Fragment implements ChatUsersAdapter.FilterCa
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     usersList.clear();
+                    filteredList.clear();
+
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         UserModel user = dataSnapshot.getValue(UserModel.class);
                         String userId = dataSnapshot.getKey();
@@ -56,10 +66,11 @@ public class ChatsFragment extends Fragment implements ChatUsersAdapter.FilterCa
                         if (user != null && userId != null && !userId.equals(currentUserId)) {
                             user.setID(userId);
                             usersList.add(user);
+                            filteredList.add(user);
                         }
                     }
 
-                    adapter.updateList(usersList);
+                    adapter.notifyDataSetChanged();
                     updateEmptyState();
                 }
 
@@ -72,22 +83,37 @@ public class ChatsFragment extends Fragment implements ChatUsersAdapter.FilterCa
         } else {
             updateEmptyState();
         }
+    }
 
-        return binding.getRoot();
+    public void filterUsers(String query) {
+        filteredList.clear();
+
+        if (query.isEmpty()) {
+            filteredList.addAll(usersList);
+        } else {
+            String searchQuery = query.toLowerCase().trim();
+            for (UserModel user : usersList) {
+                if (user.getName() != null &&
+                        user.getName().toLowerCase().startsWith(searchQuery)) {
+                    filteredList.add(user);
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged();
+        updateEmptyState();
     }
 
     private void updateEmptyState() {
         if (binding != null) {
             binding.noResultsView.setVisibility(
-                    usersList.isEmpty() ? View.VISIBLE : View.GONE);
+                    filteredList.isEmpty() ? View.VISIBLE : View.GONE);
         }
     }
 
     @Override
     public void onFilterComplete(int size) {
-        if (binding != null) {
-            binding.noResultsView.setVisibility(size == 0 ? View.VISIBLE : View.GONE);
-        }
+        updateEmptyState();
     }
 
     @Override

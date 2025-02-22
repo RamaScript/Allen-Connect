@@ -86,15 +86,25 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavView"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:background="@drawable/bottom_nav_background"
-        android:elevation="8dp"
         app:itemIconSize="24dp"
+        app:menu="@menu/bottom_nav_menu"
+
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/white"
+        android:elevation="8dp"
+        app:itemActiveIndicatorStyle="@android:color/transparent"
+        app:itemIconTint="@color/black"
+        app:itemPaddingBottom="8dp"
+        app:itemPaddingTop="8dp"
+        app:itemRippleColor="@android:color/transparent"
         app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
+        />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

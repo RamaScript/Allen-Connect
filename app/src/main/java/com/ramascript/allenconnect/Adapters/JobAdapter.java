@@ -2,7 +2,6 @@ package com.ramascript.allenconnect.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ramascript.allenconnect.JobDetailActivity;
+import com.ramascript.allenconnect.Activities.JobDetailActivity;
 import com.ramascript.allenconnect.Models.JobModel;
 import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.RvJobsBinding;
