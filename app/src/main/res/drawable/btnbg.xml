@@ -5,5 +5,5 @@
 
     <stroke
         android:width="2dp"
-        android:color="#FFFFFF"/> <!-- Border color and width -->
+        android:color="@color/btn_color"/> <!-- Border color and width -->
 </shape>

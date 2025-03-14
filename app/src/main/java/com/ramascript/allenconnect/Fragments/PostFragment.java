@@ -122,7 +122,7 @@ public class PostFragment extends Fragment {
             }
         });
 
-        binding.addImg.setOnClickListener(v -> {
+        binding.addImgbtn.setOnClickListener(v -> {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
