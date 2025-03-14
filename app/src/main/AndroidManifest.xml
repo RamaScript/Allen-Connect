@@ -26,9 +26,7 @@
         <activity
             android:name=".Activities.EditProfileActivity"
             android:exported="false" />
-        <activity
-            android:name=".Activities.SettingsActivity"
-            android:exported="false" />
+
         <activity
             android:name=".Features.WebRamaPortfolioActivity"
             android:exported="false" />
@@ -61,6 +59,9 @@
             android:exported="false" />
         <activity
             android:name=".userAuth.LoginAs"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.OnboardingActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.Splash"

@@ -1,6 +1,5 @@
 package com.ramascript.allenconnect.Fragments;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,10 +10,11 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,13 +30,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class HomeFragment extends Fragment {
-    // Step 1: Declare the binding variable
 
     FragmentHomeBinding binding;
-
-    //    ArrayList<StoryModel> list;
     ArrayList<PostModel> postList;
-
     FirebaseDatabase database;
     FirebaseAuth auth;
 
@@ -51,7 +47,6 @@ public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
@@ -61,91 +56,121 @@ public class HomeFragment extends Fragment {
         database = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
 
+        // Load user profile image
+        if (auth.getCurrentUser() != null) {
+            database.getReference().child("Users").child(auth.getCurrentUser().getUid())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists() && snapshot.hasChild("profilePhoto")) {
+                                String profileImage = snapshot.child("profilePhoto").getValue(String.class);
+                                if (getContext() != null && profileImage != null) {
+                                    Glide.with(getContext())
+                                            .load(profileImage)
+                                            .placeholder(R.drawable.ic_avatar)
+                                            .into(binding.userProfileImage);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                        }
+                    });
+        }
+
+        // Set click listeners for notification and chat
         binding.notificationHomeIV.setOnClickListener(v -> {
-            // Create an instance of the NotificationFragment
             Fragment notificationFragment = new NotificationFragment();
-
-            // Get the FragmentTransaction object and replace the HomeFragment with NotificationFragment
-            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-
-            // Replace the fragment container with the new fragment and add it to the backstack
-            transaction.replace(R.id.container, notificationFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, notificationFragment)
+                    .addToBackStack(null)
+                    .commit();
         });
 
         binding.chatHomeIV.setOnClickListener(v -> {
-            Intent i = new Intent(getContext(), Chat.class);
-            startActivity(i);
-            getActivity().finish();
+            startActivity(new Intent(getContext(), Chat.class));
+            requireActivity().finish();
         });
 
-//        list = new ArrayList<>();
-//        list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p7, "Ramanand"));
-//        list.add(new StoryModel(R.drawable.p7, R.drawable.ic_live, R.drawable.p3, "Rajat"));
-//        list.add(new StoryModel(R.drawable.p6, R.drawable.ic_live, R.drawable.p3, "suraj"));
-//        list.add(new StoryModel(R.drawable.p7, R.drawable.ic_live, R.drawable.p8, "Sohan"));
-//        list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p1, "hum"));
-//        list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p1, "hum"));
-//        list.add(new StoryModel(R.drawable.p8, R.drawable.ic_live, R.drawable.p1, "hum"));
+        // Set click listener for post creation
+        binding.createPostPrompt.setOnClickListener(v -> {
+            // TODO: Navigate to post creation activity
+            // Intent intent = new Intent(getContext(), CreatePostActivity.class);
+            // startActivity(intent);
+        });
 
-//        StoryAdapter adapter = new StoryAdapter(list, getContext());
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-//        binding.storyRV.setLayoutManager(layoutManager);
-//        binding.storyRV.setNestedScrollingEnabled(true);
-//        binding.storyRV.setAdapter(adapter);
-//        adapter.notifyDataSetChanged();
-
-        //dashboard recycler view
+        // Setup RecyclerView for posts
         postList = new ArrayList<>();
-
         PostAdapter postAdapter = new PostAdapter(postList, getContext());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         binding.dashBoardRV.setLayoutManager(linearLayoutManager);
-        binding.dashBoardRV.addItemDecoration(new DividerItemDecoration(binding.dashBoardRV.getContext(), DividerItemDecoration.VERTICAL));
-        binding.dashBoardRV.setNestedScrollingEnabled(false);
         binding.dashBoardRV.setAdapter(postAdapter);
 
+        // Add scroll listener to handle bottom navigation visibility
+        binding.dashBoardRV.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            private int scrolledDistance = 0;
+            private boolean controlsVisible = true;
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (scrolledDistance > 10 && controlsVisible) {
+                    // Hide bottom navigation and create post card
+                    binding.createPostCard.animate().translationY(-binding.createPostCard.getHeight()).setDuration(200);
+                    controlsVisible = false;
+                    scrolledDistance = 0;
+                } else if (scrolledDistance < -10 && !controlsVisible) {
+                    // Show bottom navigation and create post card
+                    binding.createPostCard.animate().translationY(0).setDuration(200);
+                    controlsVisible = true;
+                    scrolledDistance = 0;
+                }
+
+                if ((controlsVisible && dy > 0) || (!controlsVisible && dy < 0)) {
+                    scrolledDistance += dy;
+                }
+            }
+        });
+
+        // Load posts
         database.getReference().child("Posts").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 postList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     PostModel postModel = dataSnapshot.getValue(PostModel.class);
-                    postModel.setPostID(dataSnapshot.getKey());
-                    postList.add(postModel);
+                    if (postModel != null) {
+                        postModel.setPostID(dataSnapshot.getKey());
+                        postList.add(postModel);
+                    }
                 }
-
-                // Reverse the order and update the adapter
                 Collections.reverse(postList);
                 postAdapter.notifyDataSetChanged();
-
-                // Hide progress bar after data has loaded
                 binding.progressBar.setVisibility(View.GONE);
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Hide progress bar if there's an error
                 binding.progressBar.setVisibility(View.GONE);
             }
         });
 
-        // Handle back button press
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                // Show the confirmation dialog
-                new AlertDialog.Builder(getContext()).setMessage("Do you want to leave the app?").setCancelable(false).setPositiveButton("Yes", (dialog, id) -> {
-                    // Finish the activity, closing the app
-                    requireActivity().finish();
-                }).setNegativeButton("No", null) // Just dismiss the dialog
-                    .show();
-            }
-        });
+        // Handle back button
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        new AlertDialog.Builder(requireContext())
+                                .setMessage("Do you want to leave the app?")
+                                .setCancelable(false)
+                                .setPositiveButton("Yes", (dialog, id) -> requireActivity().finish())
+                                .setNegativeButton("No", null)
+                                .show();
+                    }
+                });
 
         return view;
     }
-
 }

@@ -4,28 +4,29 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingStart="@dimen/_8mdp"
+    android:background="@color/transparent"
     android:paddingEnd="@dimen/_8mdp">
 
     <LinearLayout
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingTop="@dimen/_8mdp"
         android:paddingBottom="@dimen/_8mdp"
-        android:background="@drawable/border_bottom_nocolor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
 
-        android:orientation="horizontal">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/studentPic"
-            app:civ_border_color="@color/dark_gray"
-            app:civ_border_width="2dp"
             android:layout_width="@dimen/_40mdp"
             android:layout_height="@dimen/_40mdp"
-            android:src="@drawable/ic_avatar" />
+            android:src="@drawable/ic_avatar"
+            app:civ_border_color="@color/dark_gray"
+            app:civ_border_width="1dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,19 +41,19 @@
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="-4dp"
-                android:fontFamily="@font/poppins_semibold"
-                android:text=" "
-                android:textSize="18dp" />
+                android:layout_marginBottom="-2dp"
+                android:fontFamily="@font/poppins"
+                android:text="Sample person"
+                android:textSize="14sp" />
 
 
-                <TextView
-                    android:id="@+id/professionTV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins"
-                    android:text=" "
-                    android:textSize="12dp" />
+            <TextView
+                android:id="@+id/professionTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_regular"
+                android:text="sample caption"
+                android:textSize="12sp" />
 
 
         </LinearLayout>
