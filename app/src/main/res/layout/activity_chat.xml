@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:orientation="vertical"
     tools:context=".Chat.Chat">
 
     <LinearLayout
@@ -21,28 +20,28 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp">
 
             <ImageView
-                android:id="@+id/imageView6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="2dp"
-                app:srcCompat="@drawable/arrow_back"
+                android:id="@+id/backButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/arrow_back"
                 app:tint="@color/black" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_weight="1"
                 android:fontFamily="@font/poppins_semibold"
-                android:text="Allen Chat"
+                android:text="Message"
                 android:textColor="@color/black"
                 android:textSize="24sp" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -51,60 +50,37 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/search_background"
-            android:padding="8dp">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp">
 
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
-                android:src="@drawable/ic_search" />
+                android:src="@drawable/ic_search"
+                app:tint="@color/gray" />
 
             <EditText
                 android:id="@+id/searchEt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="12dp"
                 android:background="@null"
                 android:hint="Search"
                 android:inputType="text"
                 android:textSize="16sp" />
         </LinearLayout>
+
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chatRecyclerView"
+    <!-- Fragment Container -->
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingHorizontal="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayoutChat" />
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayoutChat"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:elevation="12dp"
-        android:maxWidth="0dp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topBar"
-        app:tabBackground="@color/white_my"
-        app:tabGravity="fill"
-        app:tabIndicatorColor="@color/black"
-        app:tabMode="fixed"
-        app:tabSelectedTextColor="@color/black"
-        app:tabTextColor="@color/black" />
-
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPagerChat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayoutChat" />
+        app:layout_constraintTop_toBottomOf="@+id/topBar" />
 
     <!-- No Results View -->
     <LinearLayout
@@ -129,21 +105,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:fontFamily="@font/poppins"
             android:text="No results found"
             android:textColor="@color/gray"
             android:textSize="16sp" />
     </LinearLayout>
-
-    <!-- Fragment Container -->
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,17 +1,15 @@
 package com.ramascript.allenconnect.Chat;
 
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.view.ViewTreeObserver;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,155 +25,184 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class ChatDetailActivity extends AppCompatActivity {
 
     private ActivityChatDetailBinding binding;
     private FirebaseDatabase database;
     private FirebaseAuth auth;
-    private ValueEventListener messageListener;
-    private String senderRoom, receiverRoom;
+    private ArrayList<ChatMsgModel> messageList;
+    private ChatMsgAdapter adapter;
+    private String receiverId;
+    private String senderRoom;
+    private String receiverRoom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
+        // Set window flags for proper keyboard handling
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         binding = ActivityChatDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
         database = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        final String senderId = auth.getUid();
-        String receiveId = getIntent().getStringExtra("userId");
-        String userName = getIntent().getStringExtra("userName");
-        String profilePicture = getIntent().getStringExtra("profilePicture");
+        messageList = new ArrayList<>();
+        adapter = new ChatMsgAdapter(messageList, this);
 
-        if (receiveId == null || userName == null) {
-            Toast.makeText(this, "Error: Missing user information", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
+        // Get receiver details from intent
+        receiverId = getIntent().getStringExtra("userId");
+        String receiverName = getIntent().getStringExtra("userName");
+        String profilePic = getIntent().getStringExtra("profilePicture");
+
+        senderRoom = auth.getUid() + receiverId;
+        receiverRoom = receiverId + auth.getUid();
+
+        // Set receiver details
+        binding.userName.setText(receiverName);
+        if (profilePic != null && !profilePic.isEmpty()) {
+            Picasso.get()
+                    .load(profilePic)
+                    .placeholder(R.drawable.ic_avatar)
+                    .into(binding.profileImage);
         }
 
-        binding.userName.setText(userName);
-        Picasso.get().load(profilePicture).placeholder(R.drawable.ic_avatar).into(binding.profileImage);
-
-        binding.backBtnIV.setOnClickListener(v -> {
-            finish();
-        });
-
-        final ArrayList<ChatMsgModel> chatMsgModel = new ArrayList<>();
-        final ChatMsgAdapter chatMsgAdapter = new ChatMsgAdapter(chatMsgModel, this);
-        binding.chatRecyclerView.setAdapter(chatMsgAdapter);
+        // Setup RecyclerView
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setStackFromEnd(true);
         binding.chatRecyclerView.setLayoutManager(layoutManager);
+        binding.chatRecyclerView.setAdapter(adapter);
+        binding.chatRecyclerView.setHasFixedSize(false);
 
-        binding.getRoot().getViewTreeObserver()
-                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        Rect r = new Rect();
-                        binding.getRoot().getWindowVisibleDisplayFrame(r);
-                        int screenHeight = binding.getRoot().getRootView().getHeight();
-                        int keypadHeight = screenHeight - r.bottom;
-
-                        // If the keypad height is more than 200 pixels, consider it open
-                        if (keypadHeight > 200) {
-                            // Move the LinearLayout above the keyboard
-                            binding.linear.setTranslationY(-keypadHeight);
-                            // Scroll to the last item in the RecyclerView when the keyboard opens
-                            if (chatMsgAdapter.getItemCount() > 0) {
-                                binding.chatRecyclerView.smoothScrollToPosition(chatMsgAdapter.getItemCount() - 1);
+        // Add scroll listener to handle new messages
+        binding.chatRecyclerView
+                .addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    if (bottom < oldBottom) {
+                        binding.chatRecyclerView.postDelayed(() -> {
+                            if (messageList.size() > 0) {
+                                binding.chatRecyclerView.smoothScrollToPosition(messageList.size() - 1);
                             }
-                        } else {
-                            // Reset the LinearLayout position when the keyboard is hidden
-                            binding.linear.setTranslationY(0);
-                        }
+                        }, 100);
                     }
                 });
 
-        senderRoom = senderId + receiveId;
-        receiverRoom = receiveId + senderId;
+        // Load messages
+        database.getReference()
+                .child("chats")
+                .child(senderRoom)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        messageList.clear();
+                        for (DataSnapshot messageSnapshot : snapshot.getChildren()) {
+                            String uId = messageSnapshot.child("uId").getValue(String.class);
+                            String message = messageSnapshot.child("message").getValue(String.class);
+                            long timestamp = 0;
+                            if (messageSnapshot.child("timestamp").getValue() != null) {
+                                timestamp = messageSnapshot.child("timestamp").getValue(Long.class);
+                            }
 
-        messageListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                chatMsgModel.clear();
-                if (snapshot.exists()) {
-                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                        ChatMsgModel model = snapshot1.getValue(ChatMsgModel.class);
-                        if (model != null) {
-                            chatMsgModel.add(model);
+                            if (message != null && uId != null) {
+                                ChatMsgModel model = new ChatMsgModel(uId, message, timestamp);
+                                messageList.add(model);
+                            }
+                        }
+                        adapter.notifyDataSetChanged();
+                        if (messageList.size() > 0) {
+                            binding.chatRecyclerView.smoothScrollToPosition(messageList.size() - 1);
                         }
                     }
-                    chatMsgAdapter.notifyDataSetChanged();
-                    if (chatMsgAdapter.getItemCount() > 0) {
-                        binding.chatRecyclerView.smoothScrollToPosition(chatMsgAdapter.getItemCount() - 1);
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(ChatDetailActivity.this, "Failed to load messages", Toast.LENGTH_SHORT).show();
                     }
+                });
+
+        binding.backBtnIV.setOnClickListener(v -> finish());
+
+        binding.send.setOnClickListener(v -> {
+            String messageText = binding.msgEt.getText().toString().trim();
+            if (!messageText.isEmpty()) {
+                long timestamp = new Date().getTime();
+
+                HashMap<String, Object> messageObj = new HashMap<>();
+                messageObj.put("uId", auth.getUid());
+                messageObj.put("message", messageText);
+                messageObj.put("timestamp", timestamp);
+
+                String messageId = database.getReference().child("chats").child(senderRoom).push().getKey();
+
+                if (messageId != null) {
+                    // Add to sender's room
+                    database.getReference()
+                            .child("chats")
+                            .child(senderRoom)
+                            .child(messageId)
+                            .setValue(messageObj)
+                            .addOnSuccessListener(unused -> {
+                                // Add to receiver's room
+                                database.getReference()
+                                        .child("chats")
+                                        .child(receiverRoom)
+                                        .child(messageId)
+                                        .setValue(messageObj)
+                                        .addOnSuccessListener(unused1 -> {
+                                            binding.msgEt.setText("");
+                                        });
+                            });
                 }
+            }
+        });
+
+        binding.msgEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(ChatDetailActivity.this, "Error: " + error.getMessage(),
-                        Toast.LENGTH_SHORT).show();
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                binding.send.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
             }
-        };
 
-        database.getReference().child("chats").child(senderRoom)
-                .addValueEventListener(messageListener);
-        database.getReference().child("chats").child(receiverRoom)
-                .addValueEventListener(messageListener);
-
-        binding.send.setOnClickListener(v -> {
-            String message = binding.msgEt.getText().toString().trim();
-
-            if (!message.isEmpty()) {
-                binding.send.setEnabled(false);
-
-                ChatMsgModel model = new ChatMsgModel(senderId, message);
-                model.setTimestamp(new Date().getTime());
-                binding.msgEt.setText("");
-
-                database.getReference().child("chats")
-                        .child(senderRoom)
-                        .push()
-                        .setValue(model)
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                database.getReference().child("chats")
-                                        .child(receiverRoom)
-                                        .push()
-                                        .setValue(model)
-                                        .addOnCompleteListener(task2 -> {
-                                            binding.send.setEnabled(true);
-                                        });
-                            } else {
-                                Toast.makeText(ChatDetailActivity.this,
-                                        "Failed to send message",
-                                        Toast.LENGTH_SHORT).show();
-                                binding.send.setEnabled(true);
-                            }
-                        });
+            @Override
+            public void afterTextChanged(Editable s) {
             }
         });
+
+        monitorOnlineStatus();
+    }
+
+    private void monitorOnlineStatus() {
+        database.getReference().child("Users").child(receiverId).child("online")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            boolean isOnline = snapshot.getValue(Boolean.class) != null &&
+                                    snapshot.getValue(Boolean.class);
+                            binding.onlineStatus.setVisibility(isOnline ? View.VISIBLE : View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (messageListener != null) {
-            database.getReference().child("chats").child(senderRoom)
-                    .removeEventListener(messageListener);
-            database.getReference().child("chats").child(receiverRoom)
-                    .removeEventListener(messageListener);
+        if (messageList != null) {
+            messageList.clear();
+            messageList = null;
         }
+        adapter = null;
+        binding = null;
     }
 }

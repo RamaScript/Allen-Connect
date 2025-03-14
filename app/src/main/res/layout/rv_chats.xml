@@ -2,54 +2,56 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
     android:paddingHorizontal="16dp"
-    android:paddingVertical="12dp"
-    android:background="?attr/selectableItemBackground">
+    android:paddingVertical="12dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/ic_avatar"/>
+        android:src="@drawable/ic_avatar" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:layout_marginStart="12dp"
+        android:layout_weight="1"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/userName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:fontFamily="@font/poppins_semibold"
             android:textColor="@color/black"
-            android:fontFamily="@font/poppins_semibold"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/lastMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#757575"
             android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/poppins"
             android:maxLines="1"
-            android:ellipsize="end"/>
+            android:textColor="#757575"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="end">
+        android:gravity="end"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/msgTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="#757575"/>
+            android:fontFamily="@font/poppins"
+            android:textColor="#757575"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/unreadCount"
@@ -57,9 +59,10 @@
             android:layout_height="20dp"
             android:layout_marginTop="4dp"
             android:background="@drawable/circle_pink"
+            android:fontFamily="@font/poppins"
             android:gravity="center"
             android:textColor="@color/white"
             android:textSize="12sp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

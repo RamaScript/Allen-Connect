@@ -42,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="-2dp"
-                android:fontFamily="@font/poppins"
+                android:fontFamily="@font/poppins_semibold"
                 android:text="Sample person"
                 android:textSize="14sp" />
 
@@ -60,16 +60,15 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/followTV"
-            android:layout_width="wrap_content"
-            android:layout_height="42dp"
-            android:background="@drawable/border_black"
-            android:backgroundTint="@color/btn_color"
+            android:layout_width="64dp"
+            android:layout_height="32dp"
+            android:background="@drawable/btnbg"
             android:fontFamily="@font/poppins_semibold"
             android:paddingTop="4dp"
             android:text="Follow"
             android:textAllCaps="false"
             android:textColor="@color/white_my"
-            android:textSize="14dp" />
+            android:textSize="12sp" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
