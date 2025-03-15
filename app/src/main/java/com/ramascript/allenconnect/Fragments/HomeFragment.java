@@ -197,7 +197,7 @@ public class HomeFragment extends Fragment {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     PostModel postModel = dataSnapshot.getValue(PostModel.class);
                     if (postModel != null) {
-                        postModel.setPostID(dataSnapshot.getKey());
+                        postModel.setPostId(dataSnapshot.getKey());
                         postList.add(postModel);
                     }
                 }

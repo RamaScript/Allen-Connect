@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingStart="@dimen/_8mdp"
-    android:paddingEnd="@dimen/_8mdp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="12dp"
     xmlns:diagonal="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
@@ -12,9 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingTop="@dimen/_8mdp"
-        android:paddingBottom="@dimen/_8mdp"
-        android:background="@drawable/border_bottom_nocolor"
+        android:padding="12dp"
         diagonal:layout_constraintEnd_toEndOf="parent"
         diagonal:layout_constraintStart_toStartOf="parent"
         diagonal:layout_constraintTop_toTopOf="parent">
@@ -24,8 +23,7 @@
             android:layout_width="@dimen/_40mdp"
             android:layout_height="@dimen/_40mdp"
             android:src="@drawable/ic_avatar"
-            app:civ_border_color="@color/dark_gray"
-            app:civ_border_width="1dp" />
+             />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,8 +38,9 @@
                 android:id="@+id/companyName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_bold"
-                android:textSize="18dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:textColor="@color/dark_gray"
+                android:textSize="16sp"
                 android:layout_marginBottom="-4dp"
                 android:text="TCS" />
 
@@ -50,7 +49,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
-                android:textSize="12dp"
+                android:textSize="12sp"
+                android:layout_marginStart="1dp"
                 android:text="Software Developer" />
 
         </LinearLayout>
@@ -58,12 +58,12 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/jobViewDetailsBtn"
             android:layout_width="64dp"
-            android:layout_height="42dp"
+            android:layout_height="32dp"
             android:background="@drawable/round"
             android:backgroundTint="@color/btn_color"
             android:fontFamily="@font/poppins_semibold"
-            android:textColor="@color/white_my"
-            android:textSize="14dp"
+            android:textColor="@color/white"
+            android:textSize="14sp"
             android:paddingTop="4dp"
             android:textAllCaps="false"
             android:text="View" />
@@ -71,4 +71,4 @@
     </LinearLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

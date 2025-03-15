@@ -2,10 +2,11 @@ package com.ramascript.allenconnect.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,18 +20,17 @@ import com.ramascript.allenconnect.Features.CommentActivity;
 import com.ramascript.allenconnect.Models.PostModel;
 import com.ramascript.allenconnect.Models.UserModel;
 import com.ramascript.allenconnect.R;
-import com.ramascript.allenconnect.databinding.RvPostSampleBinding;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.viewHolder> {
+public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     ArrayList<PostModel> list;
     Context context;
-
-    FirebaseAuth auth;
-    FirebaseDatabase database;
 
     public PostAdapter(ArrayList<PostModel> list, Context context) {
         this.list = list;
@@ -39,125 +39,146 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.viewHolder> {
 
     @NonNull
     @Override
-    public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.rv_post_sample, parent, false);
-        return new viewHolder(view);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.post_item, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        PostModel model = list.get(position);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        PostModel post = list.get(position);
 
-        auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
-
-        String postImage = model.getPostImage();
-        if (postImage == null || postImage.isEmpty()) {
-            holder.binding.postImg.setVisibility(View.GONE); // Hide the image if not available
+        // Load post image
+        if (post.getPostImage() != null && !post.getPostImage().isEmpty()) {
+            Picasso.get()
+                    .load(post.getPostImage())
+                    .placeholder(R.drawable.ic_post_placeholder)
+                    .into(holder.postImage);
+            holder.postImage.setVisibility(View.VISIBLE);
         } else {
-            holder.binding.postImg.setVisibility(View.VISIBLE); // Show the image if available
-            Picasso.get().load(postImage).placeholder(R.drawable.ic_post_placeholder).into(holder.binding.postImg);
+            holder.postImage.setVisibility(View.GONE);
         }
 
-        holder.binding.commentTV.setText(model.getCommentCount() + "");
-        holder.binding.likeTV.setText(model.getPostLikes() + "");
-
-        String caption = model.getPostCaption();
-        if (caption == null || caption.isEmpty()) {
-            holder.binding.postcaption.setVisibility(View.GONE);
+        // Set description
+        if (post.getPostCaption() != null && !post.getPostCaption().isEmpty()) {
+            holder.description.setText(post.getPostCaption());
+            holder.description.setVisibility(View.VISIBLE);
         } else {
-            holder.binding.postcaption.setText(caption);
-            holder.binding.postcaption.setVisibility(View.VISIBLE);
+            holder.description.setVisibility(View.GONE);
         }
 
-        database.getReference().child("Users").child(model.getPostedBy())
-                .addValueEventListener(new ValueEventListener() {
+        // Set likes and comments count
+        holder.likes.setText(String.valueOf(post.getPostLikes()));
+        holder.comments.setText(String.valueOf(post.getCommentCount()));
+
+        // Add click listener for comment
+        holder.comment.setOnClickListener(v -> {
+            Intent intent = new Intent(context, CommentActivity.class);
+            intent.putExtra("postId", post.getPostId());
+            intent.putExtra("postedBy", post.getPostedBy());
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        });
+
+        // Set time
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
+        holder.time.setText(sdf.format(new Date(post.getPostedAt())));
+
+        // Load user info
+        FirebaseDatabase.getInstance().getReference()
+                .child("Users")
+                .child(post.getPostedBy())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         UserModel userModel = snapshot.getValue(UserModel.class);
-                        assert userModel != null;
-                        Picasso.get().load(userModel.getProfilePhoto()).placeholder(R.drawable.ic_avatar)
-                                .into(holder.binding.profileImagePost);
-                        holder.binding.userName.setText(userModel.getName());
+                        if (userModel != null && holder.profile != null && holder.name != null) {
+                            Picasso.get()
+                                    .load(userModel.getProfilePhoto())
+                                    .placeholder(R.drawable.ic_avatar)
+                                    .into(holder.profile);
+                            holder.name.setText(userModel.getName());
 
-                        // Set the text based on user type
-                        if ("Student".equals(userModel.getUserType())) {
-                            holder.binding.about
-                                    .setText(String.format("%s (%s year)", userModel.getCourse(), userModel.getYear()));
-                        } else if ("Alumni".equals(userModel.getUserType())) {
-                            holder.binding.about
-                                    .setText(String.format("%s at %s", userModel.getJobRole(), userModel.getCompany()));
-                        } else if ("Professor".equals(userModel.getUserType())) {
-                            holder.binding.about.setText("Professor at AGOI");
+                            // Set the text based on user type with null check
+                            if (holder.about != null) {
+                                if ("Student".equals(userModel.getUserType())) {
+                                    holder.about.setText(String.format("%s (%s year)",
+                                            userModel.getCourse(),
+                                            userModel.getYear()));
+                                } else if ("Alumni".equals(userModel.getUserType())) {
+                                    holder.about.setText(String.format("%s at %s",
+                                            userModel.getJobRole(),
+                                            userModel.getCompany()));
+                                } else if ("Professor".equals(userModel.getUserType())) {
+                                    holder.about.setText("Professor at AGOI");
+                                }
+                                holder.about.setVisibility(View.VISIBLE);
+                            }
                         }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
                     }
                 });
 
-        // Check if the current user has liked the post
-        database.getReference()
+        // Load like status
+        FirebaseDatabase.getInstance().getReference()
                 .child("Posts")
-                .child(model.getPostID())
+                .child(post.getPostId())
                 .child("Likes")
                 .child(FirebaseAuth.getInstance().getUid())
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             // User has already liked the post - show filled heart
-                            holder.binding.likeTV.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0,
-                                    0, 0);
+                            holder.like.setImageResource(R.drawable.ic_heart_filled);
 
                             // Add click listener for unlike
-                            holder.binding.likeTV.setOnClickListener(v -> {
+                            holder.like.setOnClickListener(v -> {
                                 // Remove like from database
                                 FirebaseDatabase.getInstance().getReference()
                                         .child("Posts")
-                                        .child(model.getPostID())
+                                        .child(post.getPostId())
                                         .child("Likes")
                                         .child(FirebaseAuth.getInstance().getUid())
                                         .removeValue()
                                         .addOnSuccessListener(unused -> {
                                             // When unliking, DECREASE the like count
-                                            int newLikeCount = model.getPostLikes() - 1;
+                                            int newLikeCount = post.getPostLikes() - 1;
                                             FirebaseDatabase.getInstance().getReference()
                                                     .child("Posts")
-                                                    .child(model.getPostID())
+                                                    .child(post.getPostId())
                                                     .child("postLikes")
                                                     .setValue(newLikeCount);
-                                            model.setPostLikes(newLikeCount); // Update local model
-                                            holder.binding.likeTV.setText(String.valueOf(newLikeCount)); // Update UI
-                                                                                                         // count
+                                            post.setPostLikes(newLikeCount); // Update local model
+                                            holder.likes.setText(String.valueOf(newLikeCount)); // Update UI count
                                         });
                             });
                         } else {
                             // User hasn't liked the post - show empty heart
-                            holder.binding.likeTV.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart, 0, 0, 0);
+                            holder.like.setImageResource(R.drawable.ic_heart);
 
                             // Add click listener for like
-                            holder.binding.likeTV.setOnClickListener(v -> {
+                            holder.like.setOnClickListener(v -> {
                                 // Add like to database
                                 FirebaseDatabase.getInstance().getReference()
                                         .child("Posts")
-                                        .child(model.getPostID())
+                                        .child(post.getPostId())
                                         .child("Likes")
                                         .child(FirebaseAuth.getInstance().getUid())
                                         .setValue(true)
                                         .addOnSuccessListener(unused -> {
                                             // When liking, INCREASE the like count
-                                            int newLikeCount = model.getPostLikes() + 1;
+                                            int newLikeCount = post.getPostLikes() + 1;
                                             FirebaseDatabase.getInstance().getReference()
                                                     .child("Posts")
-                                                    .child(model.getPostID())
+                                                    .child(post.getPostId())
                                                     .child("postLikes")
                                                     .setValue(newLikeCount);
-                                            model.setPostLikes(newLikeCount); // Update local model
-                                            holder.binding.likeTV.setText(String.valueOf(newLikeCount)); // Update UI
-                                                                                                         // count
+                                            post.setPostLikes(newLikeCount); // Update local model
+                                            holder.likes.setText(String.valueOf(newLikeCount)); // Update UI count
                                         });
                             });
                         }
@@ -165,17 +186,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.viewHolder> {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("FirebaseError", "Error: " + error.getMessage());
                     }
                 });
-
-        holder.binding.commentTV.setOnClickListener(v -> {
-            Intent intent = new Intent(context, CommentActivity.class);
-            intent.putExtra("postId", model.getPostID());
-            intent.putExtra("postedBy", model.getPostedBy());
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
-        });
     }
 
     @Override
@@ -183,15 +195,23 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.viewHolder> {
         return list.size();
     }
 
-    public static class viewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView profile, postImage, like, comment, share;
+        TextView name, time, likes, comments, description, about;
 
-        RvPostSampleBinding binding;
-
-        public viewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            binding = RvPostSampleBinding.bind(itemView);
-
+            profile = itemView.findViewById(R.id.profileImage);
+            postImage = itemView.findViewById(R.id.postImage);
+            like = itemView.findViewById(R.id.like);
+            comment = itemView.findViewById(R.id.comment);
+            share = itemView.findViewById(R.id.share);
+            name = itemView.findViewById(R.id.userName);
+            time = itemView.findViewById(R.id.time);
+            likes = itemView.findViewById(R.id.likes);
+            comments = itemView.findViewById(R.id.comments);
+            description = itemView.findViewById(R.id.description);
+            about = itemView.findViewById(R.id.about);
         }
     }
 }

@@ -23,7 +23,9 @@
 
 
     <color name="color_primary">#007AFF</color>
-    <color name="color_secondry">#00897B</color>
+    <color name="color_secondry">#00FFE5</color>
+    <color name="cyan">#00FFFF</color>
+
 
 
 

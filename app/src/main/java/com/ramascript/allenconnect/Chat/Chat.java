@@ -52,7 +52,19 @@ public class Chat extends AppCompatActivity {
                 .replace(R.id.container, chatsFragment)
                 .commit();
 
-        // Setup search functionality using the correct ID from your layout
+        // Setup back button
+        binding.backButton.setOnClickListener(v -> {
+            startActivity(new Intent(Chat.this, MainActivity.class));
+            finish();
+        });
+
+        // Setup clear button click
+        binding.clearSearchBtn.setOnClickListener(v -> {
+            binding.searchEt.setText("");
+            binding.clearSearchBtn.setVisibility(View.GONE);
+        });
+
+        // Setup search functionality
         binding.searchEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -60,7 +72,10 @@ public class Chat extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Pass search query to fragment
+                // Show/hide clear button based on text
+                binding.clearSearchBtn.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
+
+                // Filter users
                 if (chatsFragment != null) {
                     chatsFragment.filterUsers(s.toString());
                 }

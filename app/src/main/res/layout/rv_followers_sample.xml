@@ -12,8 +12,8 @@
         android:layout_width="@dimen/_52mdp"
         android:layout_height="@dimen/_52mdp"
         android:src="@drawable/ic_avatar"
-      app:civ_border_color="@color/black"
-        app:civ_border_width="2dp"
+      app:civ_border_color="@color/dark_gray"
+        app:civ_border_width="1dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

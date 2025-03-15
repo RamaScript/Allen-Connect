@@ -6,101 +6,125 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.JobPostFragment">
 
-    <LinearLayout
-        android:id="@+id/linearLayout4"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/border_bottom"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
+        app:elevation="0dp"
+        android:background="@color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/pageTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_12mdp"
-            android:layout_weight="1"
-            android:fontFamily="@font/poppins_semibold"
-            android:text="Post Job"
-            android:textColor="@color/black"
-            android:textSize="22dp"
-            android:textStyle="bold" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/postBtn"
-            android:layout_width="@dimen/_40mdp"
-            android:layout_height="@dimen/_20mdp"
-            android:layout_marginEnd="@dimen/_12mdp"
-            android:background="@drawable/btnbg"
-            android:textColor="@color/white"
-            android:fontFamily="@font/poppins_semibold"
-            android:paddingTop="2dp"
-            android:text="Post"
-            android:textAllCaps="false"
-            android:textSize="12dp" />
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_8mdp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profileImage"
-            android:layout_width="@dimen/_80mdp"
-            android:layout_height="@dimen/_40mdp"
-            android:layout_marginStart="@dimen/_8mdp"
-            android:layout_marginEnd="@dimen/_6mdp"
-            android:layout_weight="1"
-            android:src="@drawable/ic_avatar"
-            app:civ_border_color="@color/dark_gray"
-            app:civ_border_width="2dp" />
-
         <LinearLayout
+            android:id="@+id/linearLayout8"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:paddingVertical="8dp"
+            app:layout_scrollFlags="scroll|enterAlways|snap">
 
             <TextView
-                android:id="@+id/name"
-                android:layout_width="match_parent"
+                android:id="@+id/pageTitle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_bold"
-                android:text=" Username "
-                android:layout_marginBottom="-2dp"
-                android:textSize="@dimen/_16font_mdp" />
+                android:layout_marginStart="@dimen/_12mdp"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Post Job"
+                android:textColor="@color/black"
+                android:textSize="22dp"
+                android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins"
-                android:text=" User Title"
-                android:layout_marginStart="2dp"
-                android:textSize="@dimen/_12font_mdp" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/postBtn"
+                android:layout_width="@dimen/_40mdp"
+                android:layout_height="@dimen/_20mdp"
+                android:layout_marginEnd="@dimen/_12mdp"
+                android:background="@drawable/btnbg"
+                android:fontFamily="@font/poppins_semibold"
+                android:paddingTop="2dp"
+                android:text="Post"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="12dp" />
 
         </LinearLayout>
-    </LinearLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        app:cardCornerRadius="12dp"
+        android:layout_marginVertical="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2">
+
+        <LinearLayout
+            android:id="@+id/linearLayout5"
+            android:layout_width="match_parent"
+            android:padding="8dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profileImage"
+                android:layout_width="@dimen/_80mdp"
+                android:layout_height="@dimen/_40mdp"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_8mdp"
+                android:layout_marginEnd="@dimen/_6mdp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_avatar"
+                 />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="-2dp"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text=" Username "
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:fontFamily="@font/poppins"
+                    android:text=" User Title"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
+        app:layout_constraintTop_toBottomOf="@+id/cardView5">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -108,16 +132,16 @@
             android:layout_margin="16dp"
             android:orientation="vertical">
 
-            <!-- Job Title -->
+            <!-- Job Title -->r
 
             <EditText
                 android:id="@+id/job_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Job Title"
-                android:fontFamily="@font/poppins"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/et_bg"
-                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/poppins"
+                android:hint="Job Title"
                 android:inputType="text" />
 
             <!-- Company Name -->
@@ -125,69 +149,65 @@
                 android:id="@+id/company_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Company Name"
-                android:fontFamily="@font/poppins"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/et_bg"
-                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/poppins"
+                android:hint="Company Name"
                 android:inputType="text" />
 
             <!-- Job Type -->
             <Spinner
                 android:id="@+id/job_type"
                 android:layout_width="match_parent"
-                android:layout_height="36dp"
+                android:layout_height="44dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/spinner_bg"
                 android:entries="@array/job_types"
                 android:fontFamily="@font/poppins"
-                android:background="@drawable/spinner_bg"
-                android:layout_marginBottom="8dp"
-                android:paddingStart="0dp"
-                />
+                android:paddingStart="0dp" />
 
             <!-- Experience Required -->
             <Spinner
                 android:id="@+id/experience_required"
                 android:layout_width="match_parent"
-                android:layout_height="36dp"
+                android:layout_height="44dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/spinner_bg"
                 android:entries="@array/experience_levels"
                 android:fontFamily="@font/poppins"
-                android:background="@drawable/spinner_bg"
-                android:layout_marginBottom="8dp"
-                android:paddingStart="0dp"
-                />
+                android:paddingStart="0dp" />
 
             <!-- Courses Eligible -->
             <MultiAutoCompleteTextView
                 android:id="@+id/coursesEligible"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Courses Eligible"
-                android:inputType="text"
-                android:fontFamily="@font/poppins"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/et_bg"
-                android:layout_marginBottom="8dp"
-                 />
+                android:fontFamily="@font/poppins"
+                android:hint="Courses Eligible"
+                android:inputType="text" />
 
             <!-- Skills Required -->
             <MultiAutoCompleteTextView
                 android:id="@+id/skills_required"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Skills Required "
-                android:inputType="text"
-                android:fontFamily="@font/poppins"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/et_bg"
-                android:layout_marginBottom="8dp"
-                />
+                android:fontFamily="@font/poppins"
+                android:hint="Skills Required "
+                android:inputType="text" />
 
             <!-- Salary -->
             <EditText
                 android:id="@+id/job_salary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Salary (Optional)"
-                android:fontFamily="@font/poppins"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/et_bg"
-                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/poppins"
+                android:hint="Salary (Optional)"
                 android:inputType="textNoSuggestions" />
 
             <!-- Description -->
@@ -195,12 +215,12 @@
                 android:id="@+id/job_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/et_bg"
+                android:fontFamily="@font/poppins"
                 android:gravity="top"
                 android:hint="Job Description"
                 android:inputType="textMultiLine"
-                android:fontFamily="@font/poppins"
-                android:background="@drawable/et_bg"
-                android:layout_marginBottom="8dp"
                 android:lines="3" />
 
             <!-- Contact Email -->
@@ -208,10 +228,10 @@
                 android:id="@+id/contact_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Contact Email"
-                android:fontFamily="@font/poppins"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/et_bg"
-                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/poppins"
+                android:hint="Contact Email"
                 android:inputType="textEmailAddress" />
 
             <!-- Contact Phone (Optional) -->
@@ -219,12 +239,12 @@
                 android:id="@+id/contact_phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Contact Phone (Optional)"
-                android:fontFamily="@font/poppins"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/et_bg"
-                android:layout_marginBottom="8dp"
-                android:maxLength="10"
-                android:inputType="phone" />
+                android:fontFamily="@font/poppins"
+                android:hint="Contact Phone (Optional)"
+                android:inputType="phone"
+                android:maxLength="10" />
 
             <!-- Application Deadline -->
 
@@ -232,21 +252,20 @@
                 android:id="@+id/application_deadlineLL"
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
-                android:layout_marginBottom="8dp"
-                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/et_bg"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/applicationDeadlineET"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Application Deadline"
+                    android:layout_weight="1"
                     android:background="@color/transparent"
                     android:fontFamily="@font/poppins"
-                    android:layout_weight="1"
-                    android:textColor="@color/black"
-                     />
+                    android:hint="Application Deadline"
+                    android:textColor="@color/black" />
 
                 <ImageView
                     android:id="@+id/applicationDeadlinePickerIcon"
@@ -260,13 +279,13 @@
                 android:id="@+id/upload_logo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:gravity="center_vertical"
-                android:paddingEnd="12dp"
-                android:paddingStart="12dp"
                 android:layout_marginBottom="142dp"
                 android:background="@drawable/et_bg"
-                android:orientation="horizontal">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp">
 
                 <ImageView
                     android:id="@+id/uploadLogoIV"

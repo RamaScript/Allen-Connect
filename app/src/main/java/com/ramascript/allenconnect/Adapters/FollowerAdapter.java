@@ -1,6 +1,8 @@
 package com.ramascript.allenconnect.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +22,12 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.viewHolder>{
+public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.viewHolder> {
 
     ArrayList<FollowerModel> list;
     Context context;
 
-    public FollowerAdapter(ArrayList<FollowerModel> list, Context context ) {
+    public FollowerAdapter(ArrayList<FollowerModel> list, Context context) {
         this.context = context;
         this.list = list;
     }
@@ -33,28 +35,43 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.viewHo
     @NonNull
     @Override
     public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.rv_followers_sample,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.rv_followers_sample, parent, false);
         return new viewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
         FollowerModel model = list.get(position);
-        FirebaseDatabase.getInstance().getReference().child("Users")
-            .child(model.getFollowedBy()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                UserModel userModel = snapshot.getValue(UserModel.class);
-                Picasso.get()
-                        .load(userModel.getProfilePhoto())
-                        .placeholder(R.drawable.ic_avatar)
-                        .into(holder.binding.friendImg);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+        if (model.getFollowedBy() != null) {
+            FirebaseDatabase.getInstance().getReference()
+                    .child("Users")
+                    .child(model.getFollowedBy())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                UserModel userModel = snapshot.getValue(UserModel.class);
+                                if (userModel != null && userModel.getProfilePhoto() != null) {
+                                    Picasso.get()
+                                            .load(userModel.getProfilePhoto())
+                                            .placeholder(R.drawable.ic_avatar)
+                                            .error(R.drawable.ic_avatar)
+                                            .into(holder.binding.friendImg);
+                                }
+                            }
+                        }
 
-            }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.e("FollowerAdapter", "Error loading follower data: " + error.getMessage());
+                        }
+                    });
+        }
+
+        // Add click listener to view follower's profile
+        holder.binding.friendImg.setOnClickListener(v -> {
+            // You can add navigation to follower's profile here if needed
         });
     }
 
@@ -64,12 +81,10 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.viewHo
     }
 
     public class viewHolder extends RecyclerView.ViewHolder {
-
         RvFollowersSampleBinding binding;
 
         public viewHolder(@NonNull View itemView) {
             super(itemView);
-
             binding = RvFollowersSampleBinding.bind(itemView);
         }
     }

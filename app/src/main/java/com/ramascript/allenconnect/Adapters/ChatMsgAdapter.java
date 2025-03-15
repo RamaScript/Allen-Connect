@@ -13,51 +13,68 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.ramascript.allenconnect.Models.ChatMsgModel;
 import com.ramascript.allenconnect.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
-public class ChatMsgAdapter extends RecyclerView.Adapter{
+public class ChatMsgAdapter extends RecyclerView.Adapter {
 
     ArrayList<ChatMsgModel> list;
     Context context;
-
     int SENDER_VIEW_TYPE = 1;
-    int RECIEVER_VIEW_TYPE = 2 ;
+    int RECEIVER_VIEW_TYPE = 2;
 
-    public ChatMsgAdapter(ArrayList<ChatMsgModel> chatMsgModel, Context context) {
-        this.list = chatMsgModel;
+    public ChatMsgAdapter(ArrayList<ChatMsgModel> list, Context context) {
+        this.list = list;
         this.context = context;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        if (viewType == SENDER_VIEW_TYPE){
-            View view = LayoutInflater.from(context).inflate(R.layout.rv_sample_sender,parent,false);
-            return new senderViewHolder(view);
-        }else {
-            View view = LayoutInflater.from(context).inflate(R.layout.rv_sample_receiver,parent,false);
-            return new recieverViewHolder(view);
+        if (viewType == SENDER_VIEW_TYPE) {
+            View view = LayoutInflater.from(context).inflate(R.layout.rv_sample_sender, parent, false);
+            return new SenderViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(context).inflate(R.layout.rv_sample_receiver, parent, false);
+            return new ReceiverViewHolder(view);
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if(list.get(position).getuId().equals(FirebaseAuth.getInstance().getUid())){
+        if (list.get(position).getuId().equals(FirebaseAuth.getInstance().getUid())) {
             return SENDER_VIEW_TYPE;
-        }else {
-            return RECIEVER_VIEW_TYPE;
+        } else {
+            return RECEIVER_VIEW_TYPE;
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ChatMsgModel messageModel = list.get(position);
+        ChatMsgModel message = list.get(position);
 
-        if (holder.getClass()==senderViewHolder.class){
-            ((senderViewHolder)holder).senderMsg.setText(messageModel.getMessage());
-        }else {
-            ((recieverViewHolder)holder).receiverMsg.setText(messageModel.getMessage());
+        // Format the timestamp
+        String timeStr = formatTime(message.getTimestamp());
+
+        if (holder.getClass() == SenderViewHolder.class) {
+            SenderViewHolder viewHolder = (SenderViewHolder) holder;
+            viewHolder.senderMsg.setText(message.getMessage());
+            viewHolder.senderTime.setText(timeStr);
+        } else {
+            ReceiverViewHolder viewHolder = (ReceiverViewHolder) holder;
+            viewHolder.receiverMsg.setText(message.getMessage());
+            viewHolder.receiverTime.setText(timeStr);
+        }
+    }
+
+    private String formatTime(long timestamp) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+            return sdf.format(new Date(timestamp));
+        } catch (Exception e) {
+            return "";
         }
     }
 
@@ -66,21 +83,20 @@ public class ChatMsgAdapter extends RecyclerView.Adapter{
         return list.size();
     }
 
-    public class recieverViewHolder extends RecyclerView.ViewHolder{
-
+    public class ReceiverViewHolder extends RecyclerView.ViewHolder {
         TextView receiverMsg, receiverTime;
 
-        public recieverViewHolder(@NonNull View itemView) {
+        public ReceiverViewHolder(@NonNull View itemView) {
             super(itemView);
             receiverMsg = itemView.findViewById(R.id.recieverText);
             receiverTime = itemView.findViewById(R.id.recieveTime);
         }
     }
 
-    public class senderViewHolder extends RecyclerView.ViewHolder{
-
+    public class SenderViewHolder extends RecyclerView.ViewHolder {
         TextView senderMsg, senderTime;
-        public senderViewHolder(@NonNull View itemView) {
+
+        public SenderViewHolder(@NonNull View itemView) {
             super(itemView);
             senderMsg = itemView.findViewById(R.id.senderText);
             senderTime = itemView.findViewById(R.id.senderTime);

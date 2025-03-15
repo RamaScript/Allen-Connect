@@ -1,47 +1,30 @@
 package com.ramascript.allenconnect.Models;
 
 public class PostModel {
-    private String postID;
+    private String postId;
     private String postImage;
-    private String postCaption;
     private String postedBy;
+    private String postCaption;
     private long postedAt;
     private int postLikes;
     private int commentCount;
 
-    public int getCommentCount() {
-        return commentCount;
-    }
-
-    public void setCommentCount(int commentCount) {
-        this.commentCount = commentCount;
-    }
-
-    public int getPostLikes() {
-        return postLikes;
-    }
-
-    public void setPostLikes(int postLikes) {
-        this.postLikes = postLikes;
-    }
-
     public PostModel() {
     }
 
-    public PostModel(String postID, String postImage, String postCaption, String postedBy, long postedAt) {
-        this.postID = postID;
+    public PostModel(String postImage, String postedBy, String postCaption, long postedAt) {
         this.postImage = postImage;
-        this.postCaption = postCaption;
         this.postedBy = postedBy;
+        this.postCaption = postCaption;
         this.postedAt = postedAt;
     }
 
-    public String getPostID() {
-        return postID;
+    public String getPostId() {
+        return postId;
     }
 
-    public void setPostID(String postID) {
-        this.postID = postID;
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
     public String getPostImage() {
@@ -52,14 +35,6 @@ public class PostModel {
         this.postImage = postImage;
     }
 
-    public String getPostCaption() {
-        return postCaption;
-    }
-
-    public void setPostCaption(String postCaption) {
-        this.postCaption = postCaption;
-    }
-
     public String getPostedBy() {
         return postedBy;
     }
@@ -68,11 +43,35 @@ public class PostModel {
         this.postedBy = postedBy;
     }
 
+    public String getPostCaption() {
+        return postCaption;
+    }
+
+    public void setPostCaption(String postCaption) {
+        this.postCaption = postCaption;
+    }
+
     public long getPostedAt() {
         return postedAt;
     }
 
     public void setPostedAt(long postedAt) {
         this.postedAt = postedAt;
+    }
+
+    public int getPostLikes() {
+        return postLikes;
+    }
+
+    public void setPostLikes(int postLikes) {
+        this.postLikes = postLikes;
+    }
+
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
     }
 }

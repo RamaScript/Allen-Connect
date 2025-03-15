@@ -7,6 +7,15 @@ public class UserModel {
     private String lastMsg;
     private String userType;
     private int followersCount;
+    private int followingCount;
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
+    }
 
     private String email;
     private String password;
