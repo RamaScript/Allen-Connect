@@ -17,16 +17,18 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+
+
             <!-- Cover Photo with Profile Image -->
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp">
+                android:layout_height="220dp">
 
                 <!-- Cover Image -->
                 <ImageView
                     android:id="@+id/coverImage"
                     android:layout_width="match_parent"
-                    android:layout_height="140dp"
+                    android:layout_height="160dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/bg_register_login"/>
 
@@ -57,9 +59,9 @@
                     android:layout_gravity="end|top"
                     android:layout_margin="8dp"
                     android:padding="8dp"
-                    android:background="@drawable/btnbg"
+                    android:background="@drawable/border_white"
                     android:src="@drawable/ic_more"
-                    app:tint="@color/white"/>
+                    app:tint="@color/dark_gray"/>
             </FrameLayout>
 
             <!-- Profile Info -->
