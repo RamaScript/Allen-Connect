@@ -27,7 +27,7 @@ import com.ramascript.allenconnect.databinding.FragmentJobsBinding;
 
 import java.util.ArrayList;
 
-public class JobsFragment extends Fragment {
+public class JobsFragment extends BaseFragment {
 
     private FragmentJobsBinding binding;
     ArrayList<JobModel> list;
@@ -49,7 +49,7 @@ public class JobsFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Step 2: Inflate the layout using the binding
         binding = FragmentJobsBinding.inflate(inflater, container, false);
 
@@ -57,8 +57,8 @@ public class JobsFragment extends Fragment {
 
         JobAdapter adapter = new JobAdapter(getContext(), list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        binding.jobsRV.setLayoutManager(layoutManager);  // Using binding
-        binding.jobsRV.setAdapter(adapter);  // Using binding
+        binding.jobsRV.setLayoutManager(layoutManager); // Using binding
+        binding.jobsRV.setAdapter(adapter); // Using binding
 
         database.getReference().child("Jobs").addValueEventListener(new ValueEventListener() {
             @Override
@@ -77,26 +77,6 @@ public class JobsFragment extends Fragment {
 
             }
         });
-
-        // Handle back button press
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                // Show the confirmation dialog
-                new AlertDialog.Builder(getContext())
-                    .setMessage("Do you want to leave the app?")
-                    .setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // Finish the activity, closing the app
-                            requireActivity().finish();
-                        }
-                    })
-                    .setNegativeButton("No", null) // Just dismiss the dialog
-                    .show();
-            }
-        });
-
 
         return binding.getRoot();
     }

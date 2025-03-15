@@ -49,7 +49,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.ramascript.allenconnect.Models.PostModel;
 import com.ramascript.allenconnect.Adapters.PostAdapter;
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends BaseFragment {
 
     ArrayList<FollowerModel> list;
     FirebaseAuth auth;
@@ -221,7 +221,7 @@ public class ProfileFragment extends Fragment {
                         user.getCourse(), user.getYear(), user.getCourse());
                 break;
             case "Professor":
-//                professionText = "Professor at Allen Business School";
+                // professionText = "Professor at Allen Business School";
 
                 bioText = String.format("Professor at Allen Business School", user.getCourse());
                 break;
@@ -232,9 +232,9 @@ public class ProfileFragment extends Fragment {
                 break;
         }
 
-        if (professionText.equals("")){
+        if (professionText.equals("")) {
             binding.professionTV.setVisibility(View.GONE);
-        }else {
+        } else {
             binding.professionTV.setVisibility(View.VISIBLE);
             binding.professionTV.setText(professionText);
         }
@@ -306,58 +306,57 @@ public class ProfileFragment extends Fragment {
         Log.d("ProfileFragment", "Loading followers count for uid: " + uid);
 
         database.getReference()
-            .child("Users")
-            .child(uid)
-            .child("Followers") // Counting child nodes inside "followers"
-            .addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    int count = (int) snapshot.getChildrenCount(); // Count child nodes
-                    Log.d("ProfileFragment", "Followers count from DB: " + count);
+                .child("Users")
+                .child(uid)
+                .child("Followers") // Counting child nodes inside "followers"
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        int count = (int) snapshot.getChildrenCount(); // Count child nodes
+                        Log.d("ProfileFragment", "Followers count from DB: " + count);
 
-                    if (binding != null) {
-                        binding.followersCountTV.setText(String.valueOf(count)); // Update UI
+                        if (binding != null) {
+                            binding.followersCountTV.setText(String.valueOf(count)); // Update UI
+                        }
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("ProfileFragment", "Error loading followers count: " + error.getMessage());
-                    if (binding != null) {
-                        binding.followersCountTV.setText("0");
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("ProfileFragment", "Error loading followers count: " + error.getMessage());
+                        if (binding != null) {
+                            binding.followersCountTV.setText("0");
+                        }
                     }
-                }
-            });
+                });
     }
 
     private void loadFollowingCount(String uid) {
         Log.d("ProfileFragment", "Loading following count for uid: " + uid);
 
         database.getReference()
-            .child("Users")
-            .child(uid)
-            .child("Following") // Counting child nodes inside "following"
-            .addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    int count = (int) snapshot.getChildrenCount(); // Count child nodes
-                    Log.d("ProfileFragment", "Following count from DB: " + count);
+                .child("Users")
+                .child(uid)
+                .child("Following") // Counting child nodes inside "following"
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        int count = (int) snapshot.getChildrenCount(); // Count child nodes
+                        Log.d("ProfileFragment", "Following count from DB: " + count);
 
-                    if (binding != null) {
-                        binding.followingCountTV.setText(String.valueOf(count)); // Update UI
+                        if (binding != null) {
+                            binding.followingCountTV.setText(String.valueOf(count)); // Update UI
+                        }
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("ProfileFragment", "Error loading following count: " + error.getMessage());
-                    if (binding != null) {
-                        binding.followingCountTV.setText("0");
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("ProfileFragment", "Error loading following count: " + error.getMessage());
+                        if (binding != null) {
+                            binding.followingCountTV.setText("0");
+                        }
                     }
-                }
-            });
+                });
     }
-
 
     private void loadPostsCount(String uid) {
         database.getReference()
@@ -390,40 +389,38 @@ public class ProfileFragment extends Fragment {
                 });
     }
 
-
-
     private void setupClickListeners() {
         binding.profileSettingsMenuBtn.setOnClickListener(v -> showProfileMenu(v));
     }
 
     private void showProfileMenu(View v) {
-            PopupMenu popupMenu = new PopupMenu(requireContext(), v);
-            popupMenu.getMenuInflater().inflate(R.menu.profile_menu, popupMenu.getMenu());
-            popupMenu.setOnMenuItemClickListener(item -> {
-                if (item.getItemId() == R.id.action_edit_profile) {
+        PopupMenu popupMenu = new PopupMenu(requireContext(), v);
+        popupMenu.getMenuInflater().inflate(R.menu.profile_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_edit_profile) {
                 startActivity(new Intent(getContext(), EditProfileActivity.class));
-                    return true;
-                } else if (item.getItemId() == R.id.action_change_profile_picture) {
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    intent.setType("image/*");
-                    startActivityForResult(intent, 11);
-                    return true;
-                } else if (item.getItemId() == R.id.action_developers) {
+                return true;
+            } else if (item.getItemId() == R.id.action_change_profile_picture) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                startActivityForResult(intent, 11);
+                return true;
+            } else if (item.getItemId() == R.id.action_developers) {
                 startActivity(new Intent(getContext(), MeetDevsActivity.class));
-                    return true;
-                } else if (item.getItemId() == R.id.action_logout) {
-                    auth.signOut();
+                return true;
+            } else if (item.getItemId() == R.id.action_logout) {
+                auth.signOut();
                 startActivity(new Intent(getActivity(), LoginAs.class));
                 requireActivity().finish();
-                    return true;
-                }
-                return false;
-            });
-            popupMenu.show();
+                return true;
+            }
+            return false;
+        });
+        popupMenu.show();
     }
 
-            @Override
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
@@ -597,12 +594,12 @@ public class ProfileFragment extends Fragment {
                 emptyStateView.setVisibility(View.GONE);
                 postsRecyclerView.setVisibility(View.VISIBLE);
                 postAdapter.notifyDataSetChanged();
+            }
         }
-    }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
             // Clean up resources
             postList.clear();
             postsRecyclerView.setAdapter(null);

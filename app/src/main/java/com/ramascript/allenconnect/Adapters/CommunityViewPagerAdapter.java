@@ -6,45 +6,37 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.ramascript.allenconnect.Fragments.ActivityNotificationFragment;
-import com.ramascript.allenconnect.Fragments.CommunityAlumniFragment;
-import com.ramascript.allenconnect.Fragments.CommunityProfessorFragment;
-import com.ramascript.allenconnect.Fragments.CommunityStudentFragment;
-import com.ramascript.allenconnect.Fragments.EventsNotificationFragment;
-import com.ramascript.allenconnect.Fragments.RequestsNotificationFragment;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommunityViewPagerAdapter extends FragmentPagerAdapter {
+
+    private final List<Fragment> fragmentList = new ArrayList<>();
+    private final List<String> fragmentTitleList = new ArrayList<>();
+
     public CommunityViewPagerAdapter(@NonNull FragmentManager fm) {
-        super(fm);
+        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+    }
+
+    public void addFragment(Fragment fragment, String title) {
+        fragmentList.add(fragment);
+        fragmentTitleList.add(title);
     }
 
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        switch (position){
-            case 0: return new CommunityStudentFragment();
-            case 1: return new CommunityProfessorFragment();
-            case 2: return new CommunityAlumniFragment();
-            default: return new CommunityStudentFragment();
-        }
+        return fragmentList.get(position);
     }
 
     @Override
     public int getCount() {
-        return 3;
+        return fragmentList.size();
     }
 
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        String title = null;
-        if (position == 0){
-            title = "Student";
-        } else if (position == 1){
-            title = "Professor";
-        } else if (position == 2){
-            title = "Alumni";
-        }
-        return title;
+        return fragmentTitleList.get(position);
     }
 }

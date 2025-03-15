@@ -34,7 +34,7 @@ public class NotificationFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment\
         View view = inflater.inflate(R.layout.fragment_notification, container, false);
 
@@ -42,8 +42,9 @@ public class NotificationFragment extends Fragment {
         backBtnIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getContext(), MainActivity.class);
-                startActivity(i);
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).navigateToFragment(new HomeFragment(), R.id.navigation_home);
+                }
             }
         });
 
@@ -62,12 +63,12 @@ public class NotificationFragment extends Fragment {
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        if(item.getItemId() == R.id.action_settings){
+                        if (item.getItemId() == R.id.action_settings) {
                             // Handle settings click
                             // Add your logic for opening settings or handling the event
                             return true;
                         } else if (item.getItemId() == R.id.action_logout) {
-//                            handle
+                            // handle
                             return true;
                         } else {
                             return false;
@@ -85,7 +86,6 @@ public class NotificationFragment extends Fragment {
 
         tabLayout = view.findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
-
 
         return view;
     }

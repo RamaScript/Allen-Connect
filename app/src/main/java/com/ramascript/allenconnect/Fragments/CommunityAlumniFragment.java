@@ -23,11 +23,12 @@ import com.ramascript.allenconnect.databinding.FragmentCommunityStudentBinding;
 
 import java.util.ArrayList;
 
-
 public class CommunityAlumniFragment extends Fragment {
 
     FragmentCommunityAlumniBinding binding;
     ArrayList<UserModel> list;
+    ArrayList<UserModel> filteredList;
+    UserAdapter adapter;
 
     FirebaseAuth auth;
     FirebaseDatabase database;
@@ -39,32 +40,42 @@ public class CommunityAlumniFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         binding = FragmentCommunityAlumniBinding.inflate(inflater, container, false);
 
         list = new ArrayList<>();
+        filteredList = new ArrayList<>();
 
-        UserAdapter adapter = new UserAdapter(getContext(), list);
+        adapter = new UserAdapter(getContext(), filteredList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        binding.rvAlumni.setLayoutManager(layoutManager);  // Using binding
+        binding.rvAlumni.setLayoutManager(layoutManager);
         binding.rvAlumni.setAdapter(adapter);
 
+        loadUsers();
+
+        return binding.getRoot();
+    }
+
+    private void loadUsers() {
         database.getReference().child("Users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 list.clear();
+                filteredList.clear();
+
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     UserModel model = dataSnapshot.getValue(UserModel.class);
-                    model.setID(dataSnapshot.getKey());
-                    if (!dataSnapshot.getKey().equals(auth.getUid()) && "Alumni".equals(model.getUserType())) {
-                        list.add(model);
+                    if (model != null) {
+                        model.setID(dataSnapshot.getKey());
+                        if (!dataSnapshot.getKey().equals(auth.getUid()) && "Alumni".equals(model.getUserType())) {
+                            list.add(model);
+                            filteredList.add(model);
+                        }
                     }
                 }
                 adapter.notifyDataSetChanged();
@@ -72,11 +83,24 @@ public class CommunityAlumniFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
+    }
 
-        // Inflate the layout for this fragment
-        return binding.getRoot();
+    public void filterUsers(String query) {
+        filteredList.clear();
+
+        if (query.isEmpty()) {
+            filteredList.addAll(list);
+        } else {
+            query = query.toLowerCase();
+            for (UserModel user : list) {
+                if (user.getName().toLowerCase().contains(query)) {
+                    filteredList.add(user);
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged();
     }
 }

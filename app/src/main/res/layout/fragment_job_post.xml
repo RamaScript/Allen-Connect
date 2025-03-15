@@ -26,16 +26,24 @@
             android:paddingVertical="8dp"
             app:layout_scrollFlags="scroll|enterAlways|snap">
 
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingVertical="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"                android:src="@drawable/arrow_back"
+                app:tint="@color/black" />
+
             <TextView
                 android:id="@+id/pageTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_12mdp"
                 android:layout_weight="1"
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Post Job"
                 android:textColor="@color/black"
-                android:textSize="22dp"
+                android:textSize="22sp"
                 android:textStyle="bold" />
 
             <androidx.appcompat.widget.AppCompatButton

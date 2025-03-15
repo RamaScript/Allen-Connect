@@ -51,7 +51,7 @@ import java.util.List;
 
 import android.util.Patterns;
 
-public class JobPostFragment extends Fragment {
+public class JobPostFragment extends BaseFragment {
 
     FragmentJobPostBinding binding;
     Uri logoUri;
@@ -76,7 +76,7 @@ public class JobPostFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         binding = FragmentJobPostBinding.inflate(inflater, container, false);
@@ -88,57 +88,66 @@ public class JobPostFragment extends Fragment {
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
 
-        //here i am setting the profile pic and username and title of user from database to the job post fragment
+        // here i am setting the profile pic and username and title of user from
+        // database to the job post fragment
         database.getReference()
-            .child("Users")
-            .child(auth.getUid())
-            .addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if(snapshot.exists()){
-                        UserModel userModel = snapshot.getValue(UserModel.class);
-                        Picasso.get()
-                            .load(userModel.getProfilePhoto())
-                            .placeholder(R.drawable.ic_avatar)
-                            .into(binding.profileImage);
-                        binding.name.setText(userModel.getName());
+                .child("Users")
+                .child(auth.getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            UserModel userModel = snapshot.getValue(UserModel.class);
+                            Picasso.get()
+                                    .load(userModel.getProfilePhoto())
+                                    .placeholder(R.drawable.ic_avatar)
+                                    .into(binding.profileImage);
+                            binding.name.setText(userModel.getName());
 
-                        // Set the text based on user type
-                        if ( "Student".equals(userModel.getUserType())) {
-                            binding.title.setText(userModel.getCourse() + " (" + userModel.getYear() + " year)");
-                        } else if ("Alumni".equals(userModel.getUserType())) {
-                            binding.title.setText(userModel.getJobRole() + " at " + userModel.getCompany());
-                        } else if ("Professor".equals(userModel.getUserType())) {
-                            binding.title.setText("Professor at AGOI");
+                            // Set the text based on user type
+                            if ("Student".equals(userModel.getUserType())) {
+                                binding.title.setText(userModel.getCourse() + " (" + userModel.getYear() + " year)");
+                            } else if ("Alumni".equals(userModel.getUserType())) {
+                                binding.title.setText(userModel.getJobRole() + " at " + userModel.getCompany());
+                            } else if ("Professor".equals(userModel.getUserType())) {
+                                binding.title.setText("Professor at AGOI");
+                            }
                         }
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-                }
-            });
+                    }
+                });
 
-        //here i am Setting up the adapter for MultiAutoCompleteTextView
+        // here i am Setting up the adapter for MultiAutoCompleteTextView
         // For Skills Required
         List<String> skills = Arrays.asList(
-            // BCA Key Skills
-            "Java", "Python", "C", "C++", "HTML", "CSS", "JavaScript", "SQL", "MySQL", "React", "Node.js", "Android Development", "Data Structures", "Algorithms", "Object-Oriented Programming", "Git/GitHub", "Linux",
-            // BBA Key Skills
-            "Project Management", "Business Communication", "Financial Analysis", "Digital Marketing", "Market Research", "Entrepreneurship", "Leadership", "Strategic Thinking", "Negotiation Skills", "Accounting Principles", "Business Planning", "Excel",
-            // MBA Key Skills
-            "Leadership", "Strategic Planning", "Project Management", "Financial Management", "Business Analytics", "Consulting", "Change Management", "Corporate Strategy", "Data Analytics", "Business Intelligence", "Market Research", "Negotiation Skills",
-            // BTech Key Skills
-            "Java", "C", "C++", "Python", "Data Structures", "Algorithms", "Object-Oriented Programming", "Web Development", "Mobile App Development", "Machine Learning", "Cloud Computing", "Database Management", "Network Security", "DevOps", "Agile Methodology", "Git", "Artificial Intelligence"
-        );
+                // BCA Key Skills
+                "Java", "Python", "C", "C++", "HTML", "CSS", "JavaScript", "SQL", "MySQL", "React", "Node.js",
+                "Android Development", "Data Structures", "Algorithms", "Object-Oriented Programming", "Git/GitHub",
+                "Linux",
+                // BBA Key Skills
+                "Project Management", "Business Communication", "Financial Analysis", "Digital Marketing",
+                "Market Research", "Entrepreneurship", "Leadership", "Strategic Thinking", "Negotiation Skills",
+                "Accounting Principles", "Business Planning", "Excel",
+                // MBA Key Skills
+                "Leadership", "Strategic Planning", "Project Management", "Financial Management", "Business Analytics",
+                "Consulting", "Change Management", "Corporate Strategy", "Data Analytics", "Business Intelligence",
+                "Market Research", "Negotiation Skills",
+                // BTech Key Skills
+                "Java", "C", "C++", "Python", "Data Structures", "Algorithms", "Object-Oriented Programming",
+                "Web Development", "Mobile App Development", "Machine Learning", "Cloud Computing",
+                "Database Management", "Network Security", "DevOps", "Agile Methodology", "Git",
+                "Artificial Intelligence");
         setupMultiAutoCompleteTextView(binding.skillsRequired, skills);
 
         // For Courses Eligible
         List<String> courses = Arrays.asList("BCA", "BBA", "MBA", "B Tech");
         setupMultiAutoCompleteTextView(binding.coursesEligible, courses);
 
-        //picking last date to apply
+        // picking last date to apply
         binding.applicationDeadlinePickerIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -154,33 +163,34 @@ public class JobPostFragment extends Fragment {
 
                 // on below line we are creating a variable for date picker dialog.
                 DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    // on below line we are passing context.
-                    getContext(),
-                    new DatePickerDialog.OnDateSetListener() {
-                        @Override
-                        public void onDateSet(DatePicker view, int year,
-                                              int monthOfYear, int dayOfMonth) {
-                            // on below line we are setting date to our text view.
-                            binding.applicationDeadlineET.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
-                        }
-                    },
-                    // on below line we are passing year,
-                    // month and day for selected date in our date picker.
-                    year, month, day);
+                        // on below line we are passing context.
+                        getContext(),
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                    int monthOfYear, int dayOfMonth) {
+                                // on below line we are setting date to our text view.
+                                binding.applicationDeadlineET
+                                        .setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                            }
+                        },
+                        // on below line we are passing year,
+                        // month and day for selected date in our date picker.
+                        year, month, day);
                 // at last we are calling show to
                 // display our date picker dialog.
                 datePickerDialog.show();
             }
         });
 
-        //logo upload wala kaam yaha ho rha hai
+        // logo upload wala kaam yaha ho rha hai
         binding.uploadLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
-                startActivityForResult(intent,20);
+                startActivityForResult(intent, 20);
             }
         });
 
@@ -227,7 +237,8 @@ public class JobPostFragment extends Fragment {
                     // Validate experienceRequired
                     if (experienceRequired.equals("Select Experience Level")) {
                         isValid = false;
-                        Toast.makeText(getContext(), "Please select the required experience.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Please select the required experience.", Toast.LENGTH_SHORT)
+                                .show();
                     }
 
                     // Validate skillsRequired
@@ -298,62 +309,70 @@ public class JobPostFragment extends Fragment {
                     jobModel.setContactPhone(contactPhone);
                     jobModel.setApplicationDeadline(applicationDeadline);
 
-                     // Upload the logo image if selected
+                    // Upload the logo image if selected
                     if (logoUri != null) {
 
                         final StorageReference logoReference = storage.getReference().child("JobLogos")
-                            .child(auth.getUid())
-                            .child(new Date().getTime() + "_logo");
+                                .child(auth.getUid())
+                                .child(new Date().getTime() + "_logo");
 
-                        logoReference.putFile(logoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                logoReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        logoReference.putFile(logoUri)
+                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                     @Override
-                                    public void onSuccess(Uri uri) {
+                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                        logoReference.getDownloadUrl()
+                                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                    @Override
+                                                    public void onSuccess(Uri uri) {
 
-                                        // Logo uploaded successfully, get the download URL
-                                        String logoUrl = uri.toString();
+                                                        // Logo uploaded successfully, get the download URL
+                                                        String logoUrl = uri.toString();
 
-                                        // Set image URL in job model
-                                        jobModel.setLogoImgPath(logoUrl);
+                                                        // Set image URL in job model
+                                                        jobModel.setLogoImgPath(logoUrl);
 
-                                        // Save the job posting to Firebase database
-                                        database.getReference().child("Jobs").push().setValue(jobModel)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void unused) {
-                                                dialog.dismiss();
-                                                Toast.makeText(getContext(), "Job posted successfully!", Toast.LENGTH_SHORT).show();
-                                                // Optionally, navigate back or clear the fields
-                                                clearFields();
-                                            }
-                                        }).addOnFailureListener(e -> {
-                                            dialog.dismiss();
-                                            Toast.makeText(getContext(), "Failed to post job. Please try again.", Toast.LENGTH_SHORT).show();
-                                        });
+                                                        // Save the job posting to Firebase database
+                                                        database.getReference().child("Jobs").push().setValue(jobModel)
+                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void unused) {
+                                                                        dialog.dismiss();
+                                                                        Toast.makeText(getContext(),
+                                                                                "Job posted successfully!",
+                                                                                Toast.LENGTH_SHORT).show();
+                                                                        // Optionally, navigate back or clear the fields
+                                                                        clearFields();
+                                                                    }
+                                                                }).addOnFailureListener(e -> {
+                                                                    dialog.dismiss();
+                                                                    Toast.makeText(getContext(),
+                                                                            "Failed to post job. Please try again.",
+                                                                            Toast.LENGTH_SHORT).show();
+                                                                });
+                                                    }
+                                                });
                                     }
                                 });
-                            }
-                        });
-                    }
-                    else {
-                        // If no logo is uploaded, you can proceed with the poster image URL and set a default logo URL
+                    } else {
+                        // If no logo is uploaded, you can proceed with the poster image URL and set a
+                        // default logo URL
                         jobModel.setLogoImgPath(String.valueOf(R.drawable.ic_avatar));
 
                         // Save job to the database without the logo image
                         database.getReference().child("Jobs").push().setValue(jobModel)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                dialog.dismiss();
-                                Toast.makeText(getContext(), "Job posted successfully!", Toast.LENGTH_SHORT).show();
-                                clearFields();
-                            }
-                        }).addOnFailureListener(e -> {
-                            dialog.dismiss();
-                            Toast.makeText(getContext(), "Failed to post job. Please try again.", Toast.LENGTH_SHORT).show();
-                        });
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        dialog.dismiss();
+                                        Toast.makeText(getContext(), "Job posted successfully!", Toast.LENGTH_SHORT)
+                                                .show();
+                                        clearFields();
+                                    }
+                                }).addOnFailureListener(e -> {
+                                    dialog.dismiss();
+                                    Toast.makeText(getContext(), "Failed to post job. Please try again.",
+                                            Toast.LENGTH_SHORT).show();
+                                });
                     }
 
                 }
@@ -384,14 +403,16 @@ public class JobPostFragment extends Fragment {
         List<String> availableItems = new ArrayList<>(allItems);
 
         // Adapter for MultiAutoCompleteTextView
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, availableItems);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
+                availableItems);
         view.setAdapter(adapter);
         view.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 
         // Add a TextWatcher to dynamically update the dropdown
         view.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -416,7 +437,8 @@ public class JobPostFragment extends Fragment {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         // Show dropdown explicitly on click or focus

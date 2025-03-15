@@ -7,17 +7,62 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+    <!-- Header AppBarLayout with scroll behavior -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="4dp"
+        app:liftOnScroll="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingVertical="8dp"
+            app:layout_scrollFlags="scroll|enterAlways|snap">
+
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingVertical="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"                android:src="@drawable/arrow_back"
+                app:tint="@color/black" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Profile"
+                android:textColor="@color/black"
+                android:textSize="22sp" />
+
+            <ImageView
+                android:id="@+id/profileSettingsMenuBtn"
+                android:layout_width="42dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="16dp"
+                app:srcCompat="@drawable/ic_more"
+                app:tint="@color/dark_gray" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:overScrollMode="never">
+        android:overScrollMode="never"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-
 
             <!-- Cover Photo with Profile Image -->
             <FrameLayout
@@ -51,17 +96,7 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Settings Button -->
-                <ImageView
-                    android:id="@+id/profileSettingsMenuBtn"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_gravity="end|top"
-                    android:layout_margin="8dp"
-                    android:padding="8dp"
-                    android:background="@drawable/border_white"
-                    android:src="@drawable/ic_more"
-                    app:tint="@color/dark_gray"/>
+
             </FrameLayout>
 
             <!-- Profile Info -->

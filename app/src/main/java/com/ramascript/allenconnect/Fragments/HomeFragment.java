@@ -34,6 +34,7 @@ import com.ramascript.allenconnect.Models.PostModel;
 import com.ramascript.allenconnect.Models.UserModel;
 import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.FragmentHomeBinding;
+import com.ramascript.allenconnect.MainActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,14 +49,20 @@ public class HomeFragment extends Fragment {
     FirebaseStorage storage;
     Uri selectedImageUri;
     ProgressDialog dialog;
+    private static int instanceCounter = 0;
+    private final int instanceId;
 
     public HomeFragment() {
         // Required empty public constructor
+        instanceId = ++instanceCounter;
+        System.out.println("HomeFragment instance #" + instanceId + " created");
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.println("HomeFragment onCreate called with savedInstanceState: " +
+                (savedInstanceState == null ? "null" : "not null"));
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -63,6 +70,7 @@ public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        System.out.println("HomeFragment onCreateView called");
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
@@ -114,16 +122,14 @@ public class HomeFragment extends Fragment {
 
         // Set click listeners for notification and chat
         binding.notificationHomeIV.setOnClickListener(v -> {
-            Fragment notificationFragment = new NotificationFragment();
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, notificationFragment)
-                    .addToBackStack(null)
-                    .commit();
+            if (getActivity() instanceof MainActivity) {
+                Fragment notificationFragment = new NotificationFragment();
+                ((MainActivity) getActivity()).loadFragment(notificationFragment, false);
+            }
         });
 
         binding.chatHomeIV.setOnClickListener(v -> {
             startActivity(new Intent(getContext(), Chat.class));
-            requireActivity().finish();
         });
 
         // Handle image selection
@@ -162,29 +168,21 @@ public class HomeFragment extends Fragment {
         binding.dashBoardRV.setLayoutManager(linearLayoutManager);
         binding.dashBoardRV.setAdapter(postAdapter);
 
-        // Add scroll listener to handle bottom navigation visibility
-        binding.dashBoardRV.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            private int scrolledDistance = 0;
-            private boolean controlsVisible = true;
-
+        // Add this code to properly handle the scroll behavior
+        binding.nestedScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                if (scrolledDistance > 10 && controlsVisible) {
-                    // Hide bottom navigation and create post card
-                    binding.createPostCard.animate().translationY(-binding.createPostCard.getHeight()).setDuration(200);
-                    controlsVisible = false;
-                    scrolledDistance = 0;
-                } else if (scrolledDistance < -10 && !controlsVisible) {
-                    // Show bottom navigation and create post card
-                    binding.createPostCard.animate().translationY(0).setDuration(200);
-                    controlsVisible = true;
-                    scrolledDistance = 0;
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                // When scrolling down, hide the bottom navigation
+                if (scrollY > oldScrollY && scrollY > 10) {
+                    if (getActivity() != null && getActivity() instanceof MainActivity) {
+                        ((MainActivity) getActivity()).hideBottomNavigation();
+                    }
                 }
-
-                if ((controlsVisible && dy > 0) || (!controlsVisible && dy < 0)) {
-                    scrolledDistance += dy;
+                // When scrolling up, show the bottom navigation
+                else if (scrollY < oldScrollY) {
+                    if (getActivity() != null && getActivity() instanceof MainActivity) {
+                        ((MainActivity) getActivity()).showBottomNavigation();
+                    }
                 }
             }
         });
@@ -212,20 +210,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        // Handle back button
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
-                new OnBackPressedCallback(true) {
-                    @Override
-                    public void handleOnBackPressed() {
-                        new AlertDialog.Builder(requireContext())
-                                .setMessage("Do you want to leave the app?")
-                                .setCancelable(false)
-                                .setPositiveButton("Yes", (dialog, id) -> requireActivity().finish())
-                                .setNegativeButton("No", null)
-                                .show();
-                    }
-                });
-
         // Add post button click listener
         binding.postBtn.setOnClickListener(v -> {
             if (!binding.caption.getText().toString().trim().isEmpty() || selectedImageUri != null) {
@@ -236,6 +220,14 @@ public class HomeFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        System.out.println("HomeFragment onViewCreated called");
+
+        // Rest of your code...
     }
 
     @Override
@@ -324,5 +316,11 @@ public class HomeFragment extends Fragment {
                     .getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        System.out.println("HomeFragment instance #" + instanceId + " destroyed");
     }
 }

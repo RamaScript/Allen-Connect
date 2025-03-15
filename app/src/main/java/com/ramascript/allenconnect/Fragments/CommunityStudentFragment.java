@@ -25,6 +25,8 @@ public class CommunityStudentFragment extends Fragment {
 
     FragmentCommunityStudentBinding binding;
     ArrayList<UserModel> list;
+    ArrayList<UserModel> filteredList;
+    UserAdapter adapter;
 
     FirebaseAuth auth;
     FirebaseDatabase database;
@@ -47,21 +49,33 @@ public class CommunityStudentFragment extends Fragment {
         binding = FragmentCommunityStudentBinding.inflate(inflater, container, false);
 
         list = new ArrayList<>();
+        filteredList = new ArrayList<>();
 
-        UserAdapter adapter = new UserAdapter(getContext(), list);
+        adapter = new UserAdapter(getContext(), filteredList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        binding.rvStudent.setLayoutManager(layoutManager);  // Using binding
-        binding.rvStudent.setAdapter(adapter);  // Using binding
+        binding.rvStudent.setLayoutManager(layoutManager); // Using binding
+        binding.rvStudent.setAdapter(adapter); // Using binding
 
+        loadUsers();
+
+        return binding.getRoot();
+    }
+
+    private void loadUsers() {
         database.getReference().child("Users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 list.clear();
+                filteredList.clear();
+
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     UserModel model = dataSnapshot.getValue(UserModel.class);
-                    model.setID(dataSnapshot.getKey());
-                    if (!dataSnapshot.getKey().equals(auth.getUid()) && "Student".equals(model.getUserType())) {
-                        list.add(model);
+                    if (model != null) {
+                        model.setID(dataSnapshot.getKey());
+                        if (!dataSnapshot.getKey().equals(auth.getUid()) && "Student".equals(model.getUserType())) {
+                            list.add(model);
+                            filteredList.add(model);
+                        }
                     }
                 }
                 adapter.notifyDataSetChanged();
@@ -69,10 +83,24 @@ public class CommunityStudentFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
+    }
 
-        return binding.getRoot();
+    public void filterUsers(String query) {
+        filteredList.clear();
+
+        if (query.isEmpty()) {
+            filteredList.addAll(list);
+        } else {
+            query = query.toLowerCase();
+            for (UserModel user : list) {
+                if (user.getName().toLowerCase().contains(query)) {
+                    filteredList.add(user);
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged();
     }
 }

@@ -74,11 +74,9 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true" />
-        <activity
-            android:name=".Features.EditProfileActivity"
-            android:exported="false"
-            android:theme="@style/Theme.AllenConnect"/>
+            android:exported="true"
+            android:launchMode="singleTask"/>
+
     </application>
 
 </manifest>
