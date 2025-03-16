@@ -5,13 +5,12 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Features.CommentActivity">
+    tools:context=".Comment.CommentActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/border_bottom"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingLeft="8dp"
@@ -65,7 +64,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
+            <!-- Post Image -->
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:layout_margin="12dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_post_placeholder"
+                app:riv_corner_radius="12dp"
                 android:id="@+id/postImageComment"
                 android:layout_width="0dp"
                 android:layout_height="300dp"
@@ -79,7 +83,7 @@
                 android:id="@+id/profile_image_post"
                 android:layout_width="@dimen/_40mdp"
                 android:layout_height="@dimen/_40mdp"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="12dp"
                 android:layout_marginBottom="8dp"
                 android:src="@drawable/ic_avatar"
                 android:translationZ="1dp"

@@ -21,23 +21,23 @@
         android:theme="@style/Theme.AllenConnect"
         tools:targetApi="31">
         <activity
-            android:name=".Activities.JobDetailActivity"
+            android:name=".Job.JobDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.EditProfileActivity"
+            android:name=".User.EditProfileActivity"
             android:exported="false" />
 
         <activity
-            android:name=".Features.WebRamaPortfolioActivity"
+            android:name=".About.WebRamaPortfolioActivity"
             android:exported="false" />
         <activity
-            android:name=".Features.MeetDevsActivity"
+            android:name=".About.MeetDevsActivity"
             android:exported="false" />
         <activity
-            android:name=".Features.AllenBot"
+            android:name=".Bot.AllenBotActivity"
             android:exported="false" />
         <activity
-            android:name=".Features.CommentActivity"
+            android:name=".Comment.CommentActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity
@@ -46,25 +46,25 @@
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.AllenConnect" />
         <activity
-            android:name=".Chat.Chat"
+            android:name=".Chat.ChatActivity"
             android:exported="false" />
         <activity
-            android:name=".userAuth.Register"
+            android:name=".Auth.Register"
             android:exported="false" />
         <activity
-            android:name=".userAuth.RegisterAs"
+            android:name=".Auth.RegisterAs"
             android:exported="false" />
         <activity
-            android:name=".userAuth.Login"
+            android:name=".Auth.Login"
             android:exported="false" />
         <activity
-            android:name=".userAuth.LoginAs"
+            android:name=".Auth.LoginAs"
             android:exported="false" />
         <activity
-            android:name=".Activities.OnboardingActivity"
+            android:name=".OnBoarding.OnboardingActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.Splash"
+            android:name=".OnBoarding.Splash"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,9 +1,7 @@
 package com.ramascript.allenconnect;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
@@ -17,23 +15,19 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.ramascript.allenconnect.Features.AllenBot;
-import com.ramascript.allenconnect.Fragments.HomeFragment;
-import com.ramascript.allenconnect.Fragments.JobPostFragment;
-import com.ramascript.allenconnect.Fragments.JobsFragment;
-import com.ramascript.allenconnect.Fragments.CommunityFragment;
-import com.ramascript.allenconnect.Fragments.PostFragment;
-import com.ramascript.allenconnect.Fragments.ProfileFragment;
+import com.ramascript.allenconnect.Bot.AllenBotActivity;
+import com.ramascript.allenconnect.Home.HomeFragment;
+import com.ramascript.allenconnect.Job.JobPostFragment;
+import com.ramascript.allenconnect.Job.JobsFragment;
+import com.ramascript.allenconnect.Community.CommunityFragment;
+import com.ramascript.allenconnect.Post.PostFragment;
+import com.ramascript.allenconnect.User.ProfileFragment;
 import com.ramascript.allenconnect.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -69,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         binding.botIV.setOnClickListener(v -> {
-            Intent i = new Intent(MainActivity.this, AllenBot.class);
+            Intent i = new Intent(MainActivity.this, AllenBotActivity.class);
             startActivity(i);
         });
 

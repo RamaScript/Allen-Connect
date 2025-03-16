@@ -81,13 +81,14 @@
             android:adjustViewBounds="true"
             android:src="@drawable/ic_post_placeholder"
             android:scaleType="centerCrop"
-            app:riv_corner_radius="8dp" />
+            app:riv_corner_radius="12dp" />
 
         <!-- Actions -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="4dp"
+            android:paddingStart="12dp"
             android:orientation="horizontal">
 
             <!-- Like -->

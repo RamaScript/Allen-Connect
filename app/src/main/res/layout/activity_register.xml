@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:background="@drawable/bg_register_login"
     android:layout_height="match_parent"
-    tools:context=".userAuth.Register">
+    tools:context=".Auth.Register">
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/backBtn"
