@@ -7,49 +7,58 @@
     android:layout_height="match_parent"
     tools:context=".About.MeetDevsActivity">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/border_bottom"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="8dp"
-        android:paddingRight="16dp"
+        app:elevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/backBtn"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:padding="8dp"
-            android:src="@drawable/arrow_back"
-            app:tint="@color/black" />
-
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="24dp"
+        <LinearLayout
+            android:id="@+id/linearLayout8"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:layout_weight="1"
-            android:fontFamily="@font/poppins_semibold"
-            android:text="Developers"
-            android:textColor="@color/black"
-            android:textSize="24dp" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingVertical="8dp"
+            android:paddingStart="8dp"
+            app:layout_scrollFlags="scroll|enterAlways|snap">
 
-        <ImageView
-            android:id="@+id/notificationMenuIV"
-            android:layout_width="@dimen/_8mdp"
-            android:layout_height="@dimen/_28mdp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_more"
-            android:visibility="invisible" />
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/backBtn"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
+                android:src="@drawable/arrow_back"
+                app:tint="@color/black" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="24dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Developers"
+                android:textColor="@color/black"
+                android:textSize="24dp" />
+
+            <ImageView
+                android:id="@+id/notificationMenuIV"
+                android:layout_width="@dimen/_8mdp"
+                android:layout_height="@dimen/_28mdp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/ic_more"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
 
     <ScrollView
         android:layout_width="match_parent"
@@ -57,41 +66,50 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView8"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/round"
-                android:backgroundTint="@color/black"
-                android:fontFamily="@font/poppins_bold"
-                android:gravity="center"
-                android:text="Mentors"
-                android:textColor="@color/white"
-                android:textSize="24sp" />
+                android:elevation="4dp"
+
+                app:cardCornerRadius="12dp" >
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="Mentors"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="1dp"
                 android:elevation="4dp"
                 app:cardCornerRadius="12dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:padding="12dp"
                     android:orientation="vertical">
 
                     <LinearLayout
@@ -106,12 +124,12 @@
 
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/anshusir"
-                            android:layout_width="@dimen/_52mdp"
-                            android:layout_height="@dimen/_52mdp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
                             android:layout_marginEnd="8dp"
                             android:src="@drawable/anshu_sir"
                             app:civ_border_color="@color/black"
-                            app:civ_border_width="3dp" />
+                            app:civ_border_width="1dp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -150,12 +168,12 @@
 
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/profile_image"
-                            android:layout_width="@dimen/_52mdp"
-                            android:layout_height="@dimen/_52mdp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
                             android:layout_marginEnd="8dp"
                             android:src="@drawable/manish_sir"
                             app:civ_border_color="@color/black"
-                            app:civ_border_width="3dp" />
+                            app:civ_border_width="1dp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -184,28 +202,36 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:id="@+id/tv2"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/round"
-                android:backgroundTint="@color/black"
-                android:fontFamily="@font/poppins_bold"
-                android:gravity="center"
-                android:text="Developers."
-                android:textColor="@color/white"
-                android:textSize="24sp" />
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:elevation="4dp"
+                app:cardCornerRadius="12dp" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/round"
+                    android:backgroundTint="@color/white"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="Developers"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="1dp"
                 android:layout_marginBottom="16dp"
                 android:elevation="4dp"
                 app:cardCornerRadius="12dp">
@@ -213,6 +239,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:padding="12dp"
                     android:orientation="vertical">
 
                     <LinearLayout
@@ -226,18 +253,18 @@
                         android:orientation="horizontal">
 
                         <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="@dimen/_52mdp"
-                            android:layout_height="@dimen/_52mdp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
                             android:layout_marginEnd="8dp"
                             android:src="@drawable/rama"
                             app:civ_border_color="@color/black"
-                            app:civ_border_width="3dp" />
+                            app:civ_border_width="1dp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:gravity="center_vertical"
                             android:layout_weight="1"
+                            android:gravity="center_vertical"
                             android:orientation="vertical">
 
                             <TextView
@@ -275,12 +302,12 @@
                         android:visibility="gone">
 
                         <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="@dimen/_52mdp"
-                            android:layout_height="@dimen/_52mdp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
                             android:layout_marginEnd="8dp"
                             android:src="@drawable/rajat"
                             app:civ_border_color="@color/black"
-                            app:civ_border_width="3dp" />
+                            app:civ_border_width="1dp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -316,18 +343,18 @@
                         android:orientation="horizontal">
 
                         <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="@dimen/_52mdp"
-                            android:layout_height="@dimen/_52mdp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
                             android:layout_marginEnd="8dp"
                             android:src="@drawable/priyanshi"
                             app:civ_border_color="@color/black"
-                            app:civ_border_width="3dp" />
+                            app:civ_border_width="1dp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:gravity="center_vertical"
                             android:layout_weight="1"
+                            android:gravity="center_vertical"
                             android:orientation="vertical">
 
                             <TextView
@@ -363,18 +390,18 @@
                         android:orientation="horizontal">
 
                         <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="@dimen/_52mdp"
-                            android:layout_height="@dimen/_52mdp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
                             android:layout_marginEnd="8dp"
                             android:src="@drawable/yash"
                             app:civ_border_color="@color/black"
-                            app:civ_border_width="3dp" />
+                            app:civ_border_width="1dp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:gravity="center_vertical"
                             android:layout_weight="1"
+                            android:gravity="center_vertical"
                             android:orientation="vertical">
 
                             <TextView
