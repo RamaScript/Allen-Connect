@@ -95,13 +95,16 @@
             android:orientation="vertical"
             android:overScrollMode="never"
             android:paddingVertical="16dp"
-            tools:listitem="@layout/sample_sender"
             android:paddingBottom="8dp"
             android:stackFromBottom="true"
             android:transcriptMode="alwaysScroll"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/linear"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout7" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout7"
+            tools:listitem="@layout/rv_sample_sender" />
 
         <LinearLayout
             android:id="@+id/linear"

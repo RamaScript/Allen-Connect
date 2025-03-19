@@ -84,7 +84,7 @@
                 android:layout_width="@dimen/_40mdp"
                 android:layout_height="@dimen/_40mdp"
                 android:layout_marginStart="12dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="12dp"
                 android:src="@drawable/ic_avatar"
                 android:translationZ="1dp"
                 app:civ_border_color="@color/white"

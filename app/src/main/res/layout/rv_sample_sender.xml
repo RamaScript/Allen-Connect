@@ -12,7 +12,9 @@
         android:layout_marginStart="64dp"
         android:background="@drawable/sender_message_bg"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:paddingTop="12dp"
+        android:paddingBottom="4dp"
+        android:paddingHorizontal="12dp">
 
         <TextView
             android:id="@+id/senderText"
@@ -20,6 +22,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins"
             android:textColor="@color/white"
+            android:text="Sample Message"
             android:textSize="14sp" />
 
         <TextView
@@ -30,6 +33,7 @@
             android:layout_marginTop="4dp"
             android:fontFamily="@font/poppins"
             android:textColor="#EEEEEE"
+            android:text="09:12 PM"
             android:textSize="10sp" />
     </LinearLayout>
 

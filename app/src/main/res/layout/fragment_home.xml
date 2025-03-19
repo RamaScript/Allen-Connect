@@ -37,12 +37,13 @@
                 android:layout_width="@dimen/_20mdp"
                 android:layout_height="@dimen/_20mdp"
                 android:layout_marginEnd="8dp"
+                android:visibility="gone"
                 android:src="@drawable/ic_notification" />
 
             <ImageView
                 android:id="@+id/chatHomeIV"
-                android:layout_width="@dimen/_20mdp"
-                android:layout_height="@dimen/_20mdp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/ic_chat" />
         </LinearLayout>
@@ -67,7 +68,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp">
 
