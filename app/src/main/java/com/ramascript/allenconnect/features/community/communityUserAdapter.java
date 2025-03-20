@@ -1,4 +1,4 @@
-package com.ramascript.allenconnect.features.user;
+package com.ramascript.allenconnect.features.community;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,8 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,19 +19,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.RvCommStudentBinding;
+import com.ramascript.allenconnect.features.user.followerModel;
+import com.ramascript.allenconnect.features.user.followingModel;
+import com.ramascript.allenconnect.features.user.userModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-public class userAdapter extends RecyclerView.Adapter<userAdapter.viewHolder> {
+public class communityUserAdapter extends RecyclerView.Adapter<communityUserAdapter.viewHolder> {
 
    Context context;
    ArrayList<userModel> list;
    FirebaseAuth auth;
    FirebaseDatabase database;
 
-   public userAdapter(Context context, ArrayList<userModel> list) {
+   public communityUserAdapter(Context context, ArrayList<userModel> list) {
       this.context = context;
       this.list = list;
       auth = FirebaseAuth.getInstance();
@@ -69,6 +70,11 @@ public class userAdapter extends RecyclerView.Adapter<userAdapter.viewHolder> {
 
       // Check if current user is following this user
       checkFollowStatus(holder, userModel);
+
+      // Add click listener to open the user's profile
+      holder.itemView.setOnClickListener(v -> {
+         navigateToProfile(userModel.getID());
+      });
    }
 
    private void checkFollowStatus(@NonNull viewHolder holder, userModel userModel) {
@@ -315,6 +321,24 @@ public class userAdapter extends RecyclerView.Adapter<userAdapter.viewHolder> {
 
                Toast.makeText(context, "Failed to unfollow: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             });
+   }
+
+   // Method to navigate to the profile fragment
+   private void navigateToProfile(String userId) {
+      if (context instanceof androidx.fragment.app.FragmentActivity) {
+         androidx.fragment.app.FragmentActivity activity = (androidx.fragment.app.FragmentActivity) context;
+
+         // Create new profile fragment instance with the user ID
+         com.ramascript.allenconnect.features.user.profileFragment profileFragment = com.ramascript.allenconnect.features.user.profileFragment
+               .newInstance(userId);
+
+         // Replace the current fragment with the profile fragment
+         activity.getSupportFragmentManager()
+               .beginTransaction()
+               .replace(R.id.container, profileFragment)
+               .addToBackStack("communityFragment") // Use a named back stack for better control
+               .commit();
+      }
    }
 
    @Override

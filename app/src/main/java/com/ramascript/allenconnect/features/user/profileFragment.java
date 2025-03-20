@@ -52,9 +52,20 @@ public class profileFragment extends baseFragment {
     ProgressDialog dialog;
     private ViewPager2 viewPager;
     private userModel currentUser;
+    private String userId; // ID of user to display
+    private boolean isCurrentUserProfile = true; // Flag to check if it's the current user's profile
 
     public profileFragment() {
         // Required empty public constructor
+    }
+
+    // New constructor to accept a userId parameter
+    public static profileFragment newInstance(String userId) {
+        profileFragment fragment = new profileFragment();
+        Bundle args = new Bundle();
+        args.putString("userId", userId);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -64,6 +75,16 @@ public class profileFragment extends baseFragment {
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();
         dialog = new ProgressDialog(getContext());
+
+        // Check if userId was passed
+        if (getArguments() != null && getArguments().containsKey("userId")) {
+            userId = getArguments().getString("userId");
+            isCurrentUserProfile = userId.equals(auth.getCurrentUser().getUid());
+        } else {
+            // Default to current user
+            userId = auth.getCurrentUser().getUid();
+            isCurrentUserProfile = true;
+        }
     }
 
     @Override
@@ -79,6 +100,16 @@ public class profileFragment extends baseFragment {
         setupViewPager();
         loadUserData();
         setupClickListeners();
+
+        // Set up back button - maintain scroll behavior
+        binding.backButton.setOnClickListener(v -> {
+            requireActivity().onBackPressed();
+        });
+
+        // Only show menu button for current user's profile
+        if (!isCurrentUserProfile) {
+            binding.profileSettingsMenuBtn.setVisibility(View.GONE);
+        }
 
         return binding.getRoot();
     }
@@ -144,13 +175,12 @@ public class profileFragment extends baseFragment {
     }
 
     private void loadUserData() {
-        String uid = auth.getCurrentUser().getUid();
-        Log.d("profileFragment", "Loading user data for uid: " + uid);
+        Log.d("profileFragment", "Loading user data for uid: " + userId);
 
         // First load the user data
         database.getReference()
                 .child("Users")
-                .child(uid)
+                .child(userId)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -163,9 +193,9 @@ public class profileFragment extends baseFragment {
                                 updateUIWithUserData(currentUser, userId);
 
                                 // Load counts after user data is loaded
-                                loadFollowersCount(uid);
-                                loadPostsCount(uid);
-                                loadFollowingCount(uid);
+                                loadFollowersCount(userId);
+                                loadPostsCount(userId);
+                                loadFollowingCount(userId);
 
                                 // Notify adapter about user data change
                                 if (viewPager != null && viewPager.getAdapter() != null) {
@@ -214,9 +244,8 @@ public class profileFragment extends baseFragment {
                         user.getCourse(), user.getYear(), user.getCourse());
                 break;
             case "Professor":
-                // professionText = "Professor at Allen Business School";
-
-                bioText = String.format("Professor at Allen Business School", user.getCourse());
+                professionText = "Professor at Allen Business School";
+                bioText = String.format("Professor at Allen Business School");
                 break;
             case "Alumni":
                 professionText = String.format("%s at %s", user.getJobRole(), user.getCompany());
@@ -225,73 +254,249 @@ public class profileFragment extends baseFragment {
                 break;
         }
 
-        if (professionText.equals("")) {
-            binding.professionTV.setVisibility(View.GONE);
-        } else {
-            binding.professionTV.setVisibility(View.VISIBLE);
-            binding.professionTV.setText(professionText);
-        }
+        binding.professionTV.setText(professionText);
         binding.BioTV.setText(bioText);
 
-        // Handle follow button visibility
-        String currentUserId = auth.getCurrentUser().getUid();
-
-        Log.d("profileFragment", "Current User ID: " + currentUserId);
-        Log.d("profileFragment", "Profile User ID: " + userId);
-
-        if (currentUserId.equals(userId)) {
-            // This is the logged-in user's own profile
+        // Handle button visibility based on whether this is current user's profile
+        if (isCurrentUserProfile) {
+            // Hide buttons for own profile
             binding.followButton.setVisibility(View.GONE);
+            binding.messageButton.setVisibility(View.GONE);
             binding.profileSettingsMenuBtn.setVisibility(View.VISIBLE);
         } else {
-            // This is someone else's profile
+            // Show buttons for other users' profiles
             binding.followButton.setVisibility(View.VISIBLE);
+            binding.messageButton.setVisibility(View.VISIBLE);
             binding.profileSettingsMenuBtn.setVisibility(View.GONE);
 
-            // Check if already following
+            // Set message button click listener
+            binding.messageButton.setOnClickListener(v -> {
+                // Open chat detail
+                Intent intent = new Intent(getActivity(),
+                        com.ramascript.allenconnect.features.chat.chatDetailActivity.class);
+                intent.putExtra("userId", userId);
+                intent.putExtra("profilePic", user.getProfilePhoto());
+                intent.putExtra("userName", user.getName());
+                startActivity(intent);
+            });
+
+            // Set follow button appearance based on following status
             checkFollowingStatus(userId);
         }
     }
 
     private void checkFollowingStatus(String profileUserId) {
-        if (profileUserId == null || profileUserId.isEmpty()) {
-            Log.e("profileFragment", "Invalid profile user ID");
-            return;
-        }
-
         String currentUserId = auth.getCurrentUser().getUid();
-        if (currentUserId == null || currentUserId.isEmpty()) {
-            Log.e("profileFragment", "Current user ID is null");
-            return;
-        }
-
-        Log.d("profileFragment", "Checking following status: current=" + currentUserId + ", profile=" + profileUserId);
 
         database.getReference()
                 .child("Users")
-                .child(currentUserId)
-                .child("Following")
                 .child(profileUserId)
+                .child("Followers")
+                .child(currentUserId)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (binding != null) {
-                            if (snapshot.exists()) {
-                                // Already following
-                                binding.followButton.setText("Following");
-                                binding.followButton.setBackgroundResource(R.drawable.border_black);
-                            } else {
-                                // Not following
-                                binding.followButton.setText("Follow");
-                                binding.followButton.setBackgroundResource(R.drawable.btnbg);
-                            }
+                        if (binding == null)
+                            return;
+
+                        if (snapshot.exists()) {
+                            // Already following this user
+                            binding.followButton.setText("Following");
+                            binding.followButton.setBackgroundResource(android.R.color.transparent);
+                            binding.followButton.setTextColor(getResources().getColor(R.color.textColor));
+
+                            // Set click listener for unfollow
+                            binding.followButton.setOnClickListener(v -> {
+                                unfollowUser(profileUserId);
+                            });
+                        } else {
+                            // Not following yet
+                            binding.followButton.setText("Follow");
+                            binding.followButton.setBackgroundResource(R.drawable.btnbg);
+                            binding.followButton.setTextColor(getResources().getColor(R.color.white));
+
+                            // Set click listener for follow
+                            binding.followButton.setOnClickListener(v -> {
+                                followUser(profileUserId);
+                            });
                         }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("profileFragment", "Error checking following status: " + error.getMessage());
+                        Log.e("profileFragment", "Error checking follow status: " + error.getMessage());
                     }
+                });
+    }
+
+    private void followUser(String profileUserId) {
+        String currentUserId = auth.getCurrentUser().getUid();
+        long currentTime = System.currentTimeMillis();
+
+        // Create follower model
+        followerModel follower = new followerModel();
+        follower.setFollowedBy(currentUserId);
+        follower.setFollowedAt(currentTime);
+
+        // Create following model
+        followingModel following = new followingModel();
+        following.setFollowingTo(profileUserId);
+        following.setFollowingAt(currentTime);
+
+        // Disable button during operation
+        binding.followButton.setEnabled(false);
+
+        // Update UI immediately
+        binding.followButton.setText("Following");
+        binding.followButton.setBackgroundResource(android.R.color.transparent);
+        binding.followButton.setTextColor(getResources().getColor(R.color.textColor));
+
+        // Add to follower list of profile user
+        database.getReference()
+                .child("Users")
+                .child(profileUserId)
+                .child("Followers")
+                .child(currentUserId)
+                .setValue(follower)
+                .addOnSuccessListener(unused -> {
+                    // Add to following list of current user
+                    database.getReference()
+                            .child("Users")
+                            .child(currentUserId)
+                            .child("Following")
+                            .child(profileUserId)
+                            .setValue(following)
+                            .addOnSuccessListener(unused1 -> {
+                                // Update follower count
+                                database.getReference()
+                                        .child("Users")
+                                        .child(profileUserId)
+                                        .child("followersCount")
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                int count = 0;
+                                                if (snapshot.exists()) {
+                                                    count = snapshot.getValue(Integer.class);
+                                                }
+
+                                                database.getReference()
+                                                        .child("Users")
+                                                        .child(profileUserId)
+                                                        .child("followersCount")
+                                                        .setValue(count + 1)
+                                                        .addOnSuccessListener(unused2 -> {
+                                                            // Re-enable button
+                                                            binding.followButton.setEnabled(true);
+
+                                                            // Update click listener for unfollow
+                                                            binding.followButton.setOnClickListener(v -> {
+                                                                unfollowUser(profileUserId);
+                                                            });
+
+                                                            Toast.makeText(getContext(),
+                                                                    "You followed " + currentUser.getName(),
+                                                                    Toast.LENGTH_SHORT).show();
+                                                        });
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                binding.followButton.setEnabled(true);
+                                                Toast.makeText(getContext(), "Error: " + error.getMessage(),
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    binding.followButton.setEnabled(true);
+                    binding.followButton.setText("Follow");
+                    binding.followButton.setBackgroundResource(R.drawable.btnbg);
+                    binding.followButton.setTextColor(getResources().getColor(R.color.white));
+
+                    Toast.makeText(getContext(), "Failed to follow: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void unfollowUser(String profileUserId) {
+        String currentUserId = auth.getCurrentUser().getUid();
+
+        // Disable button during operation
+        binding.followButton.setEnabled(false);
+
+        // Update UI immediately
+        binding.followButton.setText("Follow");
+        binding.followButton.setBackgroundResource(R.drawable.btnbg);
+        binding.followButton.setTextColor(getResources().getColor(R.color.white));
+
+        // Remove from follower list of profile user
+        database.getReference()
+                .child("Users")
+                .child(profileUserId)
+                .child("Followers")
+                .child(currentUserId)
+                .removeValue()
+                .addOnSuccessListener(unused -> {
+                    // Remove from following list of current user
+                    database.getReference()
+                            .child("Users")
+                            .child(currentUserId)
+                            .child("Following")
+                            .child(profileUserId)
+                            .removeValue()
+                            .addOnSuccessListener(unused1 -> {
+                                // Update follower count
+                                database.getReference()
+                                        .child("Users")
+                                        .child(profileUserId)
+                                        .child("followersCount")
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                int count = 0;
+                                                if (snapshot.exists()) {
+                                                    count = snapshot.getValue(Integer.class);
+                                                }
+
+                                                if (count > 0) {
+                                                    database.getReference()
+                                                            .child("Users")
+                                                            .child(profileUserId)
+                                                            .child("followersCount")
+                                                            .setValue(count - 1)
+                                                            .addOnSuccessListener(unused2 -> {
+                                                                // Re-enable button
+                                                                binding.followButton.setEnabled(true);
+
+                                                                // Update click listener for follow
+                                                                binding.followButton.setOnClickListener(v -> {
+                                                                    followUser(profileUserId);
+                                                                });
+
+                                                                Toast.makeText(getContext(),
+                                                                        "You unfollowed " + currentUser.getName(),
+                                                                        Toast.LENGTH_SHORT).show();
+                                                            });
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                binding.followButton.setEnabled(true);
+                                                Toast.makeText(getContext(), "Error: " + error.getMessage(),
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    binding.followButton.setEnabled(true);
+                    binding.followButton.setText("Following");
+                    binding.followButton.setBackgroundResource(android.R.color.transparent);
+                    binding.followButton.setTextColor(getResources().getColor(R.color.textColor));
+
+                    Toast.makeText(getContext(), "Failed to unfollow: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -458,15 +663,31 @@ public class profileFragment extends baseFragment {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            if (position == 0) {
-                return new PostsFragment();
+            switch (position) {
+                case 0:
+                    PostsFragment postsFragment = new PostsFragment();
+                    // Pass the userId to the posts fragment
+                    Bundle args = new Bundle();
+                    args.putString("userId", userId);
+                    postsFragment.setArguments(args);
+                    return postsFragment;
+                case 1:
+                    DetailsFragment detailsFragment = new DetailsFragment();
+                    // Pass the user data to details fragment
+                    if (currentUser != null) {
+                        Bundle detailsArgs = new Bundle();
+                        detailsArgs.putString("userType", currentUser.getUserType());
+                        detailsFragment.setArguments(detailsArgs);
+                    }
+                    return detailsFragment;
+                default:
+                    return new PostsFragment();
             }
-            return new DetailsFragment();
         }
 
         @Override
         public int getItemCount() {
-            return 2;
+            return 2; // Two tabs: Posts and Details
         }
     }
 
@@ -479,6 +700,7 @@ public class profileFragment extends baseFragment {
         private FirebaseAuth auth;
         private FirebaseDatabase database;
         private String userId;
+        private boolean isCurrentUserProfile;
 
         @Nullable
         @Override
@@ -486,20 +708,46 @@ public class profileFragment extends baseFragment {
                 @Nullable Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_posts, container, false);
 
-            // Initialize views and variables
-            postsRecyclerView = view.findViewById(R.id.postsRecyclerView);
-            emptyStateView = view.findViewById(R.id.emptyStateView);
+            // Initialize Firebase
             auth = FirebaseAuth.getInstance();
             database = FirebaseDatabase.getInstance();
-            postList = new ArrayList<>();
 
-            // Get the user ID from parent fragment
-            profileFragment parentFragment = (profileFragment) getParentFragment();
-            if (parentFragment != null) {
+            // Get userId from arguments
+            if (getArguments() != null) {
+                userId = getArguments().getString("userId");
+            } else {
+                // Default to current user if not specified
                 userId = auth.getCurrentUser().getUid();
             }
 
+            // Check if viewing own profile
+            isCurrentUserProfile = userId.equals(auth.getCurrentUser().getUid());
+
+            // Initialize views
+            postsRecyclerView = view.findViewById(R.id.postsRecyclerView);
+            emptyStateView = view.findViewById(R.id.emptyStateView);
+
+            // Change empty state text for other users' profiles
+            if (!isCurrentUserProfile) {
+                TextView emptyTitle = emptyStateView.findViewById(R.id.emptyTitleText);
+                TextView emptyDesc = emptyStateView.findViewById(R.id.emptyDescText);
+
+                if (emptyTitle != null) {
+                    emptyTitle.setText("No Posts Yet");
+                }
+
+                if (emptyDesc != null) {
+                    emptyDesc.setText("This user hasn't shared any posts yet");
+                }
+            }
+
+            // Initialize data
+            postList = new ArrayList<>();
+
+            // Setup RecyclerView
             setupRecyclerView();
+
+            // Load posts
             loadUserPosts();
 
             return view;
@@ -611,38 +859,41 @@ public class profileFragment extends baseFragment {
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-            profileFragment parentFragment = (profileFragment) getParentFragment();
-            if (parentFragment != null && parentFragment.currentUser != null) {
-                showUserTypeSpecificDetails(view, parentFragment.currentUser);
+
+            // Get parent fragment
+            Fragment parentFragment = getParentFragment();
+            if (parentFragment instanceof profileFragment) {
+                profileFragment parent = (profileFragment) parentFragment;
+                showUserDetails(view, parent.currentUser);
             }
         }
 
-        private void showUserTypeSpecificDetails(View view, userModel user) {
-            // Find all common TextViews
+        private void showUserDetails(View view, userModel user) {
+            if (user == null) {
+                Log.e("profileFragment", "User is null in details fragment");
+                return;
+            }
+
+            // Find common TextViews for all user types
             TextView nameTV = view.findViewById(R.id.nameTV);
             TextView emailTV = view.findViewById(R.id.emailTV);
             TextView phoneTV = view.findViewById(R.id.phoneTV);
-
-            // Find all section containers
-            View studentFields = view.findViewById(R.id.studentFields);
-            View professorFields = view.findViewById(R.id.professorFields);
-            View alumniFields = view.findViewById(R.id.alumniFields);
-
-            if (nameTV == null || emailTV == null || phoneTV == null) {
-                return; // Safety check
-            }
 
             // Set common fields
             nameTV.setText(user.getName());
             emailTV.setText(user.getEmail());
             phoneTV.setText(user.getPhoneNo());
 
-            // Hide all sections initially
+            View studentFields = view.findViewById(R.id.studentFields);
+            View professorFields = view.findViewById(R.id.professorFields);
+            View alumniFields = view.findViewById(R.id.alumniFields);
+
+            // Hide all fields first
             studentFields.setVisibility(View.GONE);
             professorFields.setVisibility(View.GONE);
             alumniFields.setVisibility(View.GONE);
 
-            // Show and populate fields based on user type
+            // Show fields based on user type
             switch (user.getUserType()) {
                 case "Student":
                     studentFields.setVisibility(View.VISIBLE);

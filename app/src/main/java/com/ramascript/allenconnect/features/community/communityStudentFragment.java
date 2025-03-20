@@ -15,7 +15,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ramascript.allenconnect.features.user.userAdapter;
 import com.ramascript.allenconnect.features.user.userModel;
 import com.ramascript.allenconnect.databinding.FragmentCommunityStudentBinding;
 
@@ -26,7 +25,7 @@ public class communityStudentFragment extends Fragment {
     FragmentCommunityStudentBinding binding;
     ArrayList<userModel> list;
     ArrayList<userModel> filteredList;
-    userAdapter adapter;
+    communityUserAdapter adapter;
     ValueEventListener usersListener;
 
     FirebaseAuth auth;
@@ -53,10 +52,10 @@ public class communityStudentFragment extends Fragment {
         list = new ArrayList<>();
         filteredList = new ArrayList<>();
 
-        adapter = new userAdapter(getContext(), filteredList);
+        adapter = new communityUserAdapter(getContext(), filteredList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         binding.rvStudent.setLayoutManager(layoutManager);
-        binding.rvStudent.setHasFixedSize(true); // Improve performance if item size doesn't change
+        binding.rvStudent.setHasFixedSize(true);
         binding.rvStudent.setAdapter(adapter);
 
         loadUsers();
