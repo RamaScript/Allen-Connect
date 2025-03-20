@@ -40,6 +40,7 @@ public class postFragment extends baseFragment {
     FirebaseDatabase database;
     FirebaseStorage storage;
     ProgressDialog dialog;
+    private ValueEventListener userInfoListener;
 
     public postFragment() {
         // Required empty public constructor
@@ -52,61 +53,91 @@ public class postFragment extends baseFragment {
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
+
+        // Initialize dialog here, but show it when needed
         dialog = new ProgressDialog(getContext());
-
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
-        binding = FragmentPostBinding.inflate(inflater, container, false);
-
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setTitle("Post Uploading");
         dialog.setMessage("Please Wait");
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
+    }
 
-        // here i am fetching user data from db and showing in post fragment
-        database.getReference().child("Users").child(auth.getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            userModel userModel = snapshot.getValue(com.ramascript.allenconnect.features.user.userModel.class);
-                            Picasso.get().load(userModel.getProfilePhoto()).placeholder(R.drawable.ic_avatar)
-                                    .into(binding.profileImage);
-                            binding.name.setText(userModel.getName());
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        binding = FragmentPostBinding.inflate(inflater, container, false);
 
-                            // Set the text based on user type
-                            if ("Student".equals(userModel.getUserType())) {
-                                binding.title.setText(
-                                        String.format("%s (%s year)", userModel.getCourse(), userModel.getYear()));
-                            } else if ("Alumni".equals(userModel.getUserType())) {
-                                binding.title.setText(userModel.getJobRole() + " at " + userModel.getCompany());
-                            } else if ("Professor".equals(userModel.getUserType())) {
-                                binding.title.setText("Professor at AGOI");
-                            }
+        // Load user info
+        loadUserInfo();
+
+        // Setup text watcher for post button state
+        setupTextWatcher();
+
+        // Setup click listeners
+        setupClickListeners();
+
+        return binding.getRoot();
+    }
+
+    private void loadUserInfo() {
+        if (auth.getUid() == null) {
+            return;
+        }
+
+        // Remove any existing listener to avoid duplicates
+        if (userInfoListener != null) {
+            database.getReference().child("Users").child(auth.getUid()).removeEventListener(userInfoListener);
+        }
+
+        // Create and add listener
+        userInfoListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!isAdded() || binding == null) {
+                    return;
+                }
+
+                if (snapshot.exists()) {
+                    userModel userModel = snapshot.getValue(com.ramascript.allenconnect.features.user.userModel.class);
+                    if (userModel != null) {
+                        Picasso.get().load(userModel.getProfilePhoto()).placeholder(R.drawable.ic_avatar)
+                                .into(binding.profileImage);
+                        binding.name.setText(userModel.getName());
+
+                        // Set the text based on user type
+                        if ("Student".equals(userModel.getUserType())) {
+                            binding.title.setText(
+                                    String.format("%s (%s year)", userModel.getCourse(), userModel.getYear()));
+                        } else if ("Alumni".equals(userModel.getUserType())) {
+                            binding.title.setText(userModel.getJobRole() + " at " + userModel.getCompany());
+                        } else if ("Professor".equals(userModel.getUserType())) {
+                            binding.title.setText("Professor at AGOI");
                         }
                     }
+                }
+            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error if needed
+            }
+        };
 
-                    }
-                });
+        // Add the listener
+        database.getReference().child("Users").child(auth.getUid()).addValueEventListener(userInfoListener);
+    }
 
+    private void setupTextWatcher() {
         binding.caption.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String caption = binding.caption.getText().toString();
-                if (!caption.isEmpty()) {
+                if (!caption.isEmpty() || uri != null) {
                     binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.btnbg));
                     binding.postBtn.setEnabled(true);
                     binding.postBtn.setTextColor(getContext().getResources().getColor(R.color.white_my));
@@ -120,10 +151,12 @@ public class postFragment extends baseFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
+    }
 
+    private void setupClickListeners() {
+        // Image selection button
         binding.addImgbtn.setOnClickListener(v -> {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -131,6 +164,7 @@ public class postFragment extends baseFragment {
             startActivityForResult(intent, 10);
         });
 
+        // Post button
         binding.postBtn.setOnClickListener(v -> {
             // Show loading dialog
             dialog.show();
@@ -172,36 +206,23 @@ public class postFragment extends baseFragment {
                         })
                         .addOnFailureListener(e -> {
                             dialog.dismiss();
+                            if (isAdded()) {
+                                Toast.makeText(getContext(), "Failed to get download URL: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }))
                         .addOnFailureListener(e -> {
                             dialog.dismiss();
-                            Toast.makeText(getContext(), "Failed to upload image", Toast.LENGTH_SHORT).show();
+                            if (isAdded()) {
+                                Toast.makeText(getContext(), "Failed to upload image: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         });
             } else {
                 // If no image, directly save the post
                 savePostToDatabase(postModel);
             }
         });
-
-        return binding.getRoot();
-    }
-
-    private void savePostToDatabase(postModel postModel) {
-        database.getReference().child("Posts").push()
-                .setValue(postModel)
-                .addOnSuccessListener(unused -> {
-                    dialog.dismiss();
-                    Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
-
-                    // Replace postFragment with homeFragment
-                    if (getActivity() != null && getActivity() instanceof mainActivity) {
-                        ((mainActivity) getActivity()).navigateToFragment(new homeFragment(), R.id.navigation_home);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    dialog.dismiss();
-                    Toast.makeText(getContext(), "Failed to save post", Toast.LENGTH_SHORT).show();
-                });
     }
 
     @Override
@@ -218,8 +239,51 @@ public class postFragment extends baseFragment {
             binding.postBtn.setEnabled(true);
             binding.postBtn.setTextColor(getContext().getResources().getColor(R.color.white_my));
         } else {
-            Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+            if (isAdded()) {
+                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+            }
         }
+    }
+
+    private void savePostToDatabase(postModel postModel) {
+        database.getReference().child("Posts").push()
+                .setValue(postModel)
+                .addOnSuccessListener(unused -> {
+                    dialog.dismiss();
+                    if (isAdded()) {
+                        Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+
+                        // Replace postFragment with homeFragment
+                        if (getActivity() != null && getActivity() instanceof mainActivity) {
+                            ((mainActivity) getActivity()).navigateToFragment(new homeFragment(), R.id.navigation_home);
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    dialog.dismiss();
+                    if (isAdded()) {
+                        Toast.makeText(getContext(), "Failed to save post: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // Clean up dialog if it's showing
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
+
+        // Remove database listeners to prevent memory leaks
+        if (userInfoListener != null && auth.getUid() != null) {
+            database.getReference().child("Users").child(auth.getUid()).removeEventListener(userInfoListener);
+            userInfoListener = null;
+        }
+
+        binding = null;
     }
 
 }

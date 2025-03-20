@@ -41,6 +41,7 @@ public class homeFragment extends Fragment {
 
     FragmentHomeBinding binding;
     ArrayList<postModel> postList;
+    ArrayList<postModel> displayedPostList;
     FirebaseDatabase database;
     FirebaseAuth auth;
     FirebaseStorage storage;
@@ -48,6 +49,9 @@ public class homeFragment extends Fragment {
     ProgressDialog dialog;
     private static int instanceCounter = 0;
     private final int instanceId;
+    private postAdapter postAdapter;
+    private boolean isInitialPostLoad = true;
+    private ValueEventListener postsListener;
 
     public homeFragment() {
         // Required empty public constructor
@@ -88,7 +92,8 @@ public class homeFragment extends Fragment {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
-                                userModel userModel = snapshot.getValue(com.ramascript.allenconnect.features.user.userModel.class);
+                                userModel userModel = snapshot
+                                        .getValue(com.ramascript.allenconnect.features.user.userModel.class);
                                 if (userModel != null) {
                                     if (getContext() != null && userModel.getProfilePhoto() != null) {
                                         Glide.with(getContext())
@@ -160,7 +165,8 @@ public class homeFragment extends Fragment {
 
         // Setup RecyclerView for posts
         postList = new ArrayList<>();
-        postAdapter postAdapter = new postAdapter(postList, getContext());
+        displayedPostList = new ArrayList<>();
+        postAdapter = new postAdapter(displayedPostList, getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         binding.dashBoardRV.setLayoutManager(linearLayoutManager);
         binding.dashBoardRV.setAdapter(postAdapter);
@@ -185,27 +191,7 @@ public class homeFragment extends Fragment {
         });
 
         // Load posts
-        database.getReference().child("Posts").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                postList.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    postModel postModel = dataSnapshot.getValue(com.ramascript.allenconnect.features.post.postModel.class);
-                    if (postModel != null) {
-                        postModel.setPostId(dataSnapshot.getKey());
-                        postList.add(postModel);
-                    }
-                }
-                Collections.reverse(postList);
-                postAdapter.notifyDataSetChanged();
-                binding.progressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                binding.progressBar.setVisibility(View.GONE);
-            }
-        });
+        loadPosts();
 
         // Add post button click listener
         binding.postBtn.setOnClickListener(v -> {
@@ -313,6 +299,120 @@ public class homeFragment extends Fragment {
                     .getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
         }
+    }
+
+    private void loadPosts() {
+        // Cancel any existing listener to avoid duplicates
+        if (postsListener != null) {
+            database.getReference().child("Posts").removeEventListener(postsListener);
+        }
+
+        postsListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!isAdded() || binding == null) {
+                    return;
+                }
+
+                if (isInitialPostLoad) {
+                    // For initial load, clear and reload all posts
+                    postList.clear();
+                    displayedPostList.clear();
+
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        postModel postModel = dataSnapshot
+                                .getValue(com.ramascript.allenconnect.features.post.postModel.class);
+                        if (postModel != null) {
+                            postModel.setPostId(dataSnapshot.getKey());
+                            postList.add(postModel);
+                            displayedPostList.add(postModel);
+                        }
+                    }
+
+                    // Sort posts by time (newest first)
+                    Collections.reverse(displayedPostList);
+
+                    // Update UI
+                    postAdapter.notifyDataSetChanged();
+                    binding.progressBar.setVisibility(View.GONE);
+
+                    // Mark initial load as complete
+                    isInitialPostLoad = false;
+                } else {
+                    // For subsequent updates, update incrementally to avoid jitter
+                    // Check for new posts or updated like/comment counts
+                    boolean hasChanges = false;
+
+                    // First, check if we need to add any new posts
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        String postId = dataSnapshot.getKey();
+                        boolean found = false;
+
+                        // Look for this post in our existing list
+                        for (postModel existingPost : postList) {
+                            if (existingPost.getPostId().equals(postId)) {
+                                found = true;
+
+                                // Update like and comment counts
+                                Integer likeCount = dataSnapshot.child("postLikes").getValue(Integer.class);
+                                Integer commentCount = dataSnapshot.child("commentCount").getValue(Integer.class);
+
+                                if (likeCount != null && likeCount != existingPost.getPostLikes()) {
+                                    existingPost.setPostLikes(likeCount);
+                                    hasChanges = true;
+                                }
+
+                                if (commentCount != null && commentCount != existingPost.getCommentCount()) {
+                                    existingPost.setCommentCount(commentCount);
+                                    hasChanges = true;
+                                }
+
+                                break;
+                            }
+                        }
+
+                        // If post not found, it's new - add it
+                        if (!found) {
+                            postModel newPost = dataSnapshot.getValue(postModel.class);
+                            if (newPost != null) {
+                                newPost.setPostId(postId);
+                                postList.add(0, newPost); // Add to beginning of list
+                                displayedPostList.add(0, newPost);
+                                hasChanges = true;
+                            }
+                        }
+                    }
+
+                    // If we detected changes, update the adapter
+                    if (hasChanges) {
+                        postAdapter.notifyDataSetChanged();
+                    }
+
+                    binding.progressBar.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                binding.progressBar.setVisibility(View.GONE);
+            }
+        };
+
+        // Add listener to database
+        database.getReference().child("Posts").addValueEventListener(postsListener);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // Remove database listener to prevent memory leaks
+        if (postsListener != null) {
+            database.getReference().child("Posts").removeEventListener(postsListener);
+            postsListener = null;
+        }
+
+        binding = null;
     }
 
     @Override

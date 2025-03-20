@@ -30,10 +30,26 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
 
     ArrayList<postModel> list;
     Context context;
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
 
     public postAdapter(ArrayList<postModel> list, Context context) {
         this.list = list;
         this.context = context;
+        // Enable stable IDs to improve RecyclerView performance
+        setHasStableIds(true);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        // Use the post ID hash as a stable identifier
+        return list.get(position).getPostId().hashCode();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        // Return position as the view type to help RecyclerView differentiate items
+        return position;
     }
 
     @NonNull
@@ -47,15 +63,21 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         postModel post = list.get(position);
 
-        // Load post image
+        // Load post image only if it's not already loaded with the same URL
         if (post.getPostImage() != null && !post.getPostImage().isEmpty()) {
-            Picasso.get()
-                    .load(post.getPostImage())
-                    .placeholder(R.drawable.ic_post_placeholder)
-                    .into(holder.postImage);
+            // Set a tag to track the image URL being loaded
+            String currentUrl = (String) holder.postImage.getTag();
+            if (currentUrl == null || !currentUrl.equals(post.getPostImage())) {
+                holder.postImage.setTag(post.getPostImage());
+                Picasso.get()
+                        .load(post.getPostImage())
+                        .placeholder(R.drawable.ic_post_placeholder)
+                        .into(holder.postImage);
+            }
             holder.postImage.setVisibility(View.VISIBLE);
         } else {
             holder.postImage.setVisibility(View.GONE);
+            holder.postImage.setTag(null);
         }
 
         // Set description
@@ -83,20 +105,46 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
         holder.time.setText(sdf.format(new Date(post.getPostedAt())));
 
+        // Set a tag to track which post ID we're loading data for
+        holder.itemView.setTag(post.getPostId());
+        String postId = post.getPostId();
+
         // Load user info
-        FirebaseDatabase.getInstance().getReference()
+        loadUserInfo(holder, post.getPostedBy(), postId);
+
+        // Load like status
+        loadLikeStatus(holder, post);
+    }
+
+    private void loadUserInfo(ViewHolder holder, String userId, String postId) {
+        // Skip loading if this view is no longer for the same post
+        if (!postId.equals(holder.itemView.getTag())) {
+            return;
+        }
+
+        database.getReference()
                 .child("Users")
-                .child(post.getPostedBy())
+                .child(userId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        // Skip updating if the view is recycled for another post
+                        if (!postId.equals(holder.itemView.getTag())) {
+                            return;
+                        }
+
                         userModel userModel = snapshot
                                 .getValue(com.ramascript.allenconnect.features.user.userModel.class);
                         if (userModel != null && holder.profile != null && holder.name != null) {
-                            Picasso.get()
-                                    .load(userModel.getProfilePhoto())
-                                    .placeholder(R.drawable.ic_avatar)
-                                    .into(holder.profile);
+                            // Use tag to avoid redundant image loads
+                            String currentProfileUrl = (String) holder.profile.getTag();
+                            if (currentProfileUrl == null || !currentProfileUrl.equals(userModel.getProfilePhoto())) {
+                                holder.profile.setTag(userModel.getProfilePhoto());
+                                Picasso.get()
+                                        .load(userModel.getProfilePhoto())
+                                        .placeholder(R.drawable.ic_avatar)
+                                        .into(holder.profile);
+                            }
                             holder.name.setText(userModel.getName());
 
                             // Set the text based on user type with null check
@@ -121,16 +169,28 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
                     public void onCancelled(@NonNull DatabaseError error) {
                     }
                 });
+    }
 
-        // Load like status
-        FirebaseDatabase.getInstance().getReference()
+    private void loadLikeStatus(ViewHolder holder, postModel post) {
+        String postId = post.getPostId();
+        // Skip loading if this view is no longer for the same post
+        if (!postId.equals(holder.itemView.getTag())) {
+            return;
+        }
+
+        database.getReference()
                 .child("Posts")
-                .child(post.getPostId())
+                .child(postId)
                 .child("Likes")
-                .child(FirebaseAuth.getInstance().getUid())
+                .child(auth.getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        // Skip updating if the view is recycled for another post
+                        if (!postId.equals(holder.itemView.getTag())) {
+                            return;
+                        }
+
                         if (snapshot.exists()) {
                             // User has already liked the post - show filled heart
                             holder.like.setImageResource(R.drawable.ic_heart_filled);
@@ -138,11 +198,11 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
                             // Add click listener for unlike
                             holder.like.setOnClickListener(v -> {
                                 // Remove like from database
-                                FirebaseDatabase.getInstance().getReference()
+                                database.getReference()
                                         .child("Posts")
                                         .child(post.getPostId())
                                         .child("Likes")
-                                        .child(FirebaseAuth.getInstance().getUid())
+                                        .child(auth.getUid())
                                         .removeValue()
                                         .addOnSuccessListener(unused -> {
                                             // When unliking, DECREASE the like count
@@ -161,7 +221,7 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
                                             });
 
                                             // Update the database (no listener to avoid reloading)
-                                            FirebaseDatabase.getInstance().getReference()
+                                            database.getReference()
                                                     .child("Posts")
                                                     .child(post.getPostId())
                                                     .child("postLikes")
@@ -187,11 +247,11 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
 
     private void likePost(ViewHolder holder, postModel post) {
         // Add like to database
-        FirebaseDatabase.getInstance().getReference()
+        database.getReference()
                 .child("Posts")
                 .child(post.getPostId())
                 .child("Likes")
-                .child(FirebaseAuth.getInstance().getUid())
+                .child(auth.getUid())
                 .setValue(true)
                 .addOnSuccessListener(unused -> {
                     // When liking, INCREASE the like count
@@ -207,11 +267,11 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
                     // Add click listener for unlike
                     holder.like.setOnClickListener(unlikeView -> {
                         // Remove like from database
-                        FirebaseDatabase.getInstance().getReference()
+                        database.getReference()
                                 .child("Posts")
                                 .child(post.getPostId())
                                 .child("Likes")
-                                .child(FirebaseAuth.getInstance().getUid())
+                                .child(auth.getUid())
                                 .removeValue()
                                 .addOnSuccessListener(removeUnused -> {
                                     // When unliking, DECREASE the like count
@@ -230,7 +290,7 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
                                     });
 
                                     // Update the database (no listener to avoid reloading)
-                                    FirebaseDatabase.getInstance().getReference()
+                                    database.getReference()
                                             .child("Posts")
                                             .child(post.getPostId())
                                             .child("postLikes")
@@ -239,7 +299,7 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
                     });
 
                     // Update the database (no listener to avoid reloading)
-                    FirebaseDatabase.getInstance().getReference()
+                    database.getReference()
                             .child("Posts")
                             .child(post.getPostId())
                             .child("postLikes")

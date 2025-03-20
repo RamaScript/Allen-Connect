@@ -40,6 +40,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
                     android:textColor="@color/black"
+                    android:text="sample username"
                     android:textSize="14sp"/>
 
                 <TextView
