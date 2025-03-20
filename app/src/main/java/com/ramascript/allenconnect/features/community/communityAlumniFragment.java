@@ -27,9 +27,11 @@ public class communityAlumniFragment extends Fragment {
     ArrayList<userModel> list;
     ArrayList<userModel> filteredList;
     userAdapter adapter;
+    ValueEventListener usersListener;
 
     FirebaseAuth auth;
     FirebaseDatabase database;
+    private boolean isInitialLoad = true;
 
     public communityAlumniFragment() {
         // Required empty public constructor
@@ -52,6 +54,7 @@ public class communityAlumniFragment extends Fragment {
         adapter = new userAdapter(getContext(), filteredList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         binding.rvAlumni.setLayoutManager(layoutManager);
+        binding.rvAlumni.setHasFixedSize(true); // Improve performance if item size doesn't change
         binding.rvAlumni.setAdapter(adapter);
 
         loadUsers();
@@ -60,32 +63,88 @@ public class communityAlumniFragment extends Fragment {
     }
 
     private void loadUsers() {
-        database.getReference().child("Users").addValueEventListener(new ValueEventListener() {
+        // Show loading state on initial load
+        if (isInitialLoad && binding != null) {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.rvAlumni.setVisibility(View.GONE);
+        }
+
+        // Remove previous listener if exists
+        if (usersListener != null) {
+            database.getReference().child("Users").removeEventListener(usersListener);
+        }
+
+        usersListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                list.clear();
-                filteredList.clear();
+                if (!isAdded() || binding == null)
+                    return;
 
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    userModel model = dataSnapshot.getValue(userModel.class);
-                    if (model != null) {
-                        model.setID(dataSnapshot.getKey());
-                        if (!dataSnapshot.getKey().equals(auth.getUid()) && "Alumni".equals(model.getUserType())) {
-                            list.add(model);
-                            filteredList.add(model);
+                // Only clear lists on initial load or filter changes
+                if (isInitialLoad) {
+                    list.clear();
+                    filteredList.clear();
+
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        userModel model = dataSnapshot.getValue(userModel.class);
+                        if (model != null) {
+                            model.setID(dataSnapshot.getKey());
+                            if (!dataSnapshot.getKey().equals(auth.getUid()) && "Alumni".equals(model.getUserType())) {
+                                list.add(model);
+                                filteredList.add(model);
+                            }
+                        }
+                    }
+
+                    // Hide loading state
+                    binding.progressBar.setVisibility(View.GONE);
+
+                    // Check if we have data to show
+                    if (filteredList.isEmpty()) {
+                        binding.emptyView.setVisibility(View.VISIBLE);
+                        binding.rvAlumni.setVisibility(View.GONE);
+                    } else {
+                        binding.emptyView.setVisibility(View.GONE);
+                        binding.rvAlumni.setVisibility(View.VISIBLE);
+                    }
+
+                    // Use more efficient notification method
+                    adapter.notifyDataSetChanged();
+                    isInitialLoad = false;
+                } else {
+                    // For subsequent updates, just update follow status data
+                    // This prevents the list from refreshing entirely
+                    for (int i = 0; i < list.size(); i++) {
+                        userModel existingUser = list.get(i);
+                        DataSnapshot userSnapshot = snapshot.child(existingUser.getID());
+                        if (userSnapshot.exists()) {
+                            // Update follower count if needed
+                            Integer followersCount = userSnapshot.child("followersCount").getValue(Integer.class);
+                            if (followersCount != null) {
+                                existingUser.setFollowersCount(followersCount);
+                            }
                         }
                     }
                 }
-                adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                if (binding != null) {
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.rvAlumni.setVisibility(View.VISIBLE);
+                }
             }
-        });
+        };
+
+        // Add the listener
+        database.getReference().child("Users").addValueEventListener(usersListener);
     }
 
     public void filterUsers(String query) {
+        if (binding == null)
+            return;
+
         filteredList.clear();
 
         if (query.isEmpty()) {
@@ -100,5 +159,25 @@ public class communityAlumniFragment extends Fragment {
         }
 
         adapter.notifyDataSetChanged();
+
+        // Show empty state if no results found
+        if (filteredList.isEmpty()) {
+            binding.emptyView.setVisibility(View.VISIBLE);
+        } else {
+            binding.emptyView.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // Remove listeners when view is destroyed
+        if (usersListener != null) {
+            database.getReference().child("Users").removeEventListener(usersListener);
+            usersListener = null;
+        }
+
+        binding = null;
     }
 }

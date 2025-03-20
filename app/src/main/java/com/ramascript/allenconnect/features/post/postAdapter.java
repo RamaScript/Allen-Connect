@@ -90,7 +90,8 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        userModel userModel = snapshot.getValue(com.ramascript.allenconnect.features.user.userModel.class);
+                        userModel userModel = snapshot
+                                .getValue(com.ramascript.allenconnect.features.user.userModel.class);
                         if (userModel != null && holder.profile != null && holder.name != null) {
                             Picasso.get()
                                     .load(userModel.getProfilePhoto())
@@ -146,39 +147,34 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
                                         .addOnSuccessListener(unused -> {
                                             // When unliking, DECREASE the like count
                                             int newLikeCount = post.getPostLikes() - 1;
+
+                                            // Update the UI directly without reloading all data
+                                            holder.like.setImageResource(R.drawable.ic_heart);
+                                            holder.likes.setText(String.valueOf(newLikeCount));
+
+                                            // Update the model
+                                            post.setPostLikes(newLikeCount);
+
+                                            // Add click listener for like
+                                            holder.like.setOnClickListener(likeView -> {
+                                                likePost(holder, post);
+                                            });
+
+                                            // Update the database (no listener to avoid reloading)
                                             FirebaseDatabase.getInstance().getReference()
                                                     .child("Posts")
                                                     .child(post.getPostId())
                                                     .child("postLikes")
                                                     .setValue(newLikeCount);
-                                            post.setPostLikes(newLikeCount); // Update local model
-                                            holder.likes.setText(String.valueOf(newLikeCount)); // Update UI count
                                         });
                             });
                         } else {
-                            // User hasn't liked the post - show empty heart
+                            // User has not liked the post - show outline heart
                             holder.like.setImageResource(R.drawable.ic_heart);
 
                             // Add click listener for like
                             holder.like.setOnClickListener(v -> {
-                                // Add like to database
-                                FirebaseDatabase.getInstance().getReference()
-                                        .child("Posts")
-                                        .child(post.getPostId())
-                                        .child("Likes")
-                                        .child(FirebaseAuth.getInstance().getUid())
-                                        .setValue(true)
-                                        .addOnSuccessListener(unused -> {
-                                            // When liking, INCREASE the like count
-                                            int newLikeCount = post.getPostLikes() + 1;
-                                            FirebaseDatabase.getInstance().getReference()
-                                                    .child("Posts")
-                                                    .child(post.getPostId())
-                                                    .child("postLikes")
-                                                    .setValue(newLikeCount);
-                                            post.setPostLikes(newLikeCount); // Update local model
-                                            holder.likes.setText(String.valueOf(newLikeCount)); // Update UI count
-                                        });
+                                likePost(holder, post);
                             });
                         }
                     }
@@ -186,6 +182,68 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                     }
+                });
+    }
+
+    private void likePost(ViewHolder holder, postModel post) {
+        // Add like to database
+        FirebaseDatabase.getInstance().getReference()
+                .child("Posts")
+                .child(post.getPostId())
+                .child("Likes")
+                .child(FirebaseAuth.getInstance().getUid())
+                .setValue(true)
+                .addOnSuccessListener(unused -> {
+                    // When liking, INCREASE the like count
+                    int newLikeCount = post.getPostLikes() + 1;
+
+                    // Update the UI directly without reloading all data
+                    holder.like.setImageResource(R.drawable.ic_heart_filled);
+                    holder.likes.setText(String.valueOf(newLikeCount));
+
+                    // Update the model
+                    post.setPostLikes(newLikeCount);
+
+                    // Add click listener for unlike
+                    holder.like.setOnClickListener(unlikeView -> {
+                        // Remove like from database
+                        FirebaseDatabase.getInstance().getReference()
+                                .child("Posts")
+                                .child(post.getPostId())
+                                .child("Likes")
+                                .child(FirebaseAuth.getInstance().getUid())
+                                .removeValue()
+                                .addOnSuccessListener(removeUnused -> {
+                                    // When unliking, DECREASE the like count
+                                    int newerLikeCount = post.getPostLikes() - 1;
+
+                                    // Update the UI directly without reloading all data
+                                    holder.like.setImageResource(R.drawable.ic_heart);
+                                    holder.likes.setText(String.valueOf(newerLikeCount));
+
+                                    // Update the model
+                                    post.setPostLikes(newerLikeCount);
+
+                                    // Add click listener for like
+                                    holder.like.setOnClickListener(likeAgainView -> {
+                                        likePost(holder, post);
+                                    });
+
+                                    // Update the database (no listener to avoid reloading)
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("Posts")
+                                            .child(post.getPostId())
+                                            .child("postLikes")
+                                            .setValue(newerLikeCount);
+                                });
+                    });
+
+                    // Update the database (no listener to avoid reloading)
+                    FirebaseDatabase.getInstance().getReference()
+                            .child("Posts")
+                            .child(post.getPostId())
+                            .child("postLikes")
+                            .setValue(newLikeCount);
                 });
     }
 

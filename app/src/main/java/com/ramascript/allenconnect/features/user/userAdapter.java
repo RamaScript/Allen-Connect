@@ -26,7 +26,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class userAdapter extends RecyclerView.Adapter<userAdapter.viewHolder>{
+public class userAdapter extends RecyclerView.Adapter<userAdapter.viewHolder> {
 
    Context context;
    ArrayList<userModel> list;
@@ -43,7 +43,7 @@ public class userAdapter extends RecyclerView.Adapter<userAdapter.viewHolder>{
    @NonNull
    @Override
    public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-      View view = LayoutInflater.from(context).inflate(R.layout.rv_comm_student,parent,false);
+      View view = LayoutInflater.from(context).inflate(R.layout.rv_comm_student, parent, false);
       return new viewHolder(view);
    }
 
@@ -52,9 +52,9 @@ public class userAdapter extends RecyclerView.Adapter<userAdapter.viewHolder>{
       userModel userModel = list.get(position);
 
       Picasso.get()
-          .load(userModel.getProfilePhoto())
-          .placeholder(R.drawable.ic_avatar)
-          .into(holder.profilePic);
+            .load(userModel.getProfilePhoto())
+            .placeholder(R.drawable.ic_avatar)
+            .into(holder.profilePic);
 
       holder.name.setText(userModel.getName());
 
@@ -68,112 +68,253 @@ public class userAdapter extends RecyclerView.Adapter<userAdapter.viewHolder>{
       }
 
       // Check if current user is following this user
+      checkFollowStatus(holder, userModel);
+   }
+
+   private void checkFollowStatus(@NonNull viewHolder holder, userModel userModel) {
       database.getReference()
-          .child("Users")
-          .child(userModel.getID())
-          .child("Followers")
-          .child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-             @Override
-             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                   holder.binding.followTV.setBackgroundColor(ContextCompat.getColor(context,R.color.transparent));
-                   holder.binding.followTV.setText("Following");
-                   holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.textColor));
-                   holder.binding.followTV.setEnabled(false);
-                } else {
-                   holder.binding.followTV.setOnClickListener(new View.OnClickListener() {
-                      @Override
-                      public void onClick(View v) {
-                         long currentTime = new Date().getTime();
+            .child("Users")
+            .child(userModel.getID())
+            .child("Followers")
+            .child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+               @Override
+               public void onDataChange(@NonNull DataSnapshot snapshot) {
+                  if (snapshot.exists()) {
+                     // User is following - show unfollow option
+                     holder.binding.followTV.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent));
+                     holder.binding.followTV.setText("Following");
+                     holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.textColor));
 
-                         // 1. Create Follower node in other user's profile
-                         followerModel follower = new followerModel();
-                         follower.setFollowedBy(auth.getUid());
-                         follower.setFollowedAt(currentTime);
+                     // Add click listener for unfollow
+                     holder.binding.followTV.setOnClickListener(v -> {
+                        unfollowUser(holder, userModel);
+                     });
+                  } else {
+                     // User is not following - show follow option
+                     holder.binding.followTV.setBackgroundResource(R.drawable.btnbg);
+                     holder.binding.followTV.setText("Follow");
+                     holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.white_my));
 
-                         // 2. Create Following node in current user's profile
-                         followingModel following = new followingModel();
-                         following.setFollowingTo(userModel.getID());
-                         following.setFollowingAt(currentTime);
+                     // Add click listener for follow
+                     holder.binding.followTV.setOnClickListener(v -> {
+                        followUser(holder, userModel);
+                     });
+                  }
+               }
 
-                         // Start transaction to update both nodes
-                         database.getReference().child("Users")
-                             .child(userModel.getID())
-                             .child("Followers")
-                             .child(auth.getUid())
-                             .setValue(follower).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                   // Update following count of current user
-                                   database.getReference().child("Users")
-                                       .child(auth.getUid())
-                                       .child("Following")
-                                       .child(userModel.getID())
-                                       .setValue(following).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                          @Override
-                                          public void onSuccess(Void unused) {
-                                             // Update follower count in the other user's profile
-                                             database.getReference().child("Users")
-                                                 .child(userModel.getID())
-                                                 .child("followersCount")
-                                                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                       int currentCount = 0;
-                                                       if (snapshot.exists()) {
-                                                          currentCount = snapshot.getValue(Integer.class);
-                                                       }
-                                                       database.getReference().child("Users")
-                                                           .child(userModel.getID())
-                                                           .child("followersCount")
-                                                           .setValue(currentCount + 1)
-                                                           .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                              @Override
-                                                              public void onSuccess(Void unused) {
-                                                                 // Update UI
-                                                                 holder.binding.followTV.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent));
-                                                                 holder.binding.followTV.setText("Following");
-                                                                 holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.textColor));
-                                                                 holder.binding.followTV.setEnabled(false);
-                                                                 Toast.makeText(context, "You followed " + userModel.getName(), Toast.LENGTH_SHORT).show();
-                                                              }
-                                                           }).addOnFailureListener(new OnFailureListener() {
-                                                              @Override
-                                                              public void onFailure(@NonNull Exception e) {
-                                                                 Toast.makeText(context, "Failed to update follower count: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                              }
-                                                           });
-                                                    }
+               @Override
+               public void onCancelled(@NonNull DatabaseError error) {
+                  Toast.makeText(context, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+               }
+            });
+   }
 
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError error) {
-                                                       Toast.makeText(context, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                                                    }
-                                                 });
-                                          }
-                                       }).addOnFailureListener(new OnFailureListener() {
-                                          @Override
-                                          public void onFailure(@NonNull Exception e) {
-                                             Toast.makeText(context, "Failed to update following: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                          }
-                                       });
-                                }
-                             }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                   Toast.makeText(context, "Failed to follow: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                             });
-                      }
-                   });
-                }
-             }
+   private void followUser(@NonNull viewHolder holder, userModel userModel) {
+      long currentTime = new Date().getTime();
 
-             @Override
-             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-             }
-          });
+      // 1. Create Follower node in other user's profile
+      followerModel follower = new followerModel();
+      follower.setFollowedBy(auth.getUid());
+      follower.setFollowedAt(currentTime);
+
+      // 2. Create Following node in current user's profile
+      followingModel following = new followingModel();
+      following.setFollowingTo(userModel.getID());
+      following.setFollowingAt(currentTime);
+
+      // Disable the button during operation
+      holder.binding.followTV.setEnabled(false);
+
+      // Update UI immediately to prevent jitter
+      holder.binding.followTV.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent));
+      holder.binding.followTV.setText("Following");
+      holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.textColor));
+
+      // Start transaction to update both nodes
+      database.getReference().child("Users")
+            .child(userModel.getID())
+            .child("Followers")
+            .child(auth.getUid())
+            .setValue(follower).addOnSuccessListener(unused -> {
+               // Update following count of current user
+               database.getReference().child("Users")
+                     .child(auth.getUid())
+                     .child("Following")
+                     .child(userModel.getID())
+                     .setValue(following).addOnSuccessListener(unused1 -> {
+                        // Update follower count in the other user's profile
+                        database.getReference().child("Users")
+                              .child(userModel.getID())
+                              .child("followersCount")
+                              .addListenerForSingleValueEvent(new ValueEventListener() {
+                                 @Override
+                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    int currentCount = 0;
+                                    if (snapshot.exists()) {
+                                       currentCount = snapshot.getValue(Integer.class);
+                                    }
+                                    database.getReference().child("Users")
+                                          .child(userModel.getID())
+                                          .child("followersCount")
+                                          .setValue(currentCount + 1)
+                                          .addOnSuccessListener(unused2 -> {
+                                             // Re-enable button after operation completes
+                                             holder.binding.followTV.setEnabled(true);
+
+                                             // Update click listener for unfollow
+                                             holder.binding.followTV.setOnClickListener(v -> {
+                                                unfollowUser(holder, userModel);
+                                             });
+
+                                             Toast.makeText(context, "You followed " + userModel.getName(),
+                                                   Toast.LENGTH_SHORT).show();
+                                          }).addOnFailureListener(e -> {
+                                             // Revert UI on failure
+                                             holder.binding.followTV.setEnabled(true);
+                                             holder.binding.followTV.setBackgroundResource(R.drawable.btnbg);
+                                             holder.binding.followTV.setText("Follow");
+                                             holder.binding.followTV
+                                                   .setTextColor(context.getResources().getColor(R.color.white_my));
+
+                                             Toast.makeText(context,
+                                                   "Failed to update follower count: " + e.getMessage(),
+                                                   Toast.LENGTH_SHORT).show();
+                                          });
+                                 }
+
+                                 @Override
+                                 public void onCancelled(@NonNull DatabaseError error) {
+                                    // Revert UI on failure
+                                    holder.binding.followTV.setEnabled(true);
+                                    holder.binding.followTV.setBackgroundResource(R.drawable.btnbg);
+                                    holder.binding.followTV.setText("Follow");
+                                    holder.binding.followTV
+                                          .setTextColor(context.getResources().getColor(R.color.white_my));
+
+                                    Toast.makeText(context, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT)
+                                          .show();
+                                 }
+                              });
+                     }).addOnFailureListener(e -> {
+                        // Revert UI on failure
+                        holder.binding.followTV.setEnabled(true);
+                        holder.binding.followTV.setBackgroundResource(R.drawable.btnbg);
+                        holder.binding.followTV.setText("Follow");
+                        holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.white_my));
+
+                        Toast.makeText(context, "Failed to update following: " + e.getMessage(), Toast.LENGTH_SHORT)
+                              .show();
+                     });
+            }).addOnFailureListener(e -> {
+               // Revert UI on failure
+               holder.binding.followTV.setEnabled(true);
+               holder.binding.followTV.setBackgroundResource(R.drawable.btnbg);
+               holder.binding.followTV.setText("Follow");
+               holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.white_my));
+
+               Toast.makeText(context, "Failed to follow: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+   }
+
+   private void unfollowUser(@NonNull viewHolder holder, userModel userModel) {
+      // Disable the button during operation
+      holder.binding.followTV.setEnabled(false);
+
+      // Update UI immediately to prevent jitter
+      holder.binding.followTV.setBackgroundResource(R.drawable.btnbg);
+      holder.binding.followTV.setText("Follow");
+      holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.white_my));
+
+      // Remove follower relationship
+      database.getReference().child("Users")
+            .child(userModel.getID())
+            .child("Followers")
+            .child(auth.getUid())
+            .removeValue()
+            .addOnSuccessListener(unused -> {
+               // Remove following relationship
+               database.getReference().child("Users")
+                     .child(auth.getUid())
+                     .child("Following")
+                     .child(userModel.getID())
+                     .removeValue()
+                     .addOnSuccessListener(unused1 -> {
+                        // Update follower count
+                        database.getReference().child("Users")
+                              .child(userModel.getID())
+                              .child("followersCount")
+                              .addListenerForSingleValueEvent(new ValueEventListener() {
+                                 @Override
+                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    int currentCount = 0;
+                                    if (snapshot.exists()) {
+                                       currentCount = snapshot.getValue(Integer.class);
+                                    }
+                                    if (currentCount > 0) {
+                                       database.getReference().child("Users")
+                                             .child(userModel.getID())
+                                             .child("followersCount")
+                                             .setValue(currentCount - 1)
+                                             .addOnSuccessListener(unused2 -> {
+                                                // Re-enable button after operation completes
+                                                holder.binding.followTV.setEnabled(true);
+
+                                                // Update click listener for follow
+                                                holder.binding.followTV.setOnClickListener(v -> {
+                                                   followUser(holder, userModel);
+                                                });
+
+                                                Toast.makeText(context, "Unfollowed " + userModel.getName(),
+                                                      Toast.LENGTH_SHORT).show();
+                                             }).addOnFailureListener(e -> {
+                                                // Revert UI on failure
+                                                holder.binding.followTV.setEnabled(true);
+                                                holder.binding.followTV.setBackgroundColor(
+                                                      ContextCompat.getColor(context, R.color.transparent));
+                                                holder.binding.followTV.setText("Following");
+                                                holder.binding.followTV
+                                                      .setTextColor(context.getResources().getColor(R.color.textColor));
+
+                                                Toast.makeText(context,
+                                                      "Failed to update follower count: " + e.getMessage(),
+                                                      Toast.LENGTH_SHORT).show();
+                                             });
+                                    }
+                                 }
+
+                                 @Override
+                                 public void onCancelled(@NonNull DatabaseError error) {
+                                    // Revert UI on failure
+                                    holder.binding.followTV.setEnabled(true);
+                                    holder.binding.followTV
+                                          .setBackgroundColor(ContextCompat.getColor(context, R.color.transparent));
+                                    holder.binding.followTV.setText("Following");
+                                    holder.binding.followTV
+                                          .setTextColor(context.getResources().getColor(R.color.textColor));
+
+                                    Toast.makeText(context, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT)
+                                          .show();
+                                 }
+                              });
+                     }).addOnFailureListener(e -> {
+                        // Revert UI on failure
+                        holder.binding.followTV.setEnabled(true);
+                        holder.binding.followTV
+                              .setBackgroundColor(ContextCompat.getColor(context, R.color.transparent));
+                        holder.binding.followTV.setText("Following");
+                        holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.textColor));
+
+                        Toast.makeText(context, "Failed to unfollow: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                     });
+            }).addOnFailureListener(e -> {
+               // Revert UI on failure
+               holder.binding.followTV.setEnabled(true);
+               holder.binding.followTV.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent));
+               holder.binding.followTV.setText("Following");
+               holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.textColor));
+
+               Toast.makeText(context, "Failed to unfollow: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
    }
 
    @Override
@@ -181,12 +322,12 @@ public class userAdapter extends RecyclerView.Adapter<userAdapter.viewHolder>{
       return list.size();
    }
 
-   public class viewHolder extends RecyclerView.ViewHolder{
+   public class viewHolder extends RecyclerView.ViewHolder {
 
       RvCommStudentBinding binding;
 
       ImageView profilePic;
-      TextView name,profession,followerCount;
+      TextView name, profession, followerCount;
 
       public viewHolder(@NonNull View itemView) {
          super(itemView);

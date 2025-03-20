@@ -27,9 +27,11 @@ public class communityProfessorFragment extends Fragment {
     ArrayList<userModel> list;
     ArrayList<userModel> filteredList;
     userAdapter adapter;
+    ValueEventListener usersListener;
 
     FirebaseAuth auth;
     FirebaseDatabase database;
+    private boolean isInitialLoad = true;
 
     public communityProfessorFragment() {
         // Required empty public constructor
@@ -52,6 +54,7 @@ public class communityProfessorFragment extends Fragment {
         adapter = new userAdapter(getContext(), filteredList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         binding.rvProfessor.setLayoutManager(layoutManager);
+        binding.rvProfessor.setHasFixedSize(true);
         binding.rvProfessor.setAdapter(adapter);
 
         loadUsers();
@@ -60,32 +63,80 @@ public class communityProfessorFragment extends Fragment {
     }
 
     private void loadUsers() {
-        database.getReference().child("Users").addValueEventListener(new ValueEventListener() {
+        if (isInitialLoad && binding != null) {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.rvProfessor.setVisibility(View.GONE);
+        }
+
+        if (usersListener != null) {
+            database.getReference().child("Users").removeEventListener(usersListener);
+        }
+
+        usersListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                list.clear();
-                filteredList.clear();
+                if (!isAdded() || binding == null)
+                    return;
 
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    userModel model = dataSnapshot.getValue(userModel.class);
-                    if (model != null) {
-                        model.setID(dataSnapshot.getKey());
-                        if (!dataSnapshot.getKey().equals(auth.getUid()) && "Professor".equals(model.getUserType())) {
-                            list.add(model);
-                            filteredList.add(model);
+                if (isInitialLoad) {
+                    list.clear();
+                    filteredList.clear();
+
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        userModel model = dataSnapshot.getValue(userModel.class);
+                        if (model != null) {
+                            model.setID(dataSnapshot.getKey());
+                            if (!dataSnapshot.getKey().equals(auth.getUid())
+                                    && "Professor".equals(model.getUserType())) {
+                                list.add(model);
+                                filteredList.add(model);
+                            }
+                        }
+                    }
+
+                    binding.progressBar.setVisibility(View.GONE);
+
+                    // Check if we have data to show
+                    if (filteredList.isEmpty()) {
+                        binding.emptyView.setVisibility(View.VISIBLE);
+                        binding.rvProfessor.setVisibility(View.GONE);
+                    } else {
+                        binding.emptyView.setVisibility(View.GONE);
+                        binding.rvProfessor.setVisibility(View.VISIBLE);
+                    }
+
+                    adapter.notifyDataSetChanged();
+                    isInitialLoad = false;
+                } else {
+                    for (int i = 0; i < list.size(); i++) {
+                        userModel existingUser = list.get(i);
+                        DataSnapshot userSnapshot = snapshot.child(existingUser.getID());
+                        if (userSnapshot.exists()) {
+                            Integer followersCount = userSnapshot.child("followersCount").getValue(Integer.class);
+                            if (followersCount != null) {
+                                existingUser.setFollowersCount(followersCount);
+                            }
                         }
                     }
                 }
-                adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                if (binding != null) {
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.rvProfessor.setVisibility(View.VISIBLE);
+                }
             }
-        });
+        };
+
+        database.getReference().child("Users").addValueEventListener(usersListener);
     }
 
     public void filterUsers(String query) {
+        if (binding == null)
+            return;
+
         filteredList.clear();
 
         if (query.isEmpty()) {
@@ -100,5 +151,23 @@ public class communityProfessorFragment extends Fragment {
         }
 
         adapter.notifyDataSetChanged();
+
+        if (filteredList.isEmpty()) {
+            binding.emptyView.setVisibility(View.VISIBLE);
+        } else {
+            binding.emptyView.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (usersListener != null) {
+            database.getReference().child("Users").removeEventListener(usersListener);
+            usersListener = null;
+        }
+
+        binding = null;
     }
 }

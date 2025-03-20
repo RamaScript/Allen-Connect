@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,5 +39,17 @@ public class communityViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         return fragmentTitleList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        // Use a stable ID for each position
+        return position;
+    }
+
+    @Override
+    public int getItemPosition(@NonNull Object object) {
+        // Don't force recreation of fragments when notifyDataSetChanged is called
+        return POSITION_UNCHANGED;
     }
 }
