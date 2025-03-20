@@ -3,13 +3,16 @@ package com.ramascript.allenconnect.base;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +25,12 @@ public class allenConnectApp extends Application implements Application.Activity
     private int activityReferences = 0;
     private boolean isAppInForeground = false;
 
+    // New variables for improved online status handling
+    private Handler onlineStatusHandler;
+    private static final long ONLINE_STATUS_UPDATE_INTERVAL = 60000; // 1 minute
+    private Runnable onlineStatusRunnable;
+    private DatabaseReference userStatusRef;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -30,8 +39,31 @@ public class allenConnectApp extends Application implements Application.Activity
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
 
+        // Initialize handler for periodic online status updates
+        onlineStatusHandler = new Handler();
+
         // register for activity lifecycle events
         registerActivityLifecycleCallbacks(this);
+
+        // Setup online status heartbeat system
+        setupOnlineStatusSystem();
+    }
+
+    /**
+     * Sets up the system for periodic online status updates
+     */
+    private void setupOnlineStatusSystem() {
+        onlineStatusRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Only send heartbeat updates if the app is in foreground
+                if (isAppInForeground && auth.getCurrentUser() != null) {
+                    updateOnlineStatus(true);
+                    // Schedule next update
+                    onlineStatusHandler.postDelayed(this, ONLINE_STATUS_UPDATE_INTERVAL);
+                }
+            }
+        };
     }
 
     /**
@@ -42,30 +74,47 @@ public class allenConnectApp extends Application implements Application.Activity
     public void updateOnlineStatus(boolean isOnline) {
         if (auth.getCurrentUser() != null) {
             String userId = auth.getCurrentUser().getUid();
-
-            // Current timestamp for last seen
-            long currentTime = System.currentTimeMillis();
+            userStatusRef = database.getReference().child("Users").child(userId);
 
             try {
                 Map<String, Object> updates = new HashMap<>();
-                updates.put("online", isOnline);
 
-                if (!isOnline) {
-                    // Record last seen time when going offline
-                    updates.put("lastSeen", currentTime);
+                if (isOnline) {
+                    // Use server timestamp for online status
+                    updates.put("online", true);
+                    updates.put("lastActive", ServerValue.TIMESTAMP);
+                } else {
+                    // When going offline, update both flags
+                    updates.put("online", false);
+                    updates.put("lastSeen", ServerValue.TIMESTAMP);
+                    updates.put("lastActive", ServerValue.TIMESTAMP);
                 }
 
                 // Update in database
-                database.getReference()
-                        .child("Users")
-                        .child(userId)
-                        .updateChildren(updates);
+                userStatusRef.updateChildren(updates);
 
-                Log.d(TAG, "User " + userId + " status updated: " + (isOnline ? "online" : "offline") +
-                        (isOnline ? "" : ", last seen: " + currentTime));
+                Log.d(TAG, "User " + userId + " status updated: " + (isOnline ? "online" : "offline"));
             } catch (Exception e) {
                 Log.e(TAG, "Failed to update online status: " + e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Setup disconnect hook to ensure proper offline status when app closes
+     * abruptly
+     */
+    private void setupDisconnectHook() {
+        if (auth.getCurrentUser() != null) {
+            String userId = auth.getCurrentUser().getUid();
+            DatabaseReference userRef = database.getReference().child("Users").child(userId);
+
+            Map<String, Object> offlineUpdates = new HashMap<>();
+            offlineUpdates.put("online", false);
+            offlineUpdates.put("lastSeen", ServerValue.TIMESTAMP);
+
+            // This will trigger when connection to Firebase is lost
+            userRef.onDisconnect().updateChildren(offlineUpdates);
         }
     }
 
@@ -81,7 +130,16 @@ public class allenConnectApp extends Application implements Application.Activity
         if (activityReferences == 0) {
             // App came to foreground
             isAppInForeground = true;
+
+            // Update online status
             updateOnlineStatus(true);
+
+            // Setup disconnect hook
+            setupDisconnectHook();
+
+            // Start periodic updates
+            onlineStatusHandler.postDelayed(onlineStatusRunnable, ONLINE_STATUS_UPDATE_INTERVAL);
+
             Log.d(TAG, "App moved to foreground");
         }
         activityReferences++;
@@ -89,7 +147,10 @@ public class allenConnectApp extends Application implements Application.Activity
 
     @Override
     public void onActivityResumed(@NonNull Activity activity) {
-        // Not used
+        // Update status when activity is resumed
+        if (isAppInForeground) {
+            updateOnlineStatus(true);
+        }
     }
 
     @Override
@@ -103,7 +164,13 @@ public class allenConnectApp extends Application implements Application.Activity
         if (activityReferences == 0) {
             // App went to background
             isAppInForeground = false;
+
+            // Update status to offline
             updateOnlineStatus(false);
+
+            // Remove callbacks when app goes to background
+            onlineStatusHandler.removeCallbacks(onlineStatusRunnable);
+
             Log.d(TAG, "App moved to background");
         }
     }
