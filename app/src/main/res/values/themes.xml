@@ -7,8 +7,4 @@
     </style>
 
     <style name="Theme.AllenConnect" parent="Base.Theme.AllenConnect" />
-
-    <style name="Theme.YourAppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- ... other attributes ... -->
-    </style>
 </resources>

@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:name=".AllenConnectApp"
+        android:name=".base.allenConnectApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -23,50 +23,50 @@
         android:theme="@style/Theme.AllenConnect"
         tools:targetApi="31">
         <activity
-            android:name=".Job.JobDetailActivity"
+            android:name=".features.job.jobDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".User.EditProfileActivity"
+            android:name=".features.user.editProfileActivity"
             android:exported="false" />
 
         <activity
-            android:name=".About.WebRamaPortfolioActivity"
+            android:name=".features.about.webShowPortfolioActivity"
             android:exported="false" />
         <activity
-            android:name=".About.MeetDevsActivity"
+            android:name=".features.about.meetDevsActivity"
             android:exported="false" />
         <activity
-            android:name=".Bot.AllenBotActivity"
+            android:name=".features.allenBot.allenBotActivity"
             android:exported="false" />
         <activity
-            android:name=".Comment.CommentActivity"
+            android:name=".features.comment.commentActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".Chat.ChatDetailActivity"
+            android:name=".features.chat.chatDetailActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.AllenConnect" />
         <activity
-            android:name=".Chat.ChatActivity"
+            android:name=".features.chat.chatActivity"
             android:exported="false" />
         <activity
-            android:name=".Auth.Register"
+            android:name=".features.auth.register"
             android:exported="false" />
         <activity
-            android:name=".Auth.RegisterAs"
+            android:name=".features.auth.registerAs"
             android:exported="false" />
         <activity
-            android:name=".Auth.Login"
+            android:name=".features.auth.login"
             android:exported="false" />
         <activity
-            android:name=".Auth.LoginAs"
+            android:name=".features.auth.loginAs"
             android:exported="false" />
         <activity
-            android:name=".OnBoarding.OnboardingActivity"
+            android:name=".features.onBoarding.onboardingActivity"
             android:exported="false" />
         <activity
-            android:name=".OnBoarding.Splash"
+            android:name=".features.onBoarding.splash"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -75,7 +75,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".base.mainActivity"
             android:exported="true"
             android:launchMode="singleTask"/>
 

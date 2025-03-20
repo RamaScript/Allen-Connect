@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Community.CommunityStudentFragment">
+    tools:context=".features.community.communityStudentFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvStudent"
