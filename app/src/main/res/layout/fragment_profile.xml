@@ -21,6 +21,7 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingVertical="8dp"
+            android:background="@color/white"
             app:layout_scrollFlags="scroll|enterAlways|snap">
 
             <ImageView
@@ -38,6 +39,8 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Profile"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="2dp"
                 android:textColor="@color/black"
                 android:textSize="22sp" />
 
@@ -62,42 +65,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/white"
             android:orientation="vertical">
 
-            <!-- Cover Photo with Profile Image -->
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="220dp">
-
-                <!-- Cover Image -->
-                <ImageView
-                    android:id="@+id/coverImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="160dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/bg_register_login"/>
-
-                <!-- Profile Image Container -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:layout_gravity="bottom|center_horizontal"
-                    app:cardCornerRadius="60dp"
-                    app:cardElevation="4dp"
-                    android:layout_marginBottom="4dp">
+            <!-- Profile Image Container -->
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/profile_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginBottom="8dp"
                         android:src="@drawable/ic_avatar"
-                        app:civ_border_color="@color/white"
-                        app:civ_border_width="3dp"/>
+                        />
 
-                </androidx.cardview.widget.CardView>
-
-
-            </FrameLayout>
 
             <!-- Profile Info -->
             <LinearLayout
@@ -149,7 +131,6 @@
                     android:layout_marginVertical="16dp"
                     android:layout_marginHorizontal="20dp"
                     >
-
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -294,6 +275,7 @@
                     android:layout_weight="1"
                     android:layout_marginTop="8dp"
                     android:minHeight="400dp"
+                    android:layout_marginBottom="80dp"
                     android:nestedScrollingEnabled="true"/>
             </LinearLayout>
         </LinearLayout>
