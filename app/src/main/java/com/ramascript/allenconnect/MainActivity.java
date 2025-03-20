@@ -151,33 +151,34 @@ public class MainActivity extends AppCompatActivity {
 
     private void handlePostNavigation() {
         database.getReference().child("Users").child(auth.getUid())
-            .addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        String userType = snapshot.child("userType").getValue(String.class);
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            String userType = snapshot.child("userType").getValue(String.class);
 
-                        if ("Student".equals(userType)) {
-                            loadFragment(new PostFragment(), false);
-                        } else {
-                            binding.postOptions.setVisibility(View.VISIBLE);
-
-                            binding.createPost.setOnClickListener(v -> {
+                            if ("Student".equals(userType)) {
                                 loadFragment(new PostFragment(), false);
-                            });
+                            } else {
+                                binding.postOptions.setVisibility(View.VISIBLE);
 
-                            binding.JobPost.setOnClickListener(v -> {
-                                loadFragment(new JobPostFragment(), false);
-                            });
+                                binding.createPost.setOnClickListener(v -> {
+                                    loadFragment(new PostFragment(), false);
+                                });
+
+                                binding.JobPost.setOnClickListener(v -> {
+                                    loadFragment(new JobPostFragment(), false);
+                                });
+                            }
                         }
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                }
-            });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
     }
+
     public void loadFragment(Fragment fragment, boolean isAppInitialized) {
         System.out.println("loadFragment called with: " + fragment.getClass().getSimpleName() +
                 ", isAppInitialized=" + isAppInitialized);
@@ -238,4 +239,6 @@ public class MainActivity extends AppCompatActivity {
             fm.popBackStack();
         }
     }
+
+    // Online status updates are now handled by AllenConnectApp
 }

@@ -16,7 +16,7 @@
         android:layout_marginTop="16dp"
         android:background="@drawable/round"
         android:backgroundTint="@color/btn_color"
-        android:drawableStart="@drawable/arrow_back"
+        android:drawableStart="@drawable/ic_arrow_back"
         android:drawableTint="@color/white_my"
         android:paddingStart="12dp"
         app:layout_constraintStart_toStartOf="parent"

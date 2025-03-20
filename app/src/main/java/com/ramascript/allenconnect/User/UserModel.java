@@ -1,5 +1,7 @@
 package com.ramascript.allenconnect.User;
 
+import java.util.Map;
+
 public class UserModel {
 
     private String ID;
@@ -34,6 +36,13 @@ public class UserModel {
 
     private Long lastMessageTime; // Added field for message time
     private int unreadCount; // Added field for unread messages
+    private Boolean online; // Online status
+    private Long lastSeen; // Last seen timestamp
+
+    // Fields for user stats
+    private Map<String, Object> Following; // Map of users being followed
+    private Map<String, Object> Followers; // Map of followers
+    private int postsCount; // Number of posts
 
     public UserModel() {
     }
@@ -275,6 +284,78 @@ public class UserModel {
         this.unreadCount = unreadCount;
     }
 
+    // Online status getter and setter
+    public Boolean getOnline() {
+        return online;
+    }
+
+    public void setOnline(Boolean online) {
+        this.online = online;
+    }
+
+    // Last seen getter and setter
+    public Long getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(Long lastSeen) {
+        this.lastSeen = lastSeen;
+    }
+
+    /**
+     * Returns a formatted string for the last seen time
+     * 
+     * @return formatted last seen string
+     */
+    public String getLastSeenText() {
+        Boolean isUserOnline = getOnline();
+        if (isUserOnline != null && isUserOnline) {
+            return "Online Now";
+        }
+
+        if (lastSeen == null) {
+            return "";
+        }
+
+        return "Last seen " + getFormattedLastSeen(lastSeen);
+    }
+
+    /**
+     * Formats a timestamp for last seen display
+     * 
+     * @param timestamp the timestamp to format
+     * @return formatted last seen time string
+     */
+    public static String getFormattedLastSeen(Long timestamp) {
+        if (timestamp == null) {
+            return "";
+        }
+
+        long currentTime = System.currentTimeMillis();
+        long timeDiff = currentTime - timestamp;
+
+        // Convert to seconds
+        long seconds = timeDiff / 1000;
+
+        if (seconds < 60) {
+            return "just now";
+        } else if (seconds < 3600) {
+            long minutes = seconds / 60;
+            return minutes + " minute" + (minutes > 1 ? "s" : "") + " ago";
+        } else if (seconds < 86400) {
+            long hours = seconds / 3600;
+            return hours + " hour" + (hours > 1 ? "s" : "") + " ago";
+        } else if (seconds < 604800) { // Less than a week
+            long days = seconds / 86400;
+            return days + " day" + (days > 1 ? "s" : "") + " ago";
+        } else {
+            // Format the date as "MM/dd/yyyy"
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MM/dd/yyyy",
+                    java.util.Locale.getDefault());
+            return "on " + sdf.format(new java.util.Date(timestamp));
+        }
+    }
+
     // Helper method to format time
     public static String getTimeAgo(Long timestamp) {
         if (timestamp == null)
@@ -298,6 +379,31 @@ public class UserModel {
             long days = seconds / 86400;
             return days + "d";
         }
+    }
+
+    // Getters and setters for user stats
+    public Map<String, Object> getFollowing() {
+        return Following;
+    }
+
+    public void setFollowing(Map<String, Object> following) {
+        Following = following;
+    }
+
+    public Map<String, Object> getFollowers() {
+        return Followers;
+    }
+
+    public void setFollowers(Map<String, Object> followers) {
+        Followers = followers;
+    }
+
+    public int getPostsCount() {
+        return postsCount;
+    }
+
+    public void setPostsCount(int postsCount) {
+        this.postsCount = postsCount;
     }
 
 }

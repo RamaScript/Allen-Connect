@@ -20,7 +20,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/_12mdp"
         android:layout_marginBottom="72dp"
-        android:src="@drawable/ic_bot"
+        android:src="@drawable/ic_chatbot"
         android:visibility="gone"
         app:civ_border_color="@color/black"
         app:civ_border_width="2dp" />

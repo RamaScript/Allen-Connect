@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_semibold"
             android:textColor="@color/black"
+            android:text="sample chat user"
             android:textSize="16sp" />
 
         <TextView
@@ -35,6 +36,7 @@
             android:ellipsize="end"
             android:fontFamily="@font/poppins"
             android:maxLines="1"
+            android:text="sample last message"
             android:textColor="#757575"
             android:textSize="14sp" />
     </LinearLayout>
@@ -51,18 +53,19 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins"
             android:textColor="#757575"
+            android:text="12:00 PM"
             android:textSize="12sp" />
 
         <TextView
-            android:id="@+id/unreadCount"
+            android:id="@+id/unread_count"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/circle_pink"
-            android:fontFamily="@font/poppins"
-            android:gravity="center"
+            android:background="@drawable/green_dot"
             android:textColor="@color/white"
             android:textSize="12sp"
-            android:visibility="gone" />
+            android:gravity="center"
+            android:text="5"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/poppins"/>
     </LinearLayout>
 </LinearLayout>

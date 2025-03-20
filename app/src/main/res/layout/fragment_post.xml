@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:paddingVertical="8dp"
                 android:paddingStart="16dp"
-                android:paddingEnd="8dp"                android:src="@drawable/arrow_back"
+                android:paddingEnd="8dp"                android:src="@drawable/ic_arrow_back"
                 app:tint="@color/black" />
 
             <TextView

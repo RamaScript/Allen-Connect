@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:paddingVertical="8dp"
                 android:paddingStart="16dp"
-                android:paddingEnd="8dp"                android:src="@drawable/arrow_back"
+                android:paddingEnd="8dp"                android:src="@drawable/ic_arrow_back"
                 app:tint="@color/black" />
 
             <TextView
@@ -140,7 +140,7 @@
             android:layout_margin="16dp"
             android:orientation="vertical">
 
-            <!-- Job Title -->r
+            <!-- Job Title -->
 
             <EditText
                 android:id="@+id/job_title"
@@ -279,7 +279,7 @@
                     android:id="@+id/applicationDeadlinePickerIcon"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:src="@drawable/calender" />
+                    android:src="@drawable/ic_calender" />
 
             </LinearLayout>
 

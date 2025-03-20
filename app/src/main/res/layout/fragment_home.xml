@@ -42,8 +42,10 @@
 
             <ImageView
                 android:id="@+id/chatHomeIV"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="6dp"
+                android:layout_gravity="center"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/ic_chat" />
         </LinearLayout>
@@ -68,7 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp">
 

@@ -5,6 +5,6 @@
         android:drawable="@drawable/ic_plus_selected" />  <!-- Icon for selected state -->
 
     <item
-        android:drawable="@drawable/ic_add"
+        android:drawable="@drawable/ic_plus"
         />  <!-- Icon for default (unselected) state -->
 </selector>
