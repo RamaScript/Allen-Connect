@@ -23,12 +23,22 @@
         android:theme="@style/Theme.AllenConnect"
         tools:targetApi="31">
         <activity
+            android:name=".features.auth.deleteAccountActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="allenconnect" android:host="delete-account" />
+            </intent-filter>
+
+        </activity>
+        <activity
             android:name=".features.job.jobDetailActivity"
             android:exported="false" />
         <activity
             android:name=".features.user.editProfileActivity"
             android:exported="false" />
-
         <activity
             android:name=".features.about.webShowPortfolioActivity"
             android:exported="false" />
@@ -45,8 +55,8 @@
         <activity
             android:name=".features.chat.chatDetailActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.AllenConnect" />
+            android:theme="@style/Theme.AllenConnect"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".features.chat.chatActivity"
             android:exported="false" />
@@ -77,8 +87,7 @@
         <activity
             android:name=".base.mainActivity"
             android:exported="true"
-            android:launchMode="singleTask"/>
-
+            android:launchMode="singleTask" />
     </application>
 
 </manifest>

@@ -30,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.ramascript.allenconnect.features.auth.deleteAccountActivity;
 import com.ramascript.allenconnect.features.auth.loginAs;
 import com.ramascript.allenconnect.utils.baseFragment;
 import com.ramascript.allenconnect.features.about.meetDevsActivity;
@@ -606,6 +607,9 @@ public class profileFragment extends baseFragment {
                 return true;
             } else if (item.getItemId() == R.id.action_developers) {
                 startActivity(new Intent(getContext(), meetDevsActivity.class));
+                return true;
+            } else if (item.getItemId() == R.id.action_delete_account) {
+                startActivity(new Intent(getContext(), deleteAccountActivity.class));
                 return true;
             } else if (item.getItemId() == R.id.action_logout) {
                 auth.signOut();

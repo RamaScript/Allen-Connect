@@ -15,6 +15,10 @@
         android:title="Meet Developers" />
 
     <item
+        android:id="@+id/action_delete_account"
+        android:title="Delete Account" />
+
+    <item
         android:id="@+id/action_logout"
         android:title="Logout" />
 </menu>
