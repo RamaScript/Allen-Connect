@@ -52,8 +52,8 @@ public class chatUsersAdapter extends RecyclerView.Adapter<chatUsersAdapter.view
 
         // Set profile image
         if (isDeleted) {
-            // Use placeholder for deleted users
-            holder.binding.profileImage.setImageResource(R.drawable.ic_avatar);
+            // Use specific deleted account icon for deleted users in chat list
+            holder.binding.profileImage.setImageResource(R.drawable.ic_warning);
         } else if (userModel.getProfilePhoto() != null) {
             Picasso.get()
                     .load(userModel.getProfilePhoto())
@@ -63,7 +63,6 @@ public class chatUsersAdapter extends RecyclerView.Adapter<chatUsersAdapter.view
             holder.binding.profileImage.setImageResource(R.drawable.ic_avatar);
         }
 
-        // Set user name - show "Deleted User" for deleted accounts
         holder.binding.userName.setText(userModel.getName());
 
         // Check if there's a last message
