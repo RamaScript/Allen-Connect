@@ -77,6 +77,28 @@ public class chatDetailActivity extends AppCompatActivity {
                             .into(binding.profileImage);
                 }
 
+                // Check if user is deleted immediately
+                database.getReference()
+                        .child("Users")
+                        .child(receiverId)
+                        .child("isDeleted")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (binding == null || isFinishing() || isDestroyed())
+                                    return;
+
+                                if (snapshot.exists() && Boolean.TRUE.equals(snapshot.getValue(Boolean.class))) {
+                                    handleDeletedAccountUI();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                // Continue with normal flow if error occurs
+                            }
+                        });
+
                 // Setup RecyclerView
                 LinearLayoutManager layoutManager = new LinearLayoutManager(this);
                 layoutManager.setStackFromEnd(true);
@@ -229,6 +251,14 @@ public class chatDetailActivity extends AppCompatActivity {
 
                 try {
                     if (snapshot.exists()) {
+                        // Check if account is deleted
+                        if (snapshot.hasChild("isDeleted")
+                                && Boolean.TRUE.equals(snapshot.child("isDeleted").getValue(Boolean.class))) {
+                            // Handle deleted account UI
+                            handleDeletedAccountUI();
+                            return;
+                        }
+
                         // Check online status
                         Boolean isOnline = snapshot.child("online").getValue(Boolean.class);
 
@@ -274,6 +304,26 @@ public class chatDetailActivity extends AppCompatActivity {
                 .child("Users")
                 .child(receiverId)
                 .addValueEventListener(onlineStatusListener);
+    }
+
+    private void handleDeletedAccountUI() {
+        if (binding == null || isFinishing() || isDestroyed())
+            return;
+
+        // Hide online status and last seen
+        binding.onlineStatus.setVisibility(View.GONE);
+        binding.lastSeenText.setVisibility(View.GONE);
+
+        // Hide call buttons for deleted users
+        binding.videoCallBtn.setVisibility(View.GONE);
+        binding.audioCallBtn.setVisibility(View.GONE);
+
+        // Hide message input field and send button
+        binding.linear.setVisibility(View.GONE);
+
+        // Show deleted account message
+        binding.deletedAccountMessage.setVisibility(View.VISIBLE);
+        binding.deletedAccountMessage.setText("This account has been deleted. You cannot send messages to it.");
     }
 
     private void markMessagesAsRead() {

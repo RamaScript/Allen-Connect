@@ -43,6 +43,7 @@ public class userModel {
     private Map<String, Object> Following; // Map of users being followed
     private Map<String, Object> Followers; // Map of followers
     private int postsCount; // Number of posts
+    private Boolean isDeleted; // Flag to indicate if account is deleted
 
     public userModel() {
     }
@@ -56,7 +57,7 @@ public class userModel {
 
     // for student
     public userModel(String CRN, String email, String phoneNo, String password, String name, String course, String year,
-                     String profilePhoto, String userType) {
+            String profilePhoto, String userType) {
         this.CRN = CRN;
         this.email = email;
         this.phoneNo = phoneNo;
@@ -86,7 +87,7 @@ public class userModel {
 
     // for alumni
     public userModel(String email, String phoneNo, String password, String name, String course, String passingYear,
-                     String company, String jobRole, String profilePhoto, String userType) {
+            String company, String jobRole, String profilePhoto, String userType) {
         this.email = email;
         this.phoneNo = phoneNo;
         this.password = password;
@@ -404,6 +405,18 @@ public class userModel {
 
     public void setPostsCount(int postsCount) {
         this.postsCount = postsCount;
+    }
+
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public Boolean isDeleted() {
+        return this.isDeleted;
     }
 
 }

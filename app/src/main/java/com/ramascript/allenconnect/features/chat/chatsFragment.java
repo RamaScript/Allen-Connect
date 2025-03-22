@@ -179,6 +179,13 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         String userId = dataSnapshot.getKey();
                         if (userId != null && !userId.equals(currentUserId)) {
+                            // Check if user is deleted
+                            Boolean isDeleted = dataSnapshot.child("isDeleted").getValue(Boolean.class);
+                            if (isDeleted != null && isDeleted) {
+                                // Skip deleted users
+                                continue;
+                            }
+
                             // Check if user is online
                             Boolean isOnline = dataSnapshot.child("online").getValue(Boolean.class);
                             if (isOnline != null && isOnline) {

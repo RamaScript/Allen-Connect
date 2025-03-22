@@ -47,8 +47,14 @@ public class chatUsersAdapter extends RecyclerView.Adapter<chatUsersAdapter.view
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
         userModel userModel = list.get(position);
 
+        // Check if account is deleted
+        boolean isDeleted = userModel.isDeleted() != null && userModel.isDeleted();
+
         // Set profile image
-        if (userModel.getProfilePhoto() != null) {
+        if (isDeleted) {
+            // Use placeholder for deleted users
+            holder.binding.profileImage.setImageResource(R.drawable.ic_avatar);
+        } else if (userModel.getProfilePhoto() != null) {
             Picasso.get()
                     .load(userModel.getProfilePhoto())
                     .placeholder(R.drawable.ic_avatar)
@@ -57,7 +63,7 @@ public class chatUsersAdapter extends RecyclerView.Adapter<chatUsersAdapter.view
             holder.binding.profileImage.setImageResource(R.drawable.ic_avatar);
         }
 
-        // Set user name
+        // Set user name - show "Deleted User" for deleted accounts
         holder.binding.userName.setText(userModel.getName());
 
         // Check if there's a last message
@@ -66,21 +72,27 @@ public class chatUsersAdapter extends RecyclerView.Adapter<chatUsersAdapter.view
 
             // Show timestamp if available
             if (userModel.getLastMessageTime() != null) {
-                holder.binding.msgTime.setText(com.ramascript.allenconnect.features.user.userModel.getTimeAgo(userModel.getLastMessageTime()));
+                holder.binding.msgTime.setText(
+                        com.ramascript.allenconnect.features.user.userModel.getTimeAgo(userModel.getLastMessageTime()));
                 holder.binding.msgTime.setVisibility(View.VISIBLE);
             } else {
                 holder.binding.msgTime.setVisibility(View.GONE);
             }
         } else {
-            // If no chat history, show course and year
-            String courseInfo = "";
-            if (userModel.getCourse() != null && !userModel.getCourse().isEmpty()) {
-                courseInfo = userModel.getCourse();
-                if (userModel.getYear() != null && !userModel.getYear().isEmpty()) {
-                    courseInfo += " • " + userModel.getYear() + " Year";
+            // If no chat history and account is deleted, show "Account deleted"
+            if (isDeleted) {
+                holder.binding.lastMessage.setText("Account deleted");
+            } else {
+                // If no chat history, show course and year
+                String courseInfo = "";
+                if (userModel.getCourse() != null && !userModel.getCourse().isEmpty()) {
+                    courseInfo = userModel.getCourse();
+                    if (userModel.getYear() != null && !userModel.getYear().isEmpty()) {
+                        courseInfo += " • " + userModel.getYear() + " Year";
+                    }
                 }
+                holder.binding.lastMessage.setText(courseInfo);
             }
-            holder.binding.lastMessage.setText(courseInfo);
             holder.binding.msgTime.setVisibility(View.GONE);
         }
 
@@ -96,8 +108,8 @@ public class chatUsersAdapter extends RecyclerView.Adapter<chatUsersAdapter.view
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, chatDetailActivity.class);
             intent.putExtra("userId", userModel.getID());
-            intent.putExtra("profilePicture", userModel.getProfilePhoto());
-            intent.putExtra("userName", userModel.getName());
+            intent.putExtra("profilePicture", isDeleted ? "" : userModel.getProfilePhoto());
+            intent.putExtra("userName", isDeleted ? "Deleted User" : userModel.getName());
             context.startActivity(intent);
         });
     }

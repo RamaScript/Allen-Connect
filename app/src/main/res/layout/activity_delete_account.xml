@@ -70,9 +70,9 @@
                 android:layout_marginTop="16dp"
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppins_semibold"
-                android:text="This action is permanent"
+                android:text="This action will delete your account"
                 android:textColor="@android:color/holo_red_dark"
-                android:textSize="20sp" />
+                android:textSize="16sp" />
 
             <!-- Warning Description -->
             <TextView
@@ -82,7 +82,7 @@
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/poppins"
                 android:gravity="center"
-                android:text="Deleting your account will permanently remove all your data from Allen Connect, including your profile, posts, and messages. This action cannot be undone."
+                android:text="You can recover it from login screen,"
                 android:textColor="@color/dark_gray"
                 android:textSize="14sp" />
 
@@ -106,7 +106,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_semibold"
-                        android:text="You will lose:"
+                        android:text="after deleting You cannot:"
                         android:textColor="@color/black"
                         android:textSize="16sp" />
 
@@ -128,7 +128,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:fontFamily="@font/poppins"
-                            android:text="Your profile information"
+                            android:text="Login"
                             android:textColor="@color/dark_gray"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -151,7 +151,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:fontFamily="@font/poppins"
-                            android:text="All your posts and comments"
+                            android:text="post"
                             android:textColor="@color/dark_gray"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -174,7 +174,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:fontFamily="@font/poppins"
-                            android:text="All your messages and conversations"
+                            android:text="Chat"
                             android:textColor="@color/dark_gray"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -197,7 +197,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:fontFamily="@font/poppins"
-                            android:text="Your connections with other users"
+                            android:text="connect"
                             android:textColor="@color/dark_gray"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -213,7 +213,8 @@
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Consider these alternatives:"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/alternativeDesc"
@@ -223,7 +224,8 @@
                 android:fontFamily="@font/poppins"
                 android:text="• Take a break from the app instead of deleting your account\n• Update your profile information\n• Update your notification settings\n• Contact support for assistance"
                 android:textColor="@color/dark_gray"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="gone" />
 
             <!-- Confirmation Section -->
             <androidx.cardview.widget.CardView

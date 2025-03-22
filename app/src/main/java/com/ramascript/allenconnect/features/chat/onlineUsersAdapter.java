@@ -37,6 +37,16 @@ public class onlineUsersAdapter extends RecyclerView.Adapter<onlineUsersAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         userModel user = onlineUsers.get(position);
 
+        // Skip deleted users (shouldn't occur since they are filtered in ChatsFragment,
+        // but adding extra safety check)
+        Boolean isDeleted = user.isDeleted();
+        if (isDeleted != null && isDeleted) {
+            holder.itemView.setVisibility(View.GONE);
+            return;
+        } else {
+            holder.itemView.setVisibility(View.VISIBLE);
+        }
+
         // Set user image
         if (user.getProfilePhoto() != null && !user.getProfilePhoto().isEmpty()) {
             Picasso.get()

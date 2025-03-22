@@ -1,5 +1,6 @@
 package com.ramascript.allenconnect.features.auth;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -65,32 +66,44 @@ public class login extends AppCompatActivity {
                 binding.errorBoxTV.setVisibility(View.VISIBLE);
                 binding.errorBoxTV.setText("Please enter a valid email.");
             } else {
-                binding.errorBoxTV.setVisibility(View.GONE);  // Hide error message
+                binding.errorBoxTV.setVisibility(View.GONE); // Hide error message
                 binding.loginBtn.setVisibility(View.GONE);
-                binding.progressBar.setVisibility(View.VISIBLE);  // Show ProgressBar
+                binding.progressBar.setVisibility(View.VISIBLE); // Show ProgressBar
 
                 auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                    binding.progressBar.setVisibility(View.GONE);  // Hide ProgressBar after login attempt
+                    binding.progressBar.setVisibility(View.GONE); // Hide ProgressBar after login attempt
                     binding.loginBtn.setVisibility(View.VISIBLE);
                     if (task.isSuccessful()) {
                         FirebaseUser user = auth.getCurrentUser();
                         if (user != null) {
                             // Access the user's data in the database to check usertype
-                            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(user.getUid());
-                            userRef.child("userType").addListenerForSingleValueEvent(new ValueEventListener() {
+                            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users")
+                                    .child(user.getUid());
+
+                            // Get all user data at once to check both isDeleted flag and userType
+                            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    String dbUserType = snapshot.getValue(String.class);
-                                    assert userType != null;
-                                    if (userType.equals(dbUserType)) {
-                                        Toast.makeText(login.this, "login Successful", Toast.LENGTH_SHORT).show();
-                                        Intent i = new Intent(login.this, mainActivity.class);
-                                        startActivity(i);
-                                        finish();
+                                    // First check if account is deleted
+                                    if (snapshot.hasChild("isDeleted") && Boolean.TRUE
+                                            .equals(snapshot.child("isDeleted").getValue(Boolean.class))) {
+                                        // Account is deleted, show recovery dialog
+                                        showAccountRecoveryDialog(user.getUid(), userType);
                                     } else {
-                                        auth.signOut();
-                                        binding.errorBoxTV.setVisibility(View.VISIBLE);
-                                        binding.errorBoxTV.setText(String.format("Access denied. Only %s can log in here.", userType));
+                                        // Normal login flow - check user type
+                                        String dbUserType = snapshot.child("userType").getValue(String.class);
+                                        assert userType != null;
+                                        if (userType.equals(dbUserType)) {
+                                            Toast.makeText(login.this, "login Successful", Toast.LENGTH_SHORT).show();
+                                            Intent i = new Intent(login.this, mainActivity.class);
+                                            startActivity(i);
+                                            finish();
+                                        } else {
+                                            auth.signOut();
+                                            binding.errorBoxTV.setVisibility(View.VISIBLE);
+                                            binding.errorBoxTV.setText(
+                                                    String.format("Access denied. Only %s can log in here.", userType));
+                                        }
                                     }
                                 }
 
@@ -115,6 +128,55 @@ public class login extends AppCompatActivity {
             }
         });
     }
+
+    private void showAccountRecoveryDialog(String userId, String userType) {
+        auth.signOut(); // Sign out first to prevent auto-login
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Account Recovery");
+        builder.setMessage("This account was deleted. Would you like to recover it?");
+        builder.setPositiveButton("Recover", (dialog, which) -> {
+            // Show progress indicator
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.loginBtn.setVisibility(View.GONE);
+
+            // Set isDeleted flag to false
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
+                    .child("Users").child(userId);
+
+            userRef.child("isDeleted").setValue(false).addOnCompleteListener(task -> {
+                binding.progressBar.setVisibility(View.GONE);
+                binding.loginBtn.setVisibility(View.VISIBLE);
+
+                if (task.isSuccessful()) {
+                    // Show success message
+                    Toast.makeText(login.this, "Account recovered successfully. Please login again.",
+                            Toast.LENGTH_LONG).show();
+
+                    // Clear password field
+                    binding.passwordET.setText("");
+                } else {
+                    // Show error
+                    binding.errorBoxTV.setVisibility(View.VISIBLE);
+                    binding.errorBoxTV.setText("Failed to recover account. Please try again.");
+                }
+            });
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            // User doesn't want to recover the account
+            dialog.dismiss();
+
+            // Clear fields
+            binding.emailET.setText("");
+            binding.passwordET.setText("");
+        });
+
+        // Show the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();

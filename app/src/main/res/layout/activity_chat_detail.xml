@@ -107,12 +107,28 @@
             android:stackFromBottom="true"
             android:transcriptMode="alwaysScroll"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@+id/linear"
+            app:layout_constraintBottom_toTopOf="@+id/deletedAccountMessage"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout7"
             tools:listitem="@layout/rv_sample_receiver" />
+
+        <TextView
+            android:id="@+id/deletedAccountMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFEBEE"
+            android:fontFamily="@font/poppins"
+            android:padding="16dp"
+            android:text="This account has been deleted. You cannot send messages to it."
+            android:textAlignment="center"
+            android:textColor="#D32F2F"
+            android:textSize="14sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/linear"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <LinearLayout
             android:id="@+id/linear"
