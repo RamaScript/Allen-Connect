@@ -107,8 +107,8 @@ public class chatUsersAdapter extends RecyclerView.Adapter<chatUsersAdapter.view
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, chatDetailActivity.class);
             intent.putExtra("userId", userModel.getID());
-            intent.putExtra("profilePicture", isDeleted ? "" : userModel.getProfilePhoto());
-            intent.putExtra("userName", userModel.getName() + " {Deleted}");
+            intent.putExtra("profilePicture", userModel.getProfilePhoto());
+            intent.putExtra("userName", isDeleted ? userModel.getName() + " {Deleted}" :  userModel.getName());
             context.startActivity(intent);
         });
     }

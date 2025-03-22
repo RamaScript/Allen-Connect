@@ -55,18 +55,21 @@ public class onboardingActivity extends AppCompatActivity {
     private void setupOnboardingItems() {
         OnboardingAdapter onboardingAdapter = new OnboardingAdapter(
                 new OnboardingItem[] {
-                        new OnboardingItem(
-                                R.drawable.onboarding1,
-                                "Find Friends & Get Inspiration",
-                                "Connect with friends and discover inspiring content"),
-                        new OnboardingItem(
-                                R.drawable.onboarding2,
-                                "Meet Awesome People & Enjoy yourself",
-                                "Join communities and make meaningful connections"),
-                        new OnboardingItem(
-                                R.drawable.onboarding3,
-                                "Hangout with Friends",
-                                "Share moments and stay connected with your friends")
+                    new OnboardingItem(
+                        R.drawable.onboarding1,
+                        "Connect with Students & Alumni",
+                        "Stay in touch with classmates, seniors, and professors in one place."
+                    ),
+                    new OnboardingItem(
+                        R.drawable.onboarding2,
+                        "Join Communities & Collaborate",
+                        "Engage in discussions, share knowledge, and build your professional network."
+                    ),
+                    new OnboardingItem(
+                        R.drawable.onboarding3,
+                        "Stay Updated & Share Experiences",
+                        "Post updates, share memories, and stay connected with your Allenhouse family."
+                    )
                 });
         viewPager.setAdapter(onboardingAdapter);
     }

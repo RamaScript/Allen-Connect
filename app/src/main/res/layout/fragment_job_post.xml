@@ -51,7 +51,7 @@
                 android:layout_width="@dimen/_40mdp"
                 android:layout_height="@dimen/_20mdp"
                 android:layout_marginEnd="@dimen/_12mdp"
-                android:background="@drawable/btnbg"
+                android:background="@drawable/gradient_btn"
                 android:fontFamily="@font/poppins_semibold"
                 android:paddingTop="2dp"
                 android:text="Post"

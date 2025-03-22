@@ -61,7 +61,7 @@
             android:id="@+id/followTV"
             android:layout_width="64dp"
             android:layout_height="32dp"
-            android:background="@drawable/btnbg"
+            android:background="@drawable/gradient_btn"
             android:fontFamily="@font/poppins_semibold"
             android:paddingTop="4dp"
             android:text="Follow"

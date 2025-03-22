@@ -8,7 +8,7 @@
                 android:endColor="@color/color_secondry"
                 android:angle="45"/>
             <corners
-                android:radius="8dp"
+                android:radius="12dp"
                 />
         </shape>
     </item>

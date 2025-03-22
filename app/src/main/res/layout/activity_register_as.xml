@@ -25,7 +25,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
-        android:backgroundTint="@color/BG_COLOR"
+        android:backgroundTint="@color/white"
         app:cardCornerRadius="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,8 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/round"
-                android:backgroundTint="@color/BG_COLOR"
+                android:background="@drawable/gradient_btn"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
                 android:paddingLeft="12dp"
@@ -73,7 +72,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Student"
-                    android:textColor="@color/textColor"
+                    android:textColor="@color/white"
                     android:textSize="18dp" />
 
                 <ImageView
@@ -81,6 +80,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:rotationY="180"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_arrow_back" />
 
             </LinearLayout>
@@ -90,8 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/round"
-                android:backgroundTint="@color/BG_COLOR"
+                android:background="@drawable/gradient_btn"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
                 android:paddingLeft="12dp"
@@ -105,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="Alumni"
-                    android:textColor="@color/textColor"
+                    android:textColor="@color/white"
                     android:textSize="18dp" />
 
                 <ImageView
@@ -113,6 +112,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:rotationY="180"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_arrow_back" />
 
             </LinearLayout>
@@ -122,8 +122,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/round"
-                android:backgroundTint="@color/BG_COLOR"
+                android:background="@drawable/gradient_btn"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
                 android:paddingLeft="12dp"
@@ -137,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="Professor"
-                    android:textColor="@color/textColor"
+                    android:textColor="@color/white"
                     android:textSize="18dp" />
 
                 <ImageView
@@ -145,6 +144,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:rotationY="180"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_arrow_back" />
 
             </LinearLayout>
@@ -155,7 +155,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="right"
                 android:text="Already have an account?"
-                android:textColor="@color/alphaBlack" />
+                android:textColor="@color/dark_gray" />
 
 
         </LinearLayout>

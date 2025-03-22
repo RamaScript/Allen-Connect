@@ -14,11 +14,10 @@
         android:layout_height="42dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/round"
-        android:backgroundTint="@color/btn_color"
+        android:background="@drawable/gradient_btn"
         android:drawableStart="@drawable/ic_arrow_back"
         android:drawableTint="@color/white_my"
-        android:paddingStart="12dp"
+        android:paddingStart="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,7 +33,7 @@
         app:cardCornerRadius="16dp"
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp"
-        android:backgroundTint="@color/BG_COLOR"
+        android:backgroundTint="@color/white"
         >
 
 
@@ -107,7 +106,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@color/transparent"
+                    android:background="@drawable/gradient_btn"
                     android:fontFamily="@font/poppins_semibold"
                     android:text="Login"
                     android:textAllCaps="false"
