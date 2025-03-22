@@ -109,7 +109,7 @@ public class chatUsersAdapter extends RecyclerView.Adapter<chatUsersAdapter.view
             Intent intent = new Intent(context, chatDetailActivity.class);
             intent.putExtra("userId", userModel.getID());
             intent.putExtra("profilePicture", isDeleted ? "" : userModel.getProfilePhoto());
-            intent.putExtra("userName", isDeleted ? "Deleted User" : userModel.getName());
+            intent.putExtra("userName", userModel.getName() + " {Deleted}");
             context.startActivity(intent);
         });
     }

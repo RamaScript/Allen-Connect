@@ -52,6 +52,20 @@ public class communityUserAdapter extends RecyclerView.Adapter<communityUserAdap
    public void onBindViewHolder(@NonNull viewHolder holder, int position) {
       userModel userModel = list.get(position);
 
+      // Skip deleted users (should not occur since they are filtered in fragment,
+      // but adding extra safety check)
+      Boolean isDeleted = userModel.isDeleted();
+      if (isDeleted != null && isDeleted) {
+         holder.itemView.setVisibility(View.GONE);
+         holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+         return;
+      } else {
+         holder.itemView.setVisibility(View.VISIBLE);
+         holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(
+               ViewGroup.LayoutParams.MATCH_PARENT,
+               ViewGroup.LayoutParams.WRAP_CONTENT));
+      }
+
       Picasso.get()
             .load(userModel.getProfilePhoto())
             .placeholder(R.drawable.ic_avatar)

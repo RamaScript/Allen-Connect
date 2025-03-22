@@ -89,6 +89,13 @@ public class communityAlumniFragment extends Fragment {
                         userModel model = dataSnapshot.getValue(userModel.class);
                         if (model != null) {
                             model.setID(dataSnapshot.getKey());
+
+                            // Skip deleted users
+                            Boolean isDeleted = dataSnapshot.child("isDeleted").getValue(Boolean.class);
+                            if (isDeleted != null && isDeleted) {
+                                continue;
+                            }
+
                             if (!dataSnapshot.getKey().equals(auth.getUid()) && "Alumni".equals(model.getUserType())) {
                                 list.add(model);
                                 filteredList.add(model);
