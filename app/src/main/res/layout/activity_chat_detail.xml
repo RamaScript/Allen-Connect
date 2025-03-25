@@ -8,6 +8,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:fitsSystemWindows="true"
+    android:hardwareAccelerated="true"
     tools:context=".features.chat.chatDetailActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,10 +20,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:elevation="4dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingVertical="12dp"
+            android:paddingVertical="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -31,8 +31,9 @@
                 android:id="@+id/backBtnIV"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="12dp"
                 android:src="@drawable/ic_arrow_back"
+                android:contentDescription="Back button"
                 app:tint="@color/black" />
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -81,6 +82,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
+                android:contentDescription="Video call"
                 android:src="@drawable/ic_video_call"
                 app:tint="@color/black" />
 
@@ -89,6 +91,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
+                android:contentDescription="Audio call"
                 android:src="@drawable/ic_call"
                 app:tint="@color/black" />
 
@@ -106,6 +109,7 @@
             android:paddingBottom="8dp"
             android:stackFromBottom="true"
             android:transcriptMode="alwaysScroll"
+            android:layerType="hardware"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/deletedAccountMessage"
             app:layout_constraintEnd_toEndOf="parent"
@@ -135,50 +139,59 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:elevation="4dp"
             android:gravity="center"
             android:minHeight="64dp"
             android:orientation="horizontal"
-            android:padding="12dp"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="12dp"
+            android:paddingTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:background="@drawable/post_prompt_background"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="12dp">
+                app:cardCornerRadius="16dp"
+                app:strokeColor="@android:color/transparent"
+                app:strokeWidth="1dp">
 
-                <EditText
-                    android:id="@+id/msgEt"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:hint="Type something..."
-                    android:inputType="textMultiLine"
-                    android:maxLines="4"
-                    android:textSize="16sp" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
 
-                <ImageView
-                    android:id="@+id/attachmentBtn"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/ic_gallery"
-                    app:tint="@color/gray" />
+                    <EditText
+                        android:id="@+id/msgEt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:hint="Type something..."
+                        android:inputType="textMultiLine"
+                        android:maxLines="4"
+                        android:textSize="16sp" />
 
-            </LinearLayout>
+                    <ImageView
+                        android:id="@+id/attachmentBtn"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="8dp"
+                        android:contentDescription="Attach files"
+                        android:src="@drawable/ic_gallery"
+                        app:tint="@color/gray" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <ImageView
                 android:id="@+id/send"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/green_dot"
+                android:background="@drawable/gradient_btn"
                 android:contentDescription="Send message"
                 android:padding="12dp"
                 app:srcCompat="@drawable/ic_send"

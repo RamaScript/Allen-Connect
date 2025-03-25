@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -61,6 +62,13 @@ public class chatMsgAdapter extends RecyclerView.Adapter {
             SenderViewHolder viewHolder = (SenderViewHolder) holder;
             viewHolder.senderMsg.setText(message.getMessage());
             viewHolder.senderTime.setText(timeStr);
+
+            // Show read status for sender messages
+            if (message.isRead()) {
+                viewHolder.readStatus.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.readStatus.setVisibility(View.GONE);
+            }
         } else {
             ReceiverViewHolder viewHolder = (ReceiverViewHolder) holder;
             viewHolder.receiverMsg.setText(message.getMessage());
@@ -94,11 +102,13 @@ public class chatMsgAdapter extends RecyclerView.Adapter {
 
     public class SenderViewHolder extends RecyclerView.ViewHolder {
         TextView senderMsg, senderTime;
+        ImageView readStatus;
 
         public SenderViewHolder(@NonNull View itemView) {
             super(itemView);
             senderMsg = itemView.findViewById(R.id.senderText);
             senderTime = itemView.findViewById(R.id.senderTime);
+            readStatus = itemView.findViewById(R.id.readStatusIcon);
         }
     }
 }

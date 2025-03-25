@@ -1,6 +1,8 @@
 package com.ramascript.allenconnect.features.chat;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ramascript.allenconnect.R;
@@ -23,6 +26,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class chatDetailActivity extends AppCompatActivity {
 
@@ -36,6 +41,10 @@ public class chatDetailActivity extends AppCompatActivity {
     private String receiverRoom;
     private ValueEventListener messageListener;
     private ValueEventListener onlineStatusListener;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final Executor backgroundExecutor = Executors.newSingleThreadExecutor();
+    private long lastMessageReadTimestamp = 0;
+    private boolean isActivityActive = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,12 +108,13 @@ public class chatDetailActivity extends AppCompatActivity {
                             }
                         });
 
-                // Setup RecyclerView
+                // Setup RecyclerView with optimized settings
                 LinearLayoutManager layoutManager = new LinearLayoutManager(this);
                 layoutManager.setStackFromEnd(true);
                 binding.chatRecyclerView.setLayoutManager(layoutManager);
                 binding.chatRecyclerView.setAdapter(adapter);
-                binding.chatRecyclerView.setHasFixedSize(false);
+                binding.chatRecyclerView.setHasFixedSize(true);
+                binding.chatRecyclerView.setItemViewCacheSize(20);
 
                 // Add scroll listener to handle new messages
                 binding.chatRecyclerView
@@ -130,7 +140,6 @@ public class chatDetailActivity extends AppCompatActivity {
             // Setup listeners
             setupMessageListener();
             monitorOnlineStatus();
-            markMessagesAsRead();
         } catch (Exception e) {
             Log.e("chatDetailActivity", "Error in onCreate: " + e.getMessage());
             finish();
@@ -143,40 +152,37 @@ public class chatDetailActivity extends AppCompatActivity {
 
         String messageText = binding.msgEt.getText().toString().trim();
         if (!messageText.isEmpty()) {
-            long timestamp = new Date().getTime();
+            // Clear input immediately for better UX
+            binding.msgEt.setText("");
 
-            HashMap<String, Object> messageObj = new HashMap<>();
-            messageObj.put("uId", auth.getUid());
-            messageObj.put("message", messageText);
-            messageObj.put("timestamp", timestamp);
-            messageObj.put("read", false);
+            backgroundExecutor.execute(() -> {
+                long timestamp = new Date().getTime();
 
-            String messageId = database.getReference().child("chats").child(senderRoom).push().getKey();
+                HashMap<String, Object> messageObj = new HashMap<>();
+                messageObj.put("uId", auth.getUid());
+                messageObj.put("message", messageText);
+                messageObj.put("timestamp", timestamp);
+                messageObj.put("read", false);
 
-            if (messageId != null) {
-                // Add to sender's room
-                database.getReference()
-                        .child("chats")
-                        .child(senderRoom)
-                        .child(messageId)
-                        .setValue(messageObj)
-                        .addOnSuccessListener(unused -> {
-                            if (binding == null || isFinishing() || isDestroyed())
-                                return;
+                String messageId = database.getReference().child("chats").child(senderRoom).push().getKey();
 
-                            // Add to receiver's room
-                            database.getReference()
-                                    .child("chats")
-                                    .child(receiverRoom)
-                                    .child(messageId)
-                                    .setValue(messageObj)
-                                    .addOnSuccessListener(unused1 -> {
-                                        if (binding != null && !isFinishing()) {
-                                            binding.msgEt.setText("");
-                                        }
-                                    });
-                        });
-            }
+                if (messageId != null) {
+                    // Add to sender's room
+                    database.getReference()
+                            .child("chats")
+                            .child(senderRoom)
+                            .child(messageId)
+                            .setValue(messageObj)
+                            .addOnSuccessListener(unused -> {
+                                // Add to receiver's room
+                                database.getReference()
+                                        .child("chats")
+                                        .child(receiverRoom)
+                                        .child(messageId)
+                                        .setValue(messageObj);
+                            });
+                }
+            });
         }
     }
 
@@ -192,31 +198,39 @@ public class chatDetailActivity extends AppCompatActivity {
                     return;
 
                 try {
-                    messageList.clear();
-                    for (DataSnapshot messageSnapshot : snapshot.getChildren()) {
-                        String uId = messageSnapshot.child("uId").getValue(String.class);
-                        String message = messageSnapshot.child("message").getValue(String.class);
-                        long timestamp = 0;
-                        if (messageSnapshot.child("timestamp").getValue() != null) {
-                            timestamp = messageSnapshot.child("timestamp").getValue(Long.class);
+                    backgroundExecutor.execute(() -> {
+                        ArrayList<chatMsgModel> tempList = new ArrayList<>();
+                        for (DataSnapshot messageSnapshot : snapshot.getChildren()) {
+                            String uId = messageSnapshot.child("uId").getValue(String.class);
+                            String message = messageSnapshot.child("message").getValue(String.class);
+                            long timestamp = 0;
+                            if (messageSnapshot.child("timestamp").getValue() != null) {
+                                timestamp = messageSnapshot.child("timestamp").getValue(Long.class);
+                            }
+                            Boolean isRead = messageSnapshot.child("read").getValue(Boolean.class);
+
+                            if (message != null && uId != null) {
+                                chatMsgModel model = new chatMsgModel(uId, message, timestamp,
+                                        isRead != null ? isRead : false);
+                                tempList.add(model);
+                            }
                         }
 
-                        if (message != null && uId != null) {
-                            chatMsgModel model = new chatMsgModel(uId, message, timestamp);
-                            messageList.add(model);
-                        }
-                    }
+                        mainHandler.post(() -> {
+                            messageList.clear();
+                            messageList.addAll(tempList);
+                            adapter.notifyDataSetChanged();
 
-                    if (adapter != null) {
-                        adapter.notifyDataSetChanged();
-                    }
+                            if (messageList.size() > 0 && binding.chatRecyclerView != null) {
+                                binding.chatRecyclerView.smoothScrollToPosition(messageList.size() - 1);
+                            }
 
-                    if (messageList.size() > 0 && binding.chatRecyclerView != null) {
-                        binding.chatRecyclerView.smoothScrollToPosition(messageList.size() - 1);
-                    }
-
-                    // Mark messages as read
-                    markMessagesAsRead();
+                            // Mark messages as read if activity is active
+                            if (isActivityActive) {
+                                markMessagesAsRead();
+                            }
+                        });
+                    });
                 } catch (Exception e) {
                     Log.e("chatDetailActivity", "Error in message listener: " + e.getMessage());
                 }
@@ -332,48 +346,76 @@ public class chatDetailActivity extends AppCompatActivity {
             return;
 
         try {
-            String senderRoom = auth.getUid() + receiverId;
+            backgroundExecutor.execute(() -> {
+                // Get all messages in the current chat room
+                DatabaseReference chatRef = database.getReference().child("chats").child(senderRoom);
+                chatRef.addListenerForSingleValueEvent(
+                        new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (isFinishing() || isDestroyed() || database == null)
+                                    return;
 
-            // Get all messages in the current chat room
-            database.getReference().child("chats").child(senderRoom).addListenerForSingleValueEvent(
-                    new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (isFinishing() || isDestroyed() || database == null)
-                                return;
+                                try {
+                                    for (DataSnapshot messageSnapshot : snapshot.getChildren()) {
+                                        // Only mark messages from the other user
+                                        String senderId = messageSnapshot.child("uId").getValue(String.class);
+                                        Boolean isRead = messageSnapshot.child("read").getValue(Boolean.class);
+                                        Long timestamp = messageSnapshot.child("timestamp").getValue(Long.class);
 
-                            try {
-                                for (DataSnapshot messageSnapshot : snapshot.getChildren()) {
-                                    // Only mark messages from the other user
-                                    String senderId = messageSnapshot.child("uId").getValue(String.class);
-                                    Boolean isRead = messageSnapshot.child("read").getValue(Boolean.class);
+                                        // Skip messages we've already processed
+                                        if (timestamp != null && timestamp <= lastMessageReadTimestamp) {
+                                            continue;
+                                        }
 
-                                    // If message is from receiver and not marked as read
-                                    if (senderId != null && senderId.equals(receiverId)
-                                            && (isRead == null || !isRead)) {
-                                        // Mark as read in both rooms
-                                        String messageId = messageSnapshot.getKey();
-                                        if (messageId != null && database != null) {
-                                            database.getReference().child("chats").child(senderRoom)
-                                                    .child(messageId).child("read").setValue(true);
-                                            database.getReference().child("chats").child(receiverRoom)
-                                                    .child(messageId).child("read").setValue(true);
+                                        // If message is from receiver and not marked as read
+                                        if (senderId != null && senderId.equals(receiverId)
+                                                && (isRead == null || !isRead)) {
+                                            // Mark as read in both rooms
+                                            String messageId = messageSnapshot.getKey();
+                                            if (messageId != null && database != null) {
+                                                // Update read status in sender room
+                                                database.getReference().child("chats").child(senderRoom)
+                                                        .child(messageId).child("read").setValue(true);
+
+                                                // Update read status in receiver room
+                                                database.getReference().child("chats").child(receiverRoom)
+                                                        .child(messageId).child("read").setValue(true);
+
+                                                // Track latest message marked as read
+                                                if (timestamp != null && timestamp > lastMessageReadTimestamp) {
+                                                    lastMessageReadTimestamp = timestamp;
+                                                }
+                                            }
                                         }
                                     }
+                                } catch (Exception e) {
+                                    Log.e("chatDetailActivity", "Error marking messages as read: " + e.getMessage());
                                 }
-                            } catch (Exception e) {
-                                Log.e("chatDetailActivity", "Error marking messages as read: " + e.getMessage());
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.w("chatDetailActivity", "Failed to mark messages as read: " + error.getMessage());
-                        }
-                    });
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.w("chatDetailActivity", "Failed to mark messages as read: " + error.getMessage());
+                            }
+                        });
+            });
         } catch (Exception e) {
             Log.e("chatDetailActivity", "Error initiating mark messages as read: " + e.getMessage());
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isActivityActive = true;
+        markMessagesAsRead();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isActivityActive = false;
     }
 
     @Override
@@ -386,9 +428,11 @@ public class chatDetailActivity extends AppCompatActivity {
         }
 
         if (receiverId != null && database != null) {
-            database.getReference().child("Users").child(receiverId).child("online")
-                    .removeEventListener(onlineStatusListener);
+            database.getReference().child("Users").child(receiverId).removeEventListener(onlineStatusListener);
         }
+
+        // Cancel any pending tasks
+        mainHandler.removeCallbacksAndMessages(null);
 
         // Clean up references
         if (messageList != null) {
