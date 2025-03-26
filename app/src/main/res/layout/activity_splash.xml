@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/agoi_logo" />
+        app:srcCompat="@drawable/agoi_logo2" />
 
     <LinearLayout
         android:id="@+id/linearLayout10"

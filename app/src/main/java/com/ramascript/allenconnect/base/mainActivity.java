@@ -3,27 +3,38 @@ package com.ramascript.allenconnect.base;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.graphics.Insets;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ramascript.allenconnect.R;
+import com.ramascript.allenconnect.features.about.meetDevsActivity;
 import com.ramascript.allenconnect.features.allenBot.allenBotActivity;
+import com.ramascript.allenconnect.features.auth.loginAs;
 import com.ramascript.allenconnect.features.home.homeFragment;
 import com.ramascript.allenconnect.features.job.jobPostFragment;
 import com.ramascript.allenconnect.features.job.jobsFragment;
@@ -39,6 +50,16 @@ public class mainActivity extends AppCompatActivity {
     FirebaseAuth auth;
     private int currentFragmentId = R.id.navigation_home; // Track the current fragment
     private boolean initialFragmentLoaded = false;
+    private DrawerLayout drawerLayout;
+    private boolean isDarkModeEnabled = false;
+
+    // Navigation drawer item views
+    private LinearLayout navMyProfileContainer;
+    private LinearLayout navSettingsContainer;
+    private LinearLayout navHelpContainer;
+    private LinearLayout navDevelopersContainer;
+    private SwitchCompat themeSwitch;
+    private LinearLayout navSignOutContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +93,10 @@ public class mainActivity extends AppCompatActivity {
         // Force the app to always use light mode
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
+        // Initialize drawer layout
+        drawerLayout = binding.drawerLayout;
+        setupNavigationDrawer();
+
         binding.botIV.setOnClickListener(v -> {
             Intent i = new Intent(mainActivity.this, allenBotActivity.class);
             startActivity(i);
@@ -99,6 +124,12 @@ public class mainActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+                // First check if drawer is open
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    return;
+                }
+
                 FragmentManager fragmentManager = getSupportFragmentManager();
 
                 // If there are fragments in the back stack, pop the last one
@@ -142,6 +173,95 @@ public class mainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void setupNavigationDrawer() {
+        // Find navigation drawer items
+        View navView = findViewById(R.id.nav_drawer_content);
+
+        navMyProfileContainer = navView.findViewById(R.id.nav_my_profile_container);
+        navSettingsContainer = navView.findViewById(R.id.nav_settings_container);
+        navHelpContainer = navView.findViewById(R.id.nav_help_container);
+        navDevelopersContainer = navView.findViewById(R.id.nav_developers_container);
+        themeSwitch = navView.findViewById(R.id.theme_switch);
+        navSignOutContainer = navView.findViewById(R.id.nav_sign_out_container);
+
+        // Set click listeners for navigation items
+        navMyProfileContainer.setOnClickListener(v -> {
+            // Navigate to user profile
+            currentFragmentId = R.id.navigation_profile;
+            loadFragment(new profileFragment(), false);
+            binding.bottomNavView.setSelectedItemId(R.id.navigation_profile);
+            closeDrawer();
+        });
+
+        navSettingsContainer.setOnClickListener(v -> {
+            // Handle settings click
+            Toast.makeText(this, "Settings Coming Soon", Toast.LENGTH_SHORT).show();
+            closeDrawer();
+        });
+
+        navHelpContainer.setOnClickListener(v -> {
+            // Handle help click
+            Toast.makeText(this, "Help & Support Coming Soon", Toast.LENGTH_SHORT).show();
+            closeDrawer();
+        });
+
+        navDevelopersContainer.setOnClickListener(v -> {
+            // Navigate to developers screen
+            startActivity(new Intent(mainActivity.this, meetDevsActivity.class));
+            closeDrawer();
+        });
+
+        // Set theme switch listener
+        themeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            toggleDarkMode(isChecked);
+        });
+
+        navSignOutContainer.setOnClickListener(v -> {
+            // Show sign out confirmation dialog
+            new AlertDialog.Builder(this)
+                    .setMessage("Do you want to sign out?")
+                    .setCancelable(true)
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        // Sign out from Firebase
+                        if (auth != null) {
+                            auth.signOut();
+                            // Redirect to login or appropriate screen
+                            startActivity(new Intent(mainActivity.this, loginAs.class));
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+            closeDrawer();
+        });
+    }
+
+    private void toggleDarkMode(boolean isDarkMode) {
+        isDarkModeEnabled = isDarkMode;
+        if (isDarkModeEnabled) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            Toast.makeText(this, "Dark Mode Enabled", Toast.LENGTH_SHORT).show();
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            Toast.makeText(this, "Light Mode Enabled", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void closeDrawer() {
+        if (drawerLayout != null) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
+    }
+
+    // This method will be called from the homeFragment
+    public void toggleDrawer() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            binding.drawerLayout.openDrawer(GravityCompat.START);
+        }
     }
 
     private void setupBottomNavigation() {

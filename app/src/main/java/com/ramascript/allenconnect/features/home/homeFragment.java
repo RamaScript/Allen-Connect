@@ -115,6 +115,13 @@ public class homeFragment extends Fragment {
         }
         startShimmer();
 
+        // Set click listener for hamburger menu
+        binding.sideNavMenu.setOnClickListener(v -> {
+            if (getActivity() instanceof mainActivity) {
+                ((mainActivity) getActivity()).toggleDrawer();
+            }
+        });
+
         // Load user profile image and details
         if (auth.getCurrentUser() != null) {
             userDataListener = new ValueEventListener() {

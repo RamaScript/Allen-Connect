@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:id="@+id/group_main">
+        <item
+            android:id="@+id/nav_my_profile"
+            android:icon="@drawable/ic_user"
+            android:title="My Profile" />
+        <item
+            android:id="@+id/nav_community"
+            android:icon="@drawable/ic_community"
+            android:title="Community" />
+    </group>
+
+    <group android:id="@+id/group_options">
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:title="Settings" />
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_help_desk"
+            android:title="Help &amp; Support" />
+        <item
+            android:id="@+id/nav_developers"
+            android:icon="@drawable/ic_edit"
+            android:title="Developers" />
+    </group>
+
+    <group android:id="@+id/group_bottom">
+        <item
+            android:id="@+id/nav_theme_toggle"
+            android:icon="@android:drawable/ic_menu_day"
+            android:title="Toggle Dark Mode" />
+        <item
+            android:id="@+id/nav_sign_out"
+            android:icon="@android:drawable/ic_lock_power_off"
+            android:title="Sign Out" />
+    </group>
+
+</menu> 
