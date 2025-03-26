@@ -66,21 +66,22 @@ public class communityUserAdapter extends RecyclerView.Adapter<communityUserAdap
                ViewGroup.LayoutParams.WRAP_CONTENT));
       }
 
-      Picasso.get()
-            .load(userModel.getProfilePhoto())
-            .placeholder(R.drawable.ic_avatar)
-            .into(holder.profilePic);
-
-      holder.name.setText(userModel.getName());
-
-      // Set the text based on user type
-      if (!userModel.getID().equals(auth.getUid()) && "Student".equals(userModel.getUserType())) {
-         holder.profession.setText(userModel.getCourse() + " (" + userModel.getYear() + " year)");
-      } else if (!userModel.getID().equals(auth.getUid()) && "Alumni".equals(userModel.getUserType())) {
-         holder.profession.setText(userModel.getJobRole() + " at " + userModel.getCompany());
-      } else if (!userModel.getID().equals(auth.getUid()) && "Professor".equals(userModel.getUserType())) {
-         holder.profession.setText("Professor at AGOI");
+      // Load profile picture
+      if (userModel.getProfilePhoto() != null && !userModel.getProfilePhoto().isEmpty()) {
+         Picasso.get()
+               .load(userModel.getProfilePhoto())
+               .placeholder(R.drawable.ic_avatar)
+               .into(holder.profilePic);
+      } else {
+         holder.profilePic.setImageResource(R.drawable.ic_avatar);
       }
+
+      // Set user name
+      holder.name.setText(userModel.getName() != null ? userModel.getName() : "User");
+
+      // Format user info with dots between segments
+      String userInfo = formatUserInfo(userModel);
+      holder.profession.setText(userInfo);
 
       // Check if current user is following this user
       checkFollowStatus(holder, userModel);
@@ -89,6 +90,75 @@ public class communityUserAdapter extends RecyclerView.Adapter<communityUserAdap
       holder.itemView.setOnClickListener(v -> {
          navigateToProfile(userModel.getID());
       });
+   }
+
+   // Helper method to format user info with dots
+   private String formatUserInfo(userModel user) {
+      StringBuilder info = new StringBuilder();
+
+      if (user.getID().equals(auth.getUid())) {
+         // For current user
+         return "You";
+      }
+
+      String userType = user.getUserType();
+      if (userType == null) {
+         return "";
+      }
+
+      switch (userType) {
+         case "Student":
+            String course = user.getCourse();
+            String year = user.getYear();
+
+            if (course != null && !course.isEmpty()) {
+               info.append(course);
+            }
+
+            if (year != null && !year.isEmpty()) {
+               if (info.length() > 0)
+                  info.append(" • ");
+               info.append(year).append(" Year");
+            }
+            break;
+
+         case "Alumni":
+            String alumniCourse = user.getCourse();
+            String jobRole = user.getJobRole();
+            String company = user.getCompany();
+
+            info.append("Alumni");
+
+            if (alumniCourse != null && !alumniCourse.isEmpty()) {
+               info.append(" • ").append(alumniCourse);
+            }
+
+            if (jobRole != null && !jobRole.isEmpty()) {
+               if (company != null && !company.isEmpty()) {
+                  info.append(" • ").append(jobRole).append(" at ").append(company);
+               } else {
+                  info.append(" • ").append(jobRole);
+               }
+            }
+            break;
+
+         case "Professor":
+            String department = user.getCourse(); // Using course for department
+
+            info.append("Professor");
+
+            if (department != null && !department.isEmpty()) {
+               info.append(" • ").append(department);
+            } else {
+               info.append(" at Allen Business School");
+            }
+            break;
+
+         default:
+            return userType;
+      }
+
+      return info.toString();
    }
 
    private void checkFollowStatus(@NonNull viewHolder holder, userModel userModel) {

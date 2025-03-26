@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -196,6 +197,9 @@ public class UserListTabFragment extends Fragment {
     }
 
     private void updateUI(boolean isEmpty) {
+        if (getContext() == null)
+            return;
+
         if (isEmpty) {
             recyclerView.setVisibility(View.GONE);
             emptyView.setVisibility(View.VISIBLE);
@@ -203,13 +207,26 @@ public class UserListTabFragment extends Fragment {
             // Set empty state text based on list type
             TextView emptyTitle = emptyView.findViewById(R.id.emptyTitleText);
             TextView emptyDesc = emptyView.findViewById(R.id.emptyDescText);
+            ImageView emptyImage = emptyView.findViewById(R.id.emptyStateImage);
 
             if (listType.equals("followers")) {
                 emptyTitle.setText("No Followers Yet");
-                emptyDesc.setText("When someone follows you, they'll appear here");
+                emptyDesc.setText("When people follow you, they'll appear here");
+
+                if (emptyImage != null) {
+                    emptyImage.setImageResource(R.drawable.ic_profile_empty);
+                    emptyImage.setColorFilter(getContext().getResources().getColor(R.color.gray),
+                            android.graphics.PorterDuff.Mode.SRC_IN);
+                }
             } else {
-                emptyTitle.setText("Not Following Anyone Yet");
-                emptyDesc.setText("People you follow will appear here");
+                emptyTitle.setText("Not Following Anyone");
+                emptyDesc.setText("When you follow people, they'll appear here");
+
+                if (emptyImage != null) {
+                    emptyImage.setImageResource(R.drawable.ic_profile_empty);
+                    emptyImage.setColorFilter(getContext().getResources().getColor(R.color.gray),
+                            android.graphics.PorterDuff.Mode.SRC_IN);
+                }
             }
         } else {
             recyclerView.setVisibility(View.VISIBLE);
