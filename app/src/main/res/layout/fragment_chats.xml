@@ -6,13 +6,40 @@
     android:orientation="vertical"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/online_users_recycler_view"
+    <!-- Frame layout for online users to support shimmer -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"/>
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/online_users_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"/>
+
+        <!-- Shimmer for online users -->
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/onlineUsersShimmerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <include layout="@layout/shimmer_online_user_item" />
+                <include layout="@layout/shimmer_online_user_item" />
+                <include layout="@layout/shimmer_online_user_item" />
+                <include layout="@layout/shimmer_online_user_item" />
+
+            </LinearLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
+    </FrameLayout>
 
     <View
         android:id="@+id/online_users_divider"
@@ -34,7 +61,7 @@
             android:clipToPadding="false"
             android:paddingBottom="8dp" />
         
-        <!-- Progress Bar -->
+        <!-- Progress Bar - Keep for backward compatibility but hide by default -->
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
@@ -42,6 +69,28 @@
             android:layout_gravity="center"
             android:indeterminateTint="@color/color_primary"
             android:visibility="gone" />
+
+        <!-- Shimmer for chat users -->
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/chatShimmerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include layout="@layout/shimmer_chat_item" />
+                <include layout="@layout/shimmer_chat_item" />
+                <include layout="@layout/shimmer_chat_item" />
+                <include layout="@layout/shimmer_chat_item" />
+                <include layout="@layout/shimmer_chat_item" />
+                <include layout="@layout/shimmer_chat_item" />
+
+            </LinearLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
 
         <!-- Empty State Layout -->
         <LinearLayout

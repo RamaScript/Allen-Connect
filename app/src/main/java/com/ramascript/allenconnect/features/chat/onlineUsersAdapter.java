@@ -2,6 +2,7 @@ package com.ramascript.allenconnect.features.chat;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,19 +11,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ramascript.allenconnect.R;
-import com.ramascript.allenconnect.features.user.userModel;
 import com.ramascript.allenconnect.databinding.ItemOnlineUserBinding;
+import com.ramascript.allenconnect.features.user.userModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class onlineUsersAdapter extends RecyclerView.Adapter<onlineUsersAdapter.ViewHolder> {
 
-    private final ArrayList<userModel> onlineUsers;
-    private final Context context;
+    ArrayList<userModel> list;
+    Context context;
 
-    public onlineUsersAdapter(ArrayList<userModel> onlineUsers, Context context) {
-        this.onlineUsers = onlineUsers;
+    public onlineUsersAdapter(ArrayList<userModel> list, Context context) {
+        this.list = list;
         this.context = context;
     }
 
@@ -35,63 +36,49 @@ public class onlineUsersAdapter extends RecyclerView.Adapter<onlineUsersAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        userModel user = onlineUsers.get(position);
+        userModel user = list.get(position);
 
-        // Skip deleted users (shouldn't occur since they are filtered in ChatsFragment,
-        // but adding extra safety check)
-        Boolean isDeleted = user.isDeleted();
-        if (isDeleted != null && isDeleted) {
-            holder.itemView.setVisibility(View.GONE);
-            return;
-        } else {
-            holder.itemView.setVisibility(View.VISIBLE);
+        // Set user name - keep it simple
+        if (user.getName() != null) {
+            // Set name text
+            holder.binding.userName.setText(user.getName());
+
+            // Only make the name bold if this is the current user
+            if (user.isCurrentUser()) {
+                holder.binding.userName.setTypeface(Typeface.DEFAULT_BOLD);
+            } else {
+                holder.binding.userName.setTypeface(Typeface.DEFAULT);
+            }
         }
 
-        // Set user image
-        if (user.getProfilePhoto() != null && !user.getProfilePhoto().isEmpty()) {
+        // Set profile image
+        if (user.getProfilePhoto() != null) {
             Picasso.get()
                     .load(user.getProfilePhoto())
                     .placeholder(R.drawable.ic_avatar)
-                    .into(holder.binding.userImage);
+                    .into(holder.binding.profileImage);
         } else {
-            holder.binding.userImage.setImageResource(R.drawable.ic_avatar);
+            holder.binding.profileImage.setImageResource(R.drawable.ic_avatar);
         }
 
-        // Set user name with max length constraint
-        String displayName = user.getName();
-        if (displayName != null) {
-            if (displayName.length() > 10) {
-                displayName = displayName.substring(0, 7) + "...";
-            }
-            holder.binding.userName.setText(displayName);
-        }
-
-        // Online indicator is always visible for online users
-        holder.binding.onlineIndicator.setVisibility(View.VISIBLE);
-
-        // Set click listener
+        // Set click listener - only for other users (not current user)
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, chatDetailActivity.class);
-            intent.putExtra("userId", user.getID());
-            intent.putExtra("profilePicture", user.getProfilePhoto());
-            intent.putExtra("userName", user.getName());
-            context.startActivity(intent);
+            if (!user.isCurrentUser() && user.getID() != null) {
+                Intent intent = new Intent(context, chatDetailActivity.class);
+                intent.putExtra("userId", user.getID());
+                intent.putExtra("userName", user.getName());
+                intent.putExtra("profilePic", user.getProfilePhoto());
+                context.startActivity(intent);
+            }
         });
     }
 
     @Override
     public int getItemCount() {
-        return onlineUsers.size();
+        return list.size();
     }
 
-    // Add new online users to the list
-    public void updateOnlineUsers(ArrayList<userModel> newOnlineUsers) {
-        this.onlineUsers.clear();
-        this.onlineUsers.addAll(newOnlineUsers);
-        notifyDataSetChanged();
-    }
-
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         ItemOnlineUserBinding binding;
 
         public ViewHolder(@NonNull View itemView) {

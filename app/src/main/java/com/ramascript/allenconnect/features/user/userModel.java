@@ -11,13 +11,8 @@ public class userModel {
     private int followersCount;
     private int followingCount;
 
-    public int getFollowingCount() {
-        return followingCount;
-    }
-
-    public void setFollowingCount(int followingCount) {
-        this.followingCount = followingCount;
-    }
+    // Flag to identify if this is the current user (for UI customization)
+    private boolean isCurrentUser = false;
 
     private String email;
     private String password;
@@ -417,6 +412,22 @@ public class userModel {
 
     public Boolean isDeleted() {
         return this.isDeleted;
+    }
+
+    public boolean isCurrentUser() {
+        return isCurrentUser;
+    }
+
+    public void setCurrentUser(boolean currentUser) {
+        isCurrentUser = currentUser;
+    }
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
     }
 
 }

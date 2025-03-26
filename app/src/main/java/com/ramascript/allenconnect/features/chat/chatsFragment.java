@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,6 +51,10 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
     // Add this field to track if first load is complete
     private boolean isInitialLoadComplete = false;
 
+    // Shimmer layouts
+    private ShimmerFrameLayout chatShimmer;
+    private ShimmerFrameLayout onlineUsersShimmer;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -64,6 +69,10 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
         lastMessages = new HashMap<>();
         unreadCounts = new HashMap<>();
 
+        // Initialize shimmer layouts
+        chatShimmer = binding.chatShimmerLayout;
+        onlineUsersShimmer = binding.onlineUsersShimmerLayout;
+
         // Initialize adapters
         adapter = new chatUsersAdapter(filteredList, getContext(), this);
         binding.chatRecyclerView.setAdapter(adapter);
@@ -77,12 +86,11 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
 
         // Show loading state initially
         binding.emptyStateLayout.setVisibility(View.GONE);
-        binding.chatRecyclerView.setVisibility(View.VISIBLE);
+        binding.chatRecyclerView.setVisibility(View.GONE);
+        binding.onlineUsersRecyclerView.setVisibility(View.GONE);
 
-        // Show a progress bar if we have one
-        if (binding.progressBar != null) {
-            binding.progressBar.setVisibility(View.VISIBLE);
-        }
+        // Show shimmer effect
+        showShimmer(true);
 
         // Initialize the users listener (but don't attach it yet)
         loadUsers();
@@ -95,6 +103,40 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
         monitorOnlineUsers();
 
         return binding.getRoot();
+    }
+
+    private void showShimmer(boolean show) {
+        if (show) {
+            // Show shimmer
+            chatShimmer.setVisibility(View.VISIBLE);
+            onlineUsersShimmer.setVisibility(View.VISIBLE);
+            chatShimmer.startShimmer();
+            onlineUsersShimmer.startShimmer();
+
+            // Hide actual content
+            binding.chatRecyclerView.setVisibility(View.GONE);
+            binding.onlineUsersRecyclerView.setVisibility(View.GONE);
+            binding.emptyStateLayout.setVisibility(View.GONE);
+            if (binding.progressBar != null) {
+                binding.progressBar.setVisibility(View.GONE);
+            }
+        } else {
+            // Hide shimmer
+            chatShimmer.setVisibility(View.GONE);
+            onlineUsersShimmer.setVisibility(View.GONE);
+            chatShimmer.stopShimmer();
+            onlineUsersShimmer.stopShimmer();
+
+            // Show actual content based on data
+            updateEmptyState();
+
+            // Show online users if available
+            if (onlineUsersList.size() > 0) {
+                binding.onlineUsersRecyclerView.setVisibility(View.VISIBLE);
+            } else {
+                binding.onlineUsersRecyclerView.setVisibility(View.GONE);
+            }
+        }
     }
 
     private void loadUsers() {
@@ -181,9 +223,12 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
                         if (adapter != null) {
                             adapter.notifyDataSetChanged();
                         }
-                        updateEmptyState();
+
+                        // Hide shimmer after data is loaded
+                        showShimmer(false);
                     } catch (Exception e) {
                         Log.e(TAG, "Error in loadUsers: " + e.getMessage(), e);
+                        showShimmer(false);
                         updateEmptyState();
                     }
                 }
@@ -192,11 +237,13 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
                 public void onCancelled(@NonNull DatabaseError error) {
                     Log.e(TAG, "Database error: " + error.getMessage());
                     if (binding != null && isAdded()) {
+                        showShimmer(false);
                         updateEmptyState();
                     }
                 }
             };
         } else {
+            showShimmer(false);
             updateEmptyState();
         }
     }
@@ -217,7 +264,27 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
 
                 try {
                     onlineUsersList.clear();
+                    boolean currentUserAdded = false;
 
+                    // First check if current user is online to add them to the list
+                    if (snapshot.hasChild(currentUserId)) {
+                        DataSnapshot currentUserSnapshot = snapshot.child(currentUserId);
+                        Boolean isOnline = currentUserSnapshot.child("online").getValue(Boolean.class);
+                        if (isOnline != null && isOnline) {
+                            userModel currentUser = currentUserSnapshot.getValue(userModel.class);
+                            if (currentUser != null) {
+                                currentUser.setID(currentUserId);
+                                // Add a flag to indicate this is the current user (for UI customization if
+                                // needed)
+                                currentUser.setCurrentUser(true);
+                                onlineUsersList.add(currentUser);
+                                currentUserAdded = true;
+                                Log.d(TAG, "Added current user to online users list");
+                            }
+                        }
+                    }
+
+                    // Process other users
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         String userId = dataSnapshot.getKey();
                         if (userId != null && !userId.equals(currentUserId)) {
@@ -240,21 +307,35 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
                         }
                     }
 
+                    // Hide online users shimmer
+                    onlineUsersShimmer.setVisibility(View.GONE);
+                    onlineUsersShimmer.stopShimmer();
+
                     // Update online users recycler view visibility
                     if (onlineUsersList.size() > 0 && onlineUsersAdapter != null) {
                         binding.onlineUsersRecyclerView.setVisibility(View.VISIBLE);
                         onlineUsersAdapter.notifyDataSetChanged();
+
+                        // Log for debugging
+                        Log.d(TAG, "Showing " + onlineUsersList.size() + " online users (including current user: "
+                                + currentUserAdded + ")");
                     } else {
                         binding.onlineUsersRecyclerView.setVisibility(View.GONE);
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Error in monitorOnlineUsers: " + e.getMessage());
+                    onlineUsersShimmer.setVisibility(View.GONE);
+                    onlineUsersShimmer.stopShimmer();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e(TAG, "Failed to monitor online users: " + error.getMessage());
+                if (binding != null && isAdded()) {
+                    onlineUsersShimmer.setVisibility(View.GONE);
+                    onlineUsersShimmer.stopShimmer();
+                }
             }
         };
 
@@ -402,22 +483,16 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
                             adapter.notifyDataSetChanged();
                         }
 
-                        // Hide loading indicator
-                        if (binding != null && binding.progressBar != null) {
-                            binding.progressBar.setVisibility(View.GONE);
-                        }
-
-                        updateEmptyState();
+                        // Hide loading indicator and shimmer
+                        showShimmer(false);
                     } else {
                         // Now load users data after we have the message data
                         database.getReference().child("Users").addValueEventListener(usersListener);
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Error in fetchLastMessages: " + e.getMessage(), e);
-                    // Hide loading indicator
-                    if (binding != null && binding.progressBar != null) {
-                        binding.progressBar.setVisibility(View.GONE);
-                    }
+                    // Hide loading indicator and shimmer
+                    showShimmer(false);
                     // Try to load users even if there was an error
                     database.getReference().child("Users").addValueEventListener(usersListener);
                 }
@@ -426,10 +501,8 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e(TAG, "Failed to fetch messages: " + error.getMessage());
-                // Hide loading indicator
-                if (binding != null && binding.progressBar != null) {
-                    binding.progressBar.setVisibility(View.GONE);
-                }
+                // Hide loading indicator and shimmer
+                showShimmer(false);
                 // Try to load users even if there was an error
                 database.getReference().child("Users").addValueEventListener(usersListener);
             }
@@ -614,7 +687,9 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
         if (binding == null)
             return;
 
-        // Hide progress bar if it exists
+        // Hide shimmer and progress
+        chatShimmer.setVisibility(View.GONE);
+        chatShimmer.stopShimmer();
         if (binding.progressBar != null) {
             binding.progressBar.setVisibility(View.GONE);
         }
@@ -657,10 +732,8 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
                 unreadCounts.clear();
             }
 
-            // Show loading indicator temporarily
-            if (binding != null && binding.progressBar != null) {
-                binding.progressBar.setVisibility(View.VISIBLE);
-            }
+            // Show shimmer instead of progress bar
+            showShimmer(true);
 
             // Refresh messages to get latest unread counts
             fetchLastMessages();
@@ -673,10 +746,8 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
 
     // Separate method for full data refresh
     private void doFullRefresh() {
-        // Show loading indicator
-        if (binding != null && binding.progressBar != null) {
-            binding.progressBar.setVisibility(View.VISIBLE);
-        }
+        // Show shimmer
+        showShimmer(true);
 
         // Clear existing data
         if (lastMessages != null) {
@@ -715,6 +786,14 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
     @Override
     public void onPause() {
         super.onPause();
+
+        // Stop shimmer in onPause
+        if (chatShimmer != null) {
+            chatShimmer.stopShimmer();
+        }
+        if (onlineUsersShimmer != null) {
+            onlineUsersShimmer.stopShimmer();
+        }
     }
 
     private void updateOnlineStatus(boolean isOnline) {
@@ -737,6 +816,8 @@ public class chatsFragment extends Fragment implements chatUsersAdapter.FilterCa
         lastMessageTimes = null;
         lastMessages = null;
         unreadCounts = null;
+        chatShimmer = null;
+        onlineUsersShimmer = null;
 
         // Note: We intentionally don't reset isInitialLoadComplete here
         // to prevent unnecessary reloading when the fragment is recreated
