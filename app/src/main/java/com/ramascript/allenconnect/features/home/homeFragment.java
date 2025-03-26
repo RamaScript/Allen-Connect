@@ -52,6 +52,7 @@ public class homeFragment extends Fragment {
     private postAdapter postAdapter;
     private boolean isInitialPostLoad = true;
     private ValueEventListener postsListener;
+    private ValueEventListener userDataListener;
 
     public homeFragment() {
         // Required empty public constructor
@@ -87,39 +88,46 @@ public class homeFragment extends Fragment {
 
         // Load user profile image and details
         if (auth.getCurrentUser() != null) {
-            database.getReference().child("Users").child(auth.getCurrentUser().getUid())
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                userModel userModel = snapshot
-                                        .getValue(com.ramascript.allenconnect.features.user.userModel.class);
-                                if (userModel != null) {
-                                    if (getContext() != null && userModel.getProfilePhoto() != null) {
-                                        Glide.with(getContext())
-                                                .load(userModel.getProfilePhoto())
-                                                .placeholder(R.drawable.ic_avatar)
-                                                .into(binding.userProfileImage);
-                                    }
-                                    binding.name.setText(userModel.getName());
+            userDataListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    // Add null check for binding here to prevent crashes
+                    if (binding == null || !isAdded() || getContext() == null) {
+                        return; // Fragment is detached or being destroyed
+                    }
 
-                                    // Set the text based on user type
-                                    if ("Student".equals(userModel.getUserType())) {
-                                        binding.title.setText(String.format("%s (%s year)", userModel.getCourse(),
-                                                userModel.getYear()));
-                                    } else if ("Alumni".equals(userModel.getUserType())) {
-                                        binding.title.setText(userModel.getJobRole() + " at " + userModel.getCompany());
-                                    } else if ("Professor".equals(userModel.getUserType())) {
-                                        binding.title.setText("Professor at AGOI");
-                                    }
-                                }
+                    if (snapshot.exists()) {
+                        userModel userModel = snapshot
+                                .getValue(com.ramascript.allenconnect.features.user.userModel.class);
+                        if (userModel != null) {
+                            if (getContext() != null && userModel.getProfilePhoto() != null) {
+                                Glide.with(getContext())
+                                        .load(userModel.getProfilePhoto())
+                                        .placeholder(R.drawable.ic_avatar)
+                                        .into(binding.userProfileImage);
+                            }
+                            binding.name.setText(userModel.getName());
+
+                            // Set the text based on user type
+                            if ("Student".equals(userModel.getUserType())) {
+                                binding.title.setText(String.format("%s (%s year)", userModel.getCourse(),
+                                        userModel.getYear()));
+                            } else if ("Alumni".equals(userModel.getUserType())) {
+                                binding.title.setText(userModel.getJobRole() + " at " + userModel.getCompany());
+                            } else if ("Professor".equals(userModel.getUserType())) {
+                                binding.title.setText("Professor at AGOI");
                             }
                         }
+                    }
+                }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                        }
-                    });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            };
+
+            database.getReference().child("Users").child(auth.getCurrentUser().getUid())
+                    .addListenerForSingleValueEvent(userDataListener);
         }
 
         // Set click listeners for notification and chat
@@ -394,6 +402,10 @@ public class homeFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                // Check if fragment is still attached and binding is not null
+                if (!isAdded() || binding == null) {
+                    return;
+                }
                 binding.progressBar.setVisibility(View.GONE);
             }
         };
@@ -405,13 +417,22 @@ public class homeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        System.out.println("homeFragment onDestroyView called");
 
-        // Remove database listener to prevent memory leaks
-        if (postsListener != null) {
+        // Clean up listeners
+        if (postsListener != null && database != null) {
             database.getReference().child("Posts").removeEventListener(postsListener);
             postsListener = null;
         }
 
+        // Clean up user data listener if it exists
+        if (userDataListener != null && database != null && auth != null && auth.getCurrentUser() != null) {
+            database.getReference().child("Users").child(auth.getCurrentUser().getUid())
+                    .removeEventListener(userDataListener);
+            userDataListener = null;
+        }
+
+        // Clear binding
         binding = null;
     }
 

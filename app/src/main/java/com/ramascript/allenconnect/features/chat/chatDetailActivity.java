@@ -1,5 +1,6 @@
 package com.ramascript.allenconnect.features.chat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ramascript.allenconnect.R;
+import com.ramascript.allenconnect.base.mainActivity;
 import com.ramascript.allenconnect.databinding.ActivityChatDetailBinding;
 import com.ramascript.allenconnect.features.user.userModel;
 import com.squareup.picasso.Picasso;
@@ -66,7 +68,7 @@ public class chatDetailActivity extends AppCompatActivity {
             // Get receiver details from intent
             receiverId = getIntent().getStringExtra("userId");
             String receiverName = getIntent().getStringExtra("userName");
-            String profilePic = getIntent().getStringExtra("profilePicture");
+            String profilePic = getIntent().getStringExtra("profilePic");
 
             if (receiverId == null) {
                 finish();
@@ -85,6 +87,13 @@ public class chatDetailActivity extends AppCompatActivity {
                             .placeholder(R.drawable.ic_avatar)
                             .into(binding.profileImage);
                 }
+
+                // Add click listener to navigate to user profile
+                binding.chatUserLL.setOnClickListener(v -> {
+                    if (receiverId != null) {
+                        navigateToUserProfile(receiverId);
+                    }
+                });
 
                 // Check if user is deleted immediately
                 database.getReference()
@@ -143,6 +152,28 @@ public class chatDetailActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("chatDetailActivity", "Error in onCreate: " + e.getMessage());
             finish();
+        }
+    }
+
+    private void navigateToUserProfile(String userId) {
+        try {
+            // Create a completely new approach with a dedicated flag
+            Intent intent = new Intent(chatDetailActivity.this, mainActivity.class);
+
+            // Use NEW_TASK flag to create a new task and CLEAR_TASK to clear existing tasks
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            // Add special flags to indicate direct profile loading
+            intent.putExtra("directProfileLoad", true);
+            intent.putExtra("openFragment", "profileFragment");
+            intent.putExtra("userId", userId);
+
+            Log.d("chatDetailActivity", "Opening profile with direct loading for user ID: " + userId);
+            startActivity(intent);
+            finish(); // Finish this activity
+        } catch (Exception e) {
+            Log.e("chatDetailActivity", "Error opening profile: " + e.getMessage());
+            Toast.makeText(this, "Could not open profile", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -593,6 +593,15 @@ public class profileFragment extends baseFragment {
         binding.profileSettingsMenuBtn.setOnClickListener(v -> showProfileMenu(v));
     }
 
+    /**
+     * Checks if this fragment is displaying the current user's profile
+     * 
+     * @return true if this is the current user's profile, false otherwise
+     */
+    public boolean isCurrentUserProfile() {
+        return isCurrentUserProfile;
+    }
+
     private void showProfileMenu(View v) {
         PopupMenu popupMenu = new PopupMenu(requireContext(), v);
         popupMenu.getMenuInflater().inflate(R.menu.profile_menu, popupMenu.getMenu());
@@ -932,5 +941,4 @@ public class profileFragment extends baseFragment {
             }
         }
     }
-
 }

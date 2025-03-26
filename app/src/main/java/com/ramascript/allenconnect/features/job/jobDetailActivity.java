@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ramascript.allenconnect.base.mainActivity;
 import com.ramascript.allenconnect.features.chat.chatDetailActivity;
+import com.ramascript.allenconnect.features.user.profileFragment;
 import com.ramascript.allenconnect.features.user.userModel;
 import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.ActivityJobDetailBinding;
@@ -62,111 +63,146 @@ public class jobDetailActivity extends AppCompatActivity {
     }
 
     private void loadJobDetails() {
-        if (jobId == null) return;
+        if (jobId == null)
+            return;
 
         database.getReference().child("Jobs").child(jobId)
-            .addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (!snapshot.exists()) return;
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!snapshot.exists())
+                            return;
 
-                    job = snapshot.getValue(jobModel.class);
-                    if (job == null) return;
+                        job = snapshot.getValue(jobModel.class);
+                        if (job == null)
+                            return;
 
-                    updateUI(job);
-                    loadJobPoster(job.getJobPostedBy());
-                }
+                        updateUI(job);
+                        loadJobPoster(job.getJobPostedBy());
+                    }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                }
-            });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
     }
 
     private void updateUI(jobModel job) {
 
-            Picasso.get()
+        Picasso.get()
                 .load(job.getLogoImgPath())
                 .placeholder(R.drawable.ic_avatar)
                 .into(binding.companyLogo);
 
-            setTextWithHtml(binding.jobTitle, "Designation:", job.getJobTitle());
-            setTextWithHtml(binding.companyName, "Company Name:", job.getCompanyName());
-            setTextWithHtml(binding.jobType, "Job Type:", job.getJobType());
-            setTextWithHtml(binding.experienceLevel, "Experience Required:", job.getExperienceRequired());
-            setTextWithHtml(binding.courseEligibility, "Courses Eligible:", String.join(", ", job.getCoursesEligible()));
-            setTextWithHtml(binding.skillsRequired, "Skills Required:", String.join(", ", job.getSkillsRequired()));
-            setTextWithHtml(binding.salary, "Salary:", job.getSalary());
-            setTextWithHtml(binding.contactEmail, "Contact Email:", job.getContactEmail());
-            setTextWithHtml(binding.contactPhone, "Contact Phone:", job.getContactPhone());
-            setTextWithHtml(binding.jobDescription, "Job Description:", job.getJobDescription());
-            setTextWithHtml(binding.applicationDeadline, "Application Deadline:", job.getApplicationDeadline());
+        setTextWithHtml(binding.jobTitle, "Designation:", job.getJobTitle());
+        setTextWithHtml(binding.companyName, "Company Name:", job.getCompanyName());
+        setTextWithHtml(binding.jobType, "Job Type:", job.getJobType());
+        setTextWithHtml(binding.experienceLevel, "Experience Required:", job.getExperienceRequired());
+        setTextWithHtml(binding.courseEligibility, "Courses Eligible:", String.join(", ", job.getCoursesEligible()));
+        setTextWithHtml(binding.skillsRequired, "Skills Required:", String.join(", ", job.getSkillsRequired()));
+        setTextWithHtml(binding.salary, "Salary:", job.getSalary());
+        setTextWithHtml(binding.contactEmail, "Contact Email:", job.getContactEmail());
+        setTextWithHtml(binding.contactPhone, "Contact Phone:", job.getContactPhone());
+        setTextWithHtml(binding.jobDescription, "Job Description:", job.getJobDescription());
+        setTextWithHtml(binding.applicationDeadline, "Application Deadline:", job.getApplicationDeadline());
 
     }
 
     private void loadJobPoster(String userId) {
-        if (userId == null) return;
+        if (userId == null)
+            return;
 
         database.getReference().child("Users").child(userId)
-            .addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (!snapshot.exists()) return;
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!snapshot.exists())
+                            return;
 
-                    user = snapshot.getValue(userModel.class);
-                    if (user == null) return;
+                        user = snapshot.getValue(userModel.class);
+                        if (user == null)
+                            return;
 
-                    updateJobPosterUI();
-                }
+                        updateJobPosterUI();
+                    }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                }
-            });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
     }
 
     private void updateJobPosterUI() {
-            Picasso.get()
+        Picasso.get()
                 .load(user.getProfilePhoto())
                 .placeholder(R.drawable.ic_avatar)
                 .into(binding.jobPosterProfilePic);
 
-            binding.jobPosterName.setText(Html.fromHtml(user.getName()));
+        binding.jobPosterName.setText(Html.fromHtml(user.getName()));
 
-            String jobPosterTitle;
-            if ("Alumni".equals(user.getUserType())) {
-                jobPosterTitle = "<b>" + user.getJobRole() + "</b> at <b>" +
+        String jobPosterTitle;
+        if ("Alumni".equals(user.getUserType())) {
+            jobPosterTitle = "<b>" + user.getJobRole() + "</b> at <b>" +
                     user.getCompany() + "</b><br><i>Alumni AllenHouse</i> - " +
                     user.getPassingYear() + " Batch.";
-            } else if ("Professor".equals(user.getUserType())) {
-                jobPosterTitle = "<b>Prof.</b> at Allenhouse";
-            } else {
-                jobPosterTitle = "";
-            }
-            binding.jobPosterTitle.setText(Html.fromHtml(jobPosterTitle));
+        } else if ("Professor".equals(user.getUserType())) {
+            jobPosterTitle = "<b>Prof.</b> at Allenhouse";
+        } else {
+            jobPosterTitle = "";
+        }
+        binding.jobPosterTitle.setText(Html.fromHtml(jobPosterTitle));
 
-            // Enable chat button now that user data is available
-            binding.chat.setEnabled(true);
-            binding.chat.setOnClickListener(v -> openChat());
+        // Enable chat button now that user data is available
+        binding.chat.setEnabled(true);
+        binding.chat.setOnClickListener(v -> openChat());
+
+        // Add click listener to job poster layout to navigate to profile
+        binding.jobPosterLL.setOnClickListener(v -> openUserProfile());
+    }
+
+    private void openUserProfile() {
+        if (user == null || job == null)
+            return;
+
+        try {
+            // Create a completely new approach with a dedicated flag
+            Intent intent = new Intent(jobDetailActivity.this, mainActivity.class);
+
+            // Use NEW_TASK flag to create a new task and CLEAR_TASK to clear existing tasks
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            // Add special flags to indicate direct profile loading
+            intent.putExtra("directProfileLoad", true);
+            intent.putExtra("openFragment", "profileFragment");
+            intent.putExtra("userId", job.getJobPostedBy());
+
+            Log.d("jobDetailActivity", "Opening profile with direct loading for user ID: " + job.getJobPostedBy());
+            startActivity(intent);
+            finish();
+        } catch (Exception e) {
+            Log.e("jobDetailActivity", "Error opening profile: " + e.getMessage());
+            Toast.makeText(this, "Could not open profile", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void openChat() {
-        if (user == null) return;
-        Log.d("ChatDebug", "User ID: " + job.getJobPostedBy());
-        Log.d("ChatDebug", "User Profile: " + user.getProfilePhoto());
-        Log.d("ChatDebug", "User Name: " + user.getName());
+        if (user == null)
+            return;
 
-        Toast.makeText(this, "clicked on chat", Toast.LENGTH_SHORT).show();
+        Log.d("ChatDebug", "Opening chat with user: " + user.getName());
+        Log.d("ChatDebug", "User ID: " + job.getJobPostedBy());
+        Log.d("ChatDebug", "User Profile Pic: " + user.getProfilePhoto());
+
         Intent intent = new Intent(jobDetailActivity.this, chatDetailActivity.class);
         intent.putExtra("userId", job.getJobPostedBy());
         intent.putExtra("profilePic", user.getProfilePhoto());
         intent.putExtra("userName", user.getName());
         startActivity(intent);
-        Toast.makeText(this, "started", Toast.LENGTH_SHORT).show();
     }
 
     private void setTextWithHtml(View view, String label, String value) {
-        if (value == null || value.trim().isEmpty()) return;
+        if (value == null || value.trim().isEmpty())
+            return;
         if (view instanceof android.widget.TextView) {
             ((android.widget.TextView) view).setText(Html.fromHtml("<b>" + label + "</b> " + value));
         }

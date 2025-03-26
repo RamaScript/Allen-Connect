@@ -2,6 +2,7 @@ package com.ramascript.allenconnect.base;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
@@ -45,6 +46,14 @@ public class mainActivity extends AppCompatActivity {
         System.out.println("mainActivity onCreate called with savedInstanceState: " +
                 (savedInstanceState == null ? "null" : "not null"));
 
+        // Check for direct profile loading first - must be done before UI inflation
+        Intent intent = getIntent();
+        boolean isDirectProfileLoad = intent != null && intent.getBooleanExtra("directProfileLoad", false);
+
+        if (isDirectProfileLoad) {
+            Log.d("mainActivity", "Direct profile loading detected");
+        }
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -68,6 +77,74 @@ public class mainActivity extends AppCompatActivity {
             startActivity(i);
         });
 
+        // Setup bottom navigation listener
+        setupBottomNavigation();
+
+        // Process intent before loading any default fragments
+        if (savedInstanceState == null) {
+            if (processIntent(getIntent())) {
+                // Intent was processed, don't load any default fragment
+                Log.d("mainActivity", "Intent processed successfully, skipping default fragment load");
+            } else {
+                // No specific fragment requested, load home fragment
+                Log.d("mainActivity", "No specific fragment requested, loading home fragment");
+                currentFragmentId = R.id.navigation_home;
+                loadFragment(new homeFragment(), true);
+            }
+        } else {
+            System.out.println("Skipping initial fragment load: savedInstanceState=" +
+                    (savedInstanceState != null) + ", initialFragmentLoaded=" + initialFragmentLoaded);
+        }
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+
+                // If there are fragments in the back stack, pop the last one
+                if (fragmentManager.getBackStackEntryCount() > 0) {
+                    fragmentManager.popBackStack();
+                } else {
+                    // Check if we're in a user profile that's not the current user
+                    Fragment currentFragment = fragmentManager.findFragmentById(R.id.container);
+                    if (currentFragment instanceof profileFragment) {
+                        profileFragment pf = (profileFragment) currentFragment;
+                        if (!pf.isCurrentUserProfile()) {
+                            try {
+                                // Safely load the home fragment
+                                Fragment homeFragment = new homeFragment();
+
+                                // Use immediate transaction to avoid async issues
+                                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                                transaction.replace(R.id.container, homeFragment);
+                                transaction.commitNow();
+
+                                // Update navigation selection after fragment is loaded
+                                currentFragmentId = R.id.navigation_home;
+                                binding.bottomNavView.setSelectedItemId(R.id.navigation_home);
+                                return;
+                            } catch (Exception e) {
+                                Log.e("mainActivity", "Error returning to home: " + e.getMessage());
+                                // If all else fails, restart the activity
+                                recreate();
+                                return;
+                            }
+                        }
+                    }
+
+                    // If no fragments are in the back stack, show exit dialog
+                    new AlertDialog.Builder(mainActivity.this)
+                            .setMessage("Do you want to leave the app?")
+                            .setCancelable(false)
+                            .setPositiveButton("Yes", (dialog, id) -> finish())
+                            .setNegativeButton("No", null)
+                            .show();
+                }
+            }
+        });
+    }
+
+    private void setupBottomNavigation() {
         binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {
             int itemId = item.getItemId();
             System.out.println("Bottom navigation selected: " + itemId +
@@ -93,61 +170,100 @@ public class mainActivity extends AppCompatActivity {
             }
             return true;
         });
+    }
 
-        // Only load the initial fragment if this is a fresh start
-        if (savedInstanceState == null) {
-            // Check if intent contains fragment navigation instruction
-            if (getIntent().getStringExtra("openFragment") != null) {
-                String fragmentToOpen = getIntent().getStringExtra("openFragment");
+    /**
+     * Process intent to determine which fragment to load.
+     * 
+     * @param intent The intent to process
+     * @return true if a specific fragment was requested, false otherwise
+     */
+    private boolean processIntent(Intent intent) {
+        // Check if intent contains fragment navigation instruction
+        if (intent != null && intent.getStringExtra("openFragment") != null) {
+            String fragmentToOpen = intent.getStringExtra("openFragment");
+            Log.d("mainActivity", "Processing intent with openFragment: " + fragmentToOpen);
 
-                if (fragmentToOpen.equals("jobsFragment")) {
-                    currentFragmentId = R.id.navigation_job;
-                    loadFragment(new jobsFragment(), true);
-                    binding.bottomNavView.setSelectedItemId(R.id.navigation_job);
-                } else if (fragmentToOpen.equals("profileFragment")) {
-                    currentFragmentId = R.id.navigation_profile;
-                    loadFragment(new profileFragment(), true);
-                    binding.bottomNavView.setSelectedItemId(R.id.navigation_profile);
+            // Direct profile loading takes highest priority
+            boolean isDirectProfileLoad = intent.getBooleanExtra("directProfileLoad", false);
+            if (isDirectProfileLoad && fragmentToOpen.equals("profileFragment")) {
+                // Load profile fragment directly without animations
+                currentFragmentId = R.id.navigation_profile;
+                String userId = intent.getStringExtra("userId");
+
+                if (userId != null && !userId.isEmpty()) {
+                    Fragment fragment = profileFragment.newInstance(userId);
+                    loadProfileDirectly(fragment);
+                } else {
+                    loadProfileDirectly(new profileFragment());
                 }
-            } else {
-                // Default fragment when no intent specifies a fragment
-                currentFragmentId = R.id.navigation_home;
-                loadFragment(new homeFragment(), true);
+
+                // Update bottom navigation
+                binding.bottomNavView.setSelectedItemId(R.id.navigation_profile);
+                return true;
             }
-        } else {
-            System.out.println("Skipping initial fragment load: savedInstanceState=" +
-                    (savedInstanceState != null) + ", initialFragmentLoaded=" + initialFragmentLoaded);
+
+            // Normal navigation flow
+            if (fragmentToOpen.equals("jobsFragment")) {
+                currentFragmentId = R.id.navigation_job;
+                loadFragment(new jobsFragment(), true);
+                binding.bottomNavView.setSelectedItemId(R.id.navigation_job);
+                return true;
+            } else if (fragmentToOpen.equals("profileFragment")) {
+                currentFragmentId = R.id.navigation_profile;
+
+                // Directly get userId from intent extras if available
+                String userId = intent.getStringExtra("userId");
+                Fragment fragment;
+
+                // Before creating the fragment, check for null/empty userId
+                if (userId != null && !userId.isEmpty()) {
+                    // Create profile fragment with userId
+                    Log.d("mainActivity", "Loading profile for user ID: " + userId);
+                    fragment = profileFragment.newInstance(userId);
+                } else {
+                    // Default profile fragment (current user)
+                    Log.d("mainActivity", "Loading current user profile");
+                    fragment = new profileFragment();
+                }
+
+                loadFragment(fragment, true);
+                binding.bottomNavView.setSelectedItemId(R.id.navigation_profile);
+                return true;
+            }
         }
 
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-
-                // If there are fragments in the back stack, pop the last one
-                if (fragmentManager.getBackStackEntryCount() > 0) {
-                    fragmentManager.popBackStack();
-                } else {
-                    // If no fragments are in the back stack, show exit dialog
-                    new AlertDialog.Builder(mainActivity.this)
-                        .setMessage("Do you want to leave the app?")
-                        .setCancelable(false)
-                        .setPositiveButton("Yes", (dialog, id) -> finish())
-                        .setNegativeButton("No", null)
-                        .show();
-                }
-            }
-        });
-
+        // No specific fragment requested
+        return false;
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        System.out.println("mainActivity onNewIntent called");
+        Log.d("mainActivity", "onNewIntent called with action: " + intent.getAction());
+
         // Set the new intent
         setIntent(intent);
-        // But don't process it again if we're already initialized
+
+        // Check for direct profile loading
+        boolean isDirectProfileLoad = intent.getBooleanExtra("directProfileLoad", false);
+        if (isDirectProfileLoad && intent.getStringExtra("openFragment") != null) {
+            Log.d("mainActivity", "Direct profile loading in onNewIntent");
+            String userId = intent.getStringExtra("userId");
+
+            if (userId != null && !userId.isEmpty()) {
+                Fragment fragment = profileFragment.newInstance(userId);
+                loadProfileDirectly(fragment);
+            } else {
+                loadProfileDirectly(new profileFragment());
+            }
+
+            // Update bottom navigation
+            binding.bottomNavView.setSelectedItemId(R.id.navigation_profile);
+        } else {
+            // Process the new intent without loading default fragments
+            processIntent(intent);
+        }
     }
 
     private void handlePostNavigation() {
@@ -239,6 +355,25 @@ public class mainActivity extends AppCompatActivity {
         for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
             fm.popBackStack();
         }
+    }
+
+    /**
+     * Load profile fragment directly without animations
+     */
+    private void loadProfileDirectly(Fragment fragment) {
+        if (fragment == null)
+            return;
+
+        // Hide post options
+        binding.postOptions.setVisibility(View.GONE);
+
+        // Use a transaction without animation
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_NONE); // No animation
+        transaction.replace(R.id.container, fragment);
+        transaction.commitNow(); // Use commitNow for immediate execution
+
+        Log.d("mainActivity", "Profile loaded directly with suppressAnimation");
     }
 
     // Online status updates are now handled by allenConnectApp
