@@ -12,7 +12,6 @@
 > Implement Shimmer Effect for better loading experience 🟡  
 > Implement Search Feature for Posts 🔎 🟡  
 > Show Options on Posts to the user 🟡  
-> Show the List of Followers & Following when clicking `TextView` in Profile Fragment 🟡  
 > Ensure Bottom Navigation Works in all fragments (hidden on scroll) 🟡  
 > Ensure Back Button Works correctly in Profile Fragment 🟡
 

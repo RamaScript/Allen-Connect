@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 import android.widget.TextView;
@@ -598,7 +599,7 @@ public class profileFragment extends baseFragment {
         // For the followers label
         View followersLabel = ((View) binding.followersCountTV.getParent()).findViewById(
                 R.id.followersLabel);
-        if (followersLabel instanceof TextView) {
+        if (followersLabel instanceof LinearLayout) {
             followersLabel.setOnClickListener(v -> showFollowersList());
         }
 
@@ -607,7 +608,7 @@ public class profileFragment extends baseFragment {
         // For the following label
         View followingLabel = ((View) binding.followingCountTV.getParent()).findViewById(
                 R.id.followingLabel);
-        if (followingLabel instanceof TextView) {
+        if (followingLabel instanceof LinearLayout) {
             followingLabel.setOnClickListener(v -> showFollowingList());
         }
     }

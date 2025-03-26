@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white">
+    android:layout_height="match_parent">
 
     <!-- Header AppBarLayout with scroll behavior -->
     <com.google.android.material.appbar.AppBarLayout
@@ -21,7 +20,6 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingVertical="8dp"
-            android:background="@color/white"
             app:layout_scrollFlags="scroll|enterAlways|snap">
 
             <ImageView
@@ -65,7 +63,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
             android:orientation="vertical">
 
             <!-- Profile Image Container -->
@@ -140,7 +137,6 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
                         android:gravity="center"
                         android:orientation="horizontal"
                         android:paddingVertical="8dp">
@@ -173,6 +169,7 @@
 
                         <!-- Followers -->
                         <LinearLayout
+                            android:id="@+id/followersLabel"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -189,7 +186,6 @@
                                 tools:text="5k" />
 
                             <TextView
-                                android:id="@+id/followersLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/poppins"
@@ -200,6 +196,7 @@
 
                         <!-- Following -->
                         <LinearLayout
+                            android:id="@+id/followingLabel"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -216,7 +213,6 @@
                                 tools:text="12k" />
 
                             <TextView
-                                android:id="@+id/followingLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/poppins"
