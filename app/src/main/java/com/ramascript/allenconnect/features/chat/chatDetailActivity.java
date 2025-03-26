@@ -231,6 +231,9 @@ public class chatDetailActivity extends AppCompatActivity {
                 try {
                     backgroundExecutor.execute(() -> {
                         ArrayList<chatMsgModel> tempList = new ArrayList<>();
+                        boolean hasUnreadMessages = false;
+
+                        // Process all messages
                         for (DataSnapshot messageSnapshot : snapshot.getChildren()) {
                             String uId = messageSnapshot.child("uId").getValue(String.class);
                             String message = messageSnapshot.child("message").getValue(String.class);
@@ -240,12 +243,27 @@ public class chatDetailActivity extends AppCompatActivity {
                             }
                             Boolean isRead = messageSnapshot.child("read").getValue(Boolean.class);
 
+                            // If this is a message from the other user and not read yet
+                            if (uId != null && !uId.equals(auth.getUid()) && (isRead == null || !isRead)) {
+                                hasUnreadMessages = true;
+
+                                // If activity is active, mark as read immediately in the database
+                                if (isActivityActive) {
+                                    messageSnapshot.getRef().child("read").setValue(true);
+                                    isRead = true;
+                                }
+                            }
+
                             if (message != null && uId != null) {
                                 chatMsgModel model = new chatMsgModel(uId, message, timestamp,
                                         isRead != null ? isRead : false);
                                 tempList.add(model);
                             }
                         }
+
+                        // If we found unread messages, trigger the markMessagesAsRead method
+                        // to ensure unread counts are updated everywhere
+                        final boolean needToMarkAsRead = hasUnreadMessages && isActivityActive;
 
                         mainHandler.post(() -> {
                             messageList.clear();
@@ -256,8 +274,8 @@ public class chatDetailActivity extends AppCompatActivity {
                                 binding.chatRecyclerView.smoothScrollToPosition(messageList.size() - 1);
                             }
 
-                            // Mark messages as read if activity is active
-                            if (isActivityActive) {
+                            // Force sync with the lastReadTime update if needed
+                            if (needToMarkAsRead) {
                                 markMessagesAsRead();
                             }
                         });
@@ -373,67 +391,125 @@ public class chatDetailActivity extends AppCompatActivity {
 
     private void markMessagesAsRead() {
         if (receiverId == null || auth == null || auth.getUid() == null || isFinishing() || isDestroyed()
-                || database == null)
+                || database == null) {
             return;
+        }
 
         try {
-            backgroundExecutor.execute(() -> {
-                // Get all messages in the current chat room
-                DatabaseReference chatRef = database.getReference().child("chats").child(senderRoom);
-                chatRef.addListenerForSingleValueEvent(
-                        new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (isFinishing() || isDestroyed() || database == null)
-                                    return;
+            Log.d("chatDetailActivity", "Starting to mark messages as read");
 
-                                try {
-                                    for (DataSnapshot messageSnapshot : snapshot.getChildren()) {
-                                        // Only mark messages from the other user
-                                        String senderId = messageSnapshot.child("uId").getValue(String.class);
-                                        Boolean isRead = messageSnapshot.child("read").getValue(Boolean.class);
-                                        Long timestamp = messageSnapshot.child("timestamp").getValue(Long.class);
+            // Reference to chat rooms
+            String myId = auth.getUid();
 
-                                        // Skip messages we've already processed
-                                        if (timestamp != null && timestamp <= lastMessageReadTimestamp) {
-                                            continue;
-                                        }
+            // We need to check both possible room structures
+            String room1 = myId + receiverId; // senderRoom format
+            String room2 = receiverId + myId; // receiverRoom format
 
-                                        // If message is from receiver and not marked as read
-                                        if (senderId != null && senderId.equals(receiverId)
-                                                && (isRead == null || !isRead)) {
-                                            // Mark as read in both rooms
-                                            String messageId = messageSnapshot.getKey();
-                                            if (messageId != null && database != null) {
-                                                // Update read status in sender room
-                                                database.getReference().child("chats").child(senderRoom)
-                                                        .child(messageId).child("read").setValue(true);
+            // First check room1
+            markMessagesAsReadInRoom(room1);
 
-                                                // Update read status in receiver room
-                                                database.getReference().child("chats").child(receiverRoom)
-                                                        .child(messageId).child("read").setValue(true);
+            // Then check room2
+            markMessagesAsReadInRoom(room2);
 
-                                                // Track latest message marked as read
-                                                if (timestamp != null && timestamp > lastMessageReadTimestamp) {
-                                                    lastMessageReadTimestamp = timestamp;
-                                                }
-                                            }
-                                        }
+            // Force immediate update notification to all listeners
+            DatabaseReference ref = database.getReference().child("chats").child(room2);
+            HashMap<String, Object> forceUpdate = new HashMap<>();
+            forceUpdate.put("lastReadTime", System.currentTimeMillis());
+            ref.updateChildren(forceUpdate).addOnCompleteListener(task -> {
+                Log.d("chatDetailActivity", "Forced update to trigger chat listeners");
+            });
+
+        } catch (Exception e) {
+            Log.e("chatDetailActivity", "Error marking messages as read: " + e.getMessage(), e);
+        }
+    }
+
+    private void markMessagesAsReadInRoom(String roomId) {
+        // Get the chat room
+        database.getReference().child("chats").child(roomId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        try {
+                            // Skip if room doesn't exist
+                            if (!snapshot.exists()) {
+                                return;
+                            }
+
+                            Log.d("chatDetailActivity", "Checking room: " + roomId);
+
+                            // Determine if we have a messages subnode or direct messages
+                            DataSnapshot messagesNode;
+                            if (snapshot.hasChild("messages")) {
+                                messagesNode = snapshot.child("messages");
+                                Log.d("chatDetailActivity",
+                                        "Found messages subnode with " + messagesNode.getChildrenCount() + " messages");
+                            } else {
+                                // Just use the direct children
+                                messagesNode = snapshot;
+                                Log.d("chatDetailActivity",
+                                        "Using direct room with " + messagesNode.getChildrenCount() + " children");
+                            }
+
+                            // Count how many messages we mark as read
+                            int markedCount = 0;
+
+                            // Process all messages
+                            for (DataSnapshot messageSnapshot : messagesNode.getChildren()) {
+                                String senderId = null;
+
+                                // Check various possible sender ID fields
+                                if (messageSnapshot.hasChild("uId")) {
+                                    senderId = messageSnapshot.child("uId").getValue(String.class);
+                                } else if (messageSnapshot.hasChild("senderId")) {
+                                    senderId = messageSnapshot.child("senderId").getValue(String.class);
+                                } else if (messageSnapshot.hasChild("from")) {
+                                    senderId = messageSnapshot.child("from").getValue(String.class);
+                                }
+
+                                // Skip messages from the current user
+                                if (senderId == null || senderId.equals(auth.getUid())) {
+                                    continue;
+                                }
+
+                                // Check read status in various fields
+                                Boolean isRead = null;
+                                if (messageSnapshot.hasChild("read")) {
+                                    isRead = messageSnapshot.child("read").getValue(Boolean.class);
+                                } else if (messageSnapshot.hasChild("seen")) {
+                                    isRead = messageSnapshot.child("seen").getValue(Boolean.class);
+                                } else if (messageSnapshot.hasChild("isRead")) {
+                                    isRead = messageSnapshot.child("isRead").getValue(Boolean.class);
+                                }
+
+                                // Mark unread messages as read
+                                if (isRead == null || !isRead) {
+                                    markedCount++;
+                                    if (messageSnapshot.hasChild("read")) {
+                                        messageSnapshot.getRef().child("read").setValue(true);
+                                    } else if (messageSnapshot.hasChild("seen")) {
+                                        messageSnapshot.getRef().child("seen").setValue(true);
+                                    } else if (messageSnapshot.hasChild("isRead")) {
+                                        messageSnapshot.getRef().child("isRead").setValue(true);
+                                    } else {
+                                        // If no read field exists, add it
+                                        messageSnapshot.getRef().child("read").setValue(true);
                                     }
-                                } catch (Exception e) {
-                                    Log.e("chatDetailActivity", "Error marking messages as read: " + e.getMessage());
                                 }
                             }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Log.w("chatDetailActivity", "Failed to mark messages as read: " + error.getMessage());
-                            }
-                        });
-            });
-        } catch (Exception e) {
-            Log.e("chatDetailActivity", "Error initiating mark messages as read: " + e.getMessage());
-        }
+                            Log.d("chatDetailActivity",
+                                    "Marked " + markedCount + " messages as read in room " + roomId);
+                        } catch (Exception e) {
+                            Log.e("chatDetailActivity", "Error processing room: " + e.getMessage(), e);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("chatDetailActivity", "Database error while marking messages: " + error.getMessage());
+                    }
+                });
     }
 
     @Override

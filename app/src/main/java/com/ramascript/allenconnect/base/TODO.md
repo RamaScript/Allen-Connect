@@ -9,7 +9,7 @@
 
 ## ⚡ Medium Effort Features [Medium Priority]
 > Save Data in SQLite from Firebase to enhance UX 🟡  
-> Implement Shimmer Effect for better loading experience 🟡  
+> Implement Shimmer Effect for better loading experience 🟡  {home-post, community, profile, job, connection, chat}
 > Implement Search Feature for Posts 🔎 🟡  
 > Show Options on Posts to the user 🟡  
 > Ensure Bottom Navigation Works in all fragments (hidden on scroll) 🟡  

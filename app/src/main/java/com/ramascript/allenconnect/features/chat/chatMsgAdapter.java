@@ -63,16 +63,28 @@ public class chatMsgAdapter extends RecyclerView.Adapter {
             viewHolder.senderMsg.setText(message.getMessage());
             viewHolder.senderTime.setText(timeStr);
 
-            // Show read status for sender messages
+            // Show read status for sender messages - always show the icon but change its
+            // appearance
             if (message.isRead()) {
+                // Message has been read
                 viewHolder.readStatus.setVisibility(View.VISIBLE);
+                viewHolder.readStatus.setImageResource(R.drawable.ic_check_double);
+                viewHolder.readStatus.setAlpha(1.0f);
             } else {
-                viewHolder.readStatus.setVisibility(View.GONE);
+                // Message has been sent but not read yet
+                viewHolder.readStatus.setVisibility(View.VISIBLE);
+                viewHolder.readStatus.setImageResource(R.drawable.ic_cheak);
+                viewHolder.readStatus.setAlpha(0.7f);
             }
         } else {
             ReceiverViewHolder viewHolder = (ReceiverViewHolder) holder;
             viewHolder.receiverMsg.setText(message.getMessage());
             viewHolder.receiverTime.setText(timeStr);
+
+            // Automatically mark as read when displayed
+            if (!message.isRead()) {
+                message.setRead(true);
+            }
         }
     }
 

@@ -22,22 +22,56 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chatRecyclerView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/rv_chats"
-        android:clipToPadding="false"
-        android:paddingBottom="8dp" />
+        android:layout_height="match_parent">
 
-    <!-- No Results View -->
-    <TextView
-        android:id="@+id/noResultsView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="No users found"
-        android:textSize="16sp"
-        android:visibility="gone" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chatRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/rv_chats"
+            android:clipToPadding="false"
+            android:paddingBottom="8dp" />
+        
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/color_primary"
+            android:visibility="gone" />
+
+        <!-- Empty State Layout -->
+        <LinearLayout
+            android:id="@+id/emptyStateLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_chat"
+                android:alpha="0.5"
+                android:contentDescription="No messages" />
+
+            <TextView
+                android:id="@+id/emptyStateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No conversations yet. Start chatting with someone!"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:textColor="#757575" />
+
+        </LinearLayout>
+
+    </FrameLayout>
 
 </LinearLayout>
