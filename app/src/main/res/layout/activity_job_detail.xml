@@ -14,8 +14,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingLeft="8dp"
-        android:paddingRight="16dp"
+        android:paddingHorizontal="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,20 +24,20 @@
             android:id="@+id/backBtnIV"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:padding="4dp"
+            android:padding="8dp"
             android:src="@drawable/ic_arrow_back"
             app:tint="@color/black" />
 
         <TextView
             android:id="@+id/JobDetailsHeading"
-            android:layout_width="24dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
             android:layout_weight="1"
             android:fontFamily="@font/poppins_semibold"
-            android:text="Comments"
+            android:text="Job Detail"
+            android:layout_marginStart="8dp"
             android:textColor="@color/black"
-            android:textSize="24dp" />
+            android:textSize="18sp" />
 
         <ImageView
             android:id="@+id/notificationMenuIV"
@@ -79,6 +78,7 @@
                     android:layout_height="@dimen/_60mdp"
                     android:layout_gravity="center"
                     android:layout_marginBottom="16dp"
+                    android:layout_marginTop="8dp"
                     android:backgroundTint="@color/white"
                     android:contentDescription="Comapany Logo"
                     android:scaleType="centerCrop"
@@ -92,7 +92,7 @@
                     android:fontFamily="@font/poppins"
                     android:text="Job Title"
                     android:textColor="@color/dark_gray"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/companyName"

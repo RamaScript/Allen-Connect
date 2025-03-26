@@ -24,13 +24,13 @@
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="16dp"
                 android:layout_weight="1"
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Allenhouse"
                 android:textColor="@color/black"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textSize="18sp"
+                 />
 
             <ImageView
                 android:id="@+id/notificationHomeIV"
@@ -133,7 +133,7 @@
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:layout_weight="1"
-                            android:paddingEnd="12dp">
+                            android:paddingEnd="16dp">
 
                             <EditText
                                 android:id="@+id/caption"
