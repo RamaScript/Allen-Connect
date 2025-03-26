@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginBottom="16dp">
+
+    <!-- Profile Image Shimmer -->
+    <View
+        android:id="@+id/shimmer_profile_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/circle_shape_gray" />
+
+    <!-- Name Shimmer -->
+    <View
+        android:id="@+id/shimmer_name"
+        android:layout_width="200dp"
+        android:layout_height="16dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:background="@color/shimmer_color" />
+
+    <!-- Profession Shimmer -->
+    <View
+        android:id="@+id/shimmer_profession"
+        android:layout_width="150dp"
+        android:layout_height="12dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:background="@color/shimmer_color" />
+
+    <!-- Bio Shimmer -->
+    <View
+        android:id="@+id/shimmer_bio"
+        android:layout_width="250dp"
+        android:layout_height="12dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:background="@color/shimmer_color" />
+
+    <!-- Stats Container Shimmer -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        android:layout_marginVertical="16dp"
+        android:layout_marginHorizontal="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingVertical="16dp">
+
+            <!-- Posts Count Shimmer -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="30dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:background="@color/shimmer_color" />
+
+                <View
+                    android:layout_width="50dp"
+                    android:layout_height="14dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="4dp"
+                    android:background="@color/shimmer_color" />
+            </LinearLayout>
+
+            <!-- Followers Count Shimmer -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="30dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:background="@color/shimmer_color" />
+
+                <View
+                    android:layout_width="70dp"
+                    android:layout_height="14dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="4dp"
+                    android:background="@color/shimmer_color" />
+            </LinearLayout>
+
+            <!-- Following Count Shimmer -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="30dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:background="@color/shimmer_color" />
+
+                <View
+                    android:layout_width="70dp"
+                    android:layout_height="14dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="4dp"
+                    android:background="@color/shimmer_color" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Buttons Shimmer Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@color/shimmer_color" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:background="@color/shimmer_color" />
+    </LinearLayout>
+
+    <!-- Add error message at the bottom -->
+    <TextView
+        android:id="@+id/shimmer_error_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="24dp"
+        android:text="Offline mode. Some data may not be available."
+        android:textColor="@color/gray"
+        android:visibility="gone"
+        android:fontFamily="@font/poppins" />
+</LinearLayout> 

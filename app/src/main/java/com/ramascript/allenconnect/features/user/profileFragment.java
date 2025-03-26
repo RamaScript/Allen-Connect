@@ -28,6 +28,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 import com.ramascript.allenconnect.databinding.FragmentProfileBinding;
 import com.ramascript.allenconnect.features.post.postModel;
 import com.ramascript.allenconnect.features.post.postAdapter;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 public class profileFragment extends baseFragment {
 
@@ -57,6 +59,7 @@ public class profileFragment extends baseFragment {
     private userModel currentUser;
     private String userId; // ID of user to display
     private boolean isCurrentUserProfile = true; // Flag to check if it's the current user's profile
+    private ShimmerFrameLayout profileShimmerLayout;
 
     public profileFragment() {
         // Required empty public constructor
@@ -77,6 +80,23 @@ public class profileFragment extends baseFragment {
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();
+
+        // Enable disk persistence for offline data
+        try {
+            // Note: persistence should be enabled only once in the Application class
+            // We don't need to enable it here as it's already done in allenConnectApp
+
+            // Keep user data synced for offline access
+            if (getArguments() != null && getArguments().containsKey("userId")) {
+                String id = getArguments().getString("userId");
+                if (id != null) {
+                    database.getReference().child("Users").child(id).keepSynced(true);
+                }
+            }
+        } catch (Exception e) {
+            Log.e("profileFragment", "Error with Firebase persistence: " + e.getMessage());
+        }
+
         dialog = new ProgressDialog(getContext());
 
         // Check if userId was passed
@@ -100,6 +120,7 @@ public class profileFragment extends baseFragment {
         storage = FirebaseStorage.getInstance();
 
         setupProgressDialog();
+        setupShimmer();
         setupViewPager();
         loadUserData();
         setupClickListeners();
@@ -124,6 +145,27 @@ public class profileFragment extends baseFragment {
         dialog.setMessage("Please Wait...");
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
+    }
+
+    private void setupShimmer() {
+        profileShimmerLayout = binding.profileShimmerLayout;
+        startShimmer();
+    }
+
+    private void startShimmer() {
+        if (profileShimmerLayout != null && binding != null) {
+            profileShimmerLayout.setVisibility(View.VISIBLE);
+            profileShimmerLayout.startShimmer();
+            binding.profileContentContainer.setVisibility(View.GONE);
+        }
+    }
+
+    private void stopShimmer() {
+        if (profileShimmerLayout != null && binding != null) {
+            profileShimmerLayout.stopShimmer();
+            profileShimmerLayout.setVisibility(View.GONE);
+            binding.profileContentContainer.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setupViewPager() {
@@ -180,43 +222,66 @@ public class profileFragment extends baseFragment {
     private void loadUserData() {
         Log.d("profileFragment", "Loading user data for uid: " + userId);
 
+        // Show shimmer effect while loading
+        startShimmer();
+
+        // Keep data synced offline
+        DatabaseReference userRef = database.getReference().child("Users").child(userId);
+        userRef.keepSynced(true);
+
         // First load the user data
-        database.getReference()
-                .child("Users")
-                .child(userId)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (binding != null && snapshot.exists()) {
-                            currentUser = snapshot.getValue(userModel.class);
-                            if (currentUser != null) {
-                                // Always use the snapshot key as the user ID
-                                String userId = snapshot.getKey();
-                                Log.d("profileFragment", "User data loaded successfully with ID: " + userId);
-                                updateUIWithUserData(currentUser, userId);
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Check if fragment is still attached and binding exists
+                if (!isAdded() || binding == null) {
+                    Log.e("profileFragment", "Fragment not attached or binding is null");
+                    return;
+                }
 
-                                // Load counts after user data is loaded
-                                loadFollowersCount(userId);
-                                loadPostsCount(userId);
-                                loadFollowingCount(userId);
+                if (snapshot.exists()) {
+                    currentUser = snapshot.getValue(userModel.class);
+                    if (currentUser != null) {
+                        // Always use the snapshot key as the user ID
+                        String userId = snapshot.getKey();
+                        Log.d("profileFragment", "User data loaded successfully with ID: " + userId);
 
-                                // Notify adapter about user data change
-                                if (viewPager != null && viewPager.getAdapter() != null) {
-                                    viewPager.getAdapter().notifyDataSetChanged();
-                                }
-                            } else {
-                                Log.e("profileFragment", "User data is null");
-                            }
-                        } else {
-                            Log.e("profileFragment", "Binding is null or snapshot doesn't exist");
+                        // Hide shimmer once data is loaded
+                        stopShimmer();
+
+                        updateUIWithUserData(currentUser, userId);
+
+                        // Load counts after user data is loaded
+                        loadFollowersCount(userId);
+                        loadPostsCount(userId);
+                        loadFollowingCount(userId);
+
+                        // Notify adapter about user data change
+                        if (viewPager != null && viewPager.getAdapter() != null) {
+                            viewPager.getAdapter().notifyDataSetChanged();
                         }
+                    } else {
+                        Log.e("profileFragment", "User data is null");
+                        stopShimmer(); // Stop shimmer on error
+                        showOfflineMessage();
                     }
+                } else {
+                    Log.e("profileFragment", "Snapshot doesn't exist");
+                    stopShimmer(); // Stop shimmer on error
+                    showOfflineMessage();
+                }
+            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("profileFragment", "Error loading user data: " + error.getMessage());
-                    }
-                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("profileFragment", "Error loading user data: " + error.getMessage());
+                // Check if fragment is still attached and binding exists
+                if (isAdded() && binding != null) {
+                    stopShimmer(); // Stop shimmer on error
+                    showOfflineMessage();
+                }
+            }
+        });
     }
 
     private void updateUIWithUserData(userModel user, String userId) {
@@ -506,88 +571,84 @@ public class profileFragment extends baseFragment {
     private void loadFollowersCount(String uid) {
         Log.d("profileFragment", "Loading followers count for uid: " + uid);
 
-        database.getReference()
-                .child("Users")
-                .child(uid)
-                .child("Followers") // Counting child nodes inside "followers"
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        int count = (int) snapshot.getChildrenCount(); // Count child nodes
-                        Log.d("profileFragment", "Followers count from DB: " + count);
+        DatabaseReference followersRef = database.getReference().child("Users").child(uid).child("Followers");
+        followersRef.keepSynced(true);
 
-                        if (binding != null) {
-                            binding.followersCountTV.setText(String.valueOf(count)); // Update UI
-                        }
-                    }
+        followersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!isAdded() || binding == null)
+                    return;
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("profileFragment", "Error loading followers count: " + error.getMessage());
-                        if (binding != null) {
-                            binding.followersCountTV.setText("0");
-                        }
-                    }
-                });
+                int count = (int) snapshot.getChildrenCount(); // Count child nodes
+                Log.d("profileFragment", "Followers count from DB: " + count);
+
+                binding.followersCountTV.setText(String.valueOf(count)); // Update UI
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("profileFragment", "Error loading followers count: " + error.getMessage());
+                if (isAdded() && binding != null) {
+                    binding.followersCountTV.setText("0");
+                }
+            }
+        });
     }
 
     private void loadFollowingCount(String uid) {
         Log.d("profileFragment", "Loading following count for uid: " + uid);
 
-        database.getReference()
-                .child("Users")
-                .child(uid)
-                .child("Following") // Counting child nodes inside "following"
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        int count = (int) snapshot.getChildrenCount(); // Count child nodes
-                        Log.d("profileFragment", "Following count from DB: " + count);
+        DatabaseReference followingRef = database.getReference().child("Users").child(uid).child("Following");
+        followingRef.keepSynced(true);
 
-                        if (binding != null) {
-                            binding.followingCountTV.setText(String.valueOf(count)); // Update UI
-                        }
-                    }
+        followingRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!isAdded() || binding == null)
+                    return;
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("profileFragment", "Error loading following count: " + error.getMessage());
-                        if (binding != null) {
-                            binding.followingCountTV.setText("0");
-                        }
-                    }
-                });
+                int count = (int) snapshot.getChildrenCount(); // Count child nodes
+                Log.d("profileFragment", "Following count from DB: " + count);
+
+                binding.followingCountTV.setText(String.valueOf(count)); // Update UI
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("profileFragment", "Error loading following count: " + error.getMessage());
+                if (isAdded() && binding != null) {
+                    binding.followingCountTV.setText("0");
+                }
+            }
+        });
     }
 
     private void loadPostsCount(String uid) {
-        database.getReference()
-                .child("Posts")
-                .orderByChild("postedBy")
-                .equalTo(uid)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (binding != null) {
-                            long count = snapshot.getChildrenCount();
-                            binding.postsCountTV.setText(String.valueOf(count));
+        DatabaseReference postsRef = database.getReference().child("Posts");
+        postsRef.keepSynced(true);
 
-                            // Update posts count in database
-                            database.getReference()
-                                    .child("Users")
-                                    .child(uid)
-                                    .child("postsCount")
-                                    .setValue(count);
-                        }
-                    }
+        postsRef.orderByChild("postedBy").equalTo(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!isAdded() || binding == null)
+                    return;
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("profileFragment", "Error loading posts count: " + error.getMessage());
-                        if (binding != null) {
-                            binding.postsCountTV.setText("0");
-                        }
-                    }
-                });
+                long count = snapshot.getChildrenCount();
+                binding.postsCountTV.setText(String.valueOf(count));
+
+                // Update posts count in database
+                database.getReference().child("Users").child(uid).child("postsCount").setValue(count);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("profileFragment", "Error loading posts count: " + error.getMessage());
+                if (isAdded() && binding != null) {
+                    binding.postsCountTV.setText("0");
+                }
+            }
+        });
     }
 
     private void setupClickListeners() {
@@ -732,6 +793,22 @@ public class profileFragment extends baseFragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (profileShimmerLayout != null && profileShimmerLayout.getVisibility() == View.VISIBLE && binding != null) {
+            profileShimmerLayout.startShimmer();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (profileShimmerLayout != null && binding != null) {
+            profileShimmerLayout.stopShimmer();
+        }
+    }
+
     // ViewPager2 Adapter
     private class ProfilePagerAdapter extends FragmentStateAdapter {
         public ProfilePagerAdapter(@NonNull Fragment fragment) {
@@ -844,75 +921,89 @@ public class profileFragment extends baseFragment {
             if (userId == null)
                 return;
 
-            database.getReference()
-                    .child("Posts")
-                    .orderByChild("postedBy")
-                    .equalTo(userId)
-                    .addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            postList.clear();
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                try {
-                                    postModel post = new postModel();
-                                    post.setPostId(dataSnapshot.getKey());
-                                    post.setPostImage(dataSnapshot.child("postImage").getValue(String.class));
-                                    post.setPostCaption(dataSnapshot.child("postCaption").getValue(String.class));
-                                    post.setPostedBy(dataSnapshot.child("postedBy").getValue(String.class));
+            DatabaseReference postsRef = database.getReference().child("Posts");
+            postsRef.keepSynced(true);
 
-                                    if (dataSnapshot.child("postedAt").exists()) {
-                                        Long postedAt = dataSnapshot.child("postedAt").getValue(Long.class);
-                                        if (postedAt != null) {
-                                            post.setPostedAt(postedAt);
-                                        }
-                                    }
+            postsRef.orderByChild("postedBy").equalTo(userId).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (!isAdded() || postsRecyclerView == null) {
+                        return; // Fragment not attached or views destroyed
+                    }
 
-                                    if (dataSnapshot.child("postLikes").exists()) {
-                                        Long postLikes = dataSnapshot.child("postLikes").getValue(Long.class);
-                                        post.setPostLikes(postLikes != null ? postLikes.intValue() : 0);
-                                    }
+                    postList.clear();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        try {
+                            postModel post = new postModel();
+                            post.setPostId(dataSnapshot.getKey());
+                            post.setPostImage(dataSnapshot.child("postImage").getValue(String.class));
+                            post.setPostCaption(dataSnapshot.child("postCaption").getValue(String.class));
+                            post.setPostedBy(dataSnapshot.child("postedBy").getValue(String.class));
 
-                                    // Handle comment count
-                                    if (dataSnapshot.child("commentCount").exists()) {
-                                        Long commentCount = dataSnapshot.child("commentCount").getValue(Long.class);
-                                        post.setCommentCount(commentCount != null ? commentCount.intValue() : 0);
-                                    } else {
-                                        // If commentCount doesn't exist, count the comments manually
-                                        int count = (int) dataSnapshot.child("comments").getChildrenCount();
-                                        post.setCommentCount(count);
-
-                                        // Update the commentCount in database
-                                        database.getReference()
-                                                .child("Posts")
-                                                .child(post.getPostId())
-                                                .child("commentCount")
-                                                .setValue(count);
-                                    }
-
-                                    postList.add(post);
-                                } catch (Exception e) {
-                                    Log.e("PostsFragment", "Error parsing post: " + e.getMessage());
+                            if (dataSnapshot.child("postedAt").exists()) {
+                                Long postedAt = dataSnapshot.child("postedAt").getValue(Long.class);
+                                if (postedAt != null) {
+                                    post.setPostedAt(postedAt);
                                 }
                             }
-                            updateUI();
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.e("PostsFragment", "Error loading posts: " + error.getMessage());
-                            Toast.makeText(getContext(), "Error loading posts", Toast.LENGTH_SHORT).show();
+                            if (dataSnapshot.child("postLikes").exists()) {
+                                Long postLikes = dataSnapshot.child("postLikes").getValue(Long.class);
+                                post.setPostLikes(postLikes != null ? postLikes.intValue() : 0);
+                            }
+
+                            // Handle comment count
+                            if (dataSnapshot.child("commentCount").exists()) {
+                                Long commentCount = dataSnapshot.child("commentCount").getValue(Long.class);
+                                post.setCommentCount(commentCount != null ? commentCount.intValue() : 0);
+                            } else {
+                                // If commentCount doesn't exist, count the comments manually
+                                int count = (int) dataSnapshot.child("comments").getChildrenCount();
+                                post.setCommentCount(count);
+
+                                // Update the commentCount in database
+                                if (isAdded()) {
+                                    database.getReference()
+                                            .child("Posts")
+                                            .child(post.getPostId())
+                                            .child("commentCount")
+                                            .setValue(count);
+                                }
+                            }
+
+                            postList.add(post);
+                        } catch (Exception e) {
+                            Log.e("PostsFragment", "Error parsing post: " + e.getMessage());
                         }
-                    });
+                    }
+                    updateUI();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("PostsFragment", "Error loading posts: " + error.getMessage());
+                    if (isAdded() && getContext() != null) {
+                        Toast.makeText(getContext(), "Error loading posts", Toast.LENGTH_SHORT).show();
+                    }
+                    updateUI(); // Still call updateUI to handle empty state
+                }
+            });
         }
 
         private void updateUI() {
+            if (!isAdded() || emptyStateView == null || postsRecyclerView == null) {
+                return; // Fragment not attached or views destroyed
+            }
+
             if (postList.isEmpty()) {
                 emptyStateView.setVisibility(View.VISIBLE);
                 postsRecyclerView.setVisibility(View.GONE);
             } else {
                 emptyStateView.setVisibility(View.GONE);
                 postsRecyclerView.setVisibility(View.VISIBLE);
-                postAdapter.notifyDataSetChanged();
+                if (postAdapter != null) {
+                    postAdapter.notifyDataSetChanged();
+                }
             }
         }
 
@@ -1002,6 +1093,26 @@ public class profileFragment extends baseFragment {
                     jobRoleTV.setText(user.getJobRole());
                     passingYearTV.setText(user.getPassingYear());
                     break;
+            }
+        }
+    }
+
+    // Add a method to show offline message
+    private void showOfflineMessage() {
+        if (binding != null) {
+            // Show offline error message in shimmer layout
+            View errorMessage = binding.getRoot().findViewById(R.id.shimmer_error_message);
+            if (errorMessage != null) {
+                errorMessage.setVisibility(View.VISIBLE);
+            }
+
+            // Check if we have cached data and display it
+            if (currentUser != null) {
+                stopShimmer();
+                updateUIWithUserData(currentUser, userId);
+            } else {
+                // If no cached data, show a toast message
+                Toast.makeText(getContext(), "Network error. Please check your connection.", Toast.LENGTH_SHORT).show();
             }
         }
     }

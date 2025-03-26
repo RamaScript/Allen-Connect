@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/_8mdp"
+    android:paddingEnd="@dimen/_8mdp"
+    android:paddingTop="@dimen/_6mdp"
+    android:paddingBottom="@dimen/_6mdp"
+    android:background="@color/white">
+
+    <View
+        android:id="@+id/shimmer_profile_pic"
+        android:layout_width="@dimen/_40mdp"
+        android:layout_height="@dimen/_40mdp"
+        android:background="@drawable/circle_shape_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/shimmer_name"
+        android:layout_width="0dp"
+        android:layout_height="14sp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/shimmer_color"
+        app:layout_constraintStart_toEndOf="@+id/shimmer_profile_pic"
+        app:layout_constraintTop_toTopOf="@+id/shimmer_profile_pic"
+        app:layout_constraintWidth_percent="0.5" />
+
+    <View
+        android:id="@+id/shimmer_profession"
+        android:layout_width="0dp"
+        android:layout_height="12sp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="6dp"
+        android:background="@color/shimmer_color"
+        app:layout_constraintBottom_toBottomOf="@+id/shimmer_profile_pic"
+        app:layout_constraintStart_toEndOf="@+id/shimmer_profile_pic"
+        app:layout_constraintTop_toBottomOf="@+id/shimmer_name"
+        app:layout_constraintWidth_percent="0.2" />
+
+    <View
+        android:id="@+id/shimmer_follow_btn"
+        android:layout_width="68dp"
+        android:layout_height="32dp"
+        android:background="@color/shimmer_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout> 

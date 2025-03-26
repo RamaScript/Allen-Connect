@@ -52,6 +52,16 @@ public class allenConnectApp extends Application implements Application.Activity
     public void onCreate() {
         super.onCreate();
 
+        // Enable Firebase disk persistence for offline capability
+        try {
+            // This must be set before any other Firebase database usage
+            // And can only be called once per application
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        } catch (Exception e) {
+            // This may throw if it's already been called before, which is okay
+            Log.e(TAG, "Error enabling Firebase persistence: " + e.getMessage());
+        }
+
         // Initialize Firebase
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();

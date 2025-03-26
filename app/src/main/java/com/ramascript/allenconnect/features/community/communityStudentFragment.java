@@ -1,6 +1,7 @@
 package com.ramascript.allenconnect.features.community;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -10,9 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ramascript.allenconnect.features.user.userModel;
@@ -27,6 +30,7 @@ public class communityStudentFragment extends Fragment {
     ArrayList<userModel> filteredList;
     communityUserAdapter adapter;
     ValueEventListener usersListener;
+    private ShimmerFrameLayout shimmerLayout;
 
     FirebaseAuth auth;
     FirebaseDatabase database;
@@ -42,6 +46,13 @@ public class communityStudentFragment extends Fragment {
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
+
+        // Keep Users data synced for offline access
+        try {
+            database.getReference().child("Users").keepSynced(true);
+        } catch (Exception e) {
+            Log.e("communityStudentFragment", "Error setting keepSynced: " + e.getMessage());
+        }
     }
 
     @Override
@@ -58,22 +69,48 @@ public class communityStudentFragment extends Fragment {
         binding.rvStudent.setHasFixedSize(true);
         binding.rvStudent.setAdapter(adapter);
 
+        // Initialize shimmer
+        shimmerLayout = binding.shimmerLayout;
+        startShimmer();
+
         loadUsers();
 
         return binding.getRoot();
     }
 
+    private void startShimmer() {
+        if (shimmerLayout != null && binding != null) {
+            shimmerLayout.setVisibility(View.VISIBLE);
+            shimmerLayout.startShimmer();
+            binding.rvStudent.setVisibility(View.GONE);
+            binding.progressBar.setVisibility(View.GONE);
+            binding.emptyView.setVisibility(View.GONE);
+        }
+    }
+
+    private void stopShimmer() {
+        if (shimmerLayout != null && binding != null) {
+            shimmerLayout.stopShimmer();
+            shimmerLayout.setVisibility(View.GONE);
+        }
+    }
+
     private void loadUsers() {
         // Show loading state on initial load
         if (isInitialLoad && binding != null) {
-            binding.progressBar.setVisibility(View.VISIBLE);
-            binding.rvStudent.setVisibility(View.GONE);
+            startShimmer();
         }
 
         // Remove previous listener if exists
         if (usersListener != null) {
             database.getReference().child("Users").removeEventListener(usersListener);
         }
+
+        // Reference to the Users node
+        final DatabaseReference usersRef = database.getReference().child("Users");
+
+        // Enable disk persistence for this reference
+        usersRef.keepSynced(true);
 
         usersListener = new ValueEventListener() {
             @Override
@@ -105,7 +142,7 @@ public class communityStudentFragment extends Fragment {
                     }
 
                     // Hide loading state
-                    binding.progressBar.setVisibility(View.GONE);
+                    stopShimmer();
 
                     // Check if we have data to show
                     if (filteredList.isEmpty()) {
@@ -138,15 +175,21 @@ public class communityStudentFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                if (binding != null) {
-                    binding.progressBar.setVisibility(View.GONE);
+                if (isAdded() && binding != null) {
+                    stopShimmer();
                     binding.rvStudent.setVisibility(View.VISIBLE);
+
+                    // Show offline message if data is empty
+                    if (list.isEmpty()) {
+                        binding.emptyView.setText("Network error. Please check your connection.");
+                        binding.emptyView.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         };
 
-        // Add the listener
-        database.getReference().child("Users").addValueEventListener(usersListener);
+        // Add the listener and keep data synced offline
+        usersRef.addValueEventListener(usersListener);
     }
 
     public void filterUsers(String query) {
@@ -186,6 +229,23 @@ public class communityStudentFragment extends Fragment {
             usersListener = null;
         }
 
+        stopShimmer();
         binding = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (shimmerLayout != null && shimmerLayout.getVisibility() == View.VISIBLE && binding != null) {
+            shimmerLayout.startShimmer();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (shimmerLayout != null && binding != null) {
+            shimmerLayout.stopShimmer();
+        }
     }
 }

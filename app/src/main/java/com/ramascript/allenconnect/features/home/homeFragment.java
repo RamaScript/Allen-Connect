@@ -21,6 +21,7 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -54,6 +55,7 @@ public class homeFragment extends Fragment {
     private boolean isInitialPostLoad = true;
     private ValueEventListener postsListener;
     private ValueEventListener userDataListener;
+    private ShimmerFrameLayout shimmerFrameLayout;
 
     public homeFragment() {
         // Required empty public constructor
@@ -69,6 +71,18 @@ public class homeFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
+
+        // Keep Posts data synced for offline access
+        try {
+            database.getReference().child("Posts").keepSynced(true);
+
+            // Also keep current user data synced
+            if (auth.getCurrentUser() != null) {
+                database.getReference().child("Users").child(auth.getCurrentUser().getUid()).keepSynced(true);
+            }
+        } catch (Exception e) {
+            System.out.println("Error setting keepSynced: " + e.getMessage());
+        }
 
         // Reset initial post load flag when fragment is created
         isInitialPostLoad = true;
@@ -90,16 +104,16 @@ public class homeFragment extends Fragment {
         // Make RecyclerView initially hidden
         binding.dashBoardRV.setVisibility(View.GONE);
 
-        // Get the shimmer layout directly from the included layout
-        View shimmerView = view.findViewById(R.id.shimmerLayout);
-        ShimmerFrameLayout shimmerFrameLayout = null;
-        if (shimmerView != null) {
-            shimmerFrameLayout = shimmerView.findViewById(R.id.shimmerFrameLayout);
-            if (shimmerFrameLayout != null) {
-                shimmerFrameLayout.startShimmer();
-                shimmerFrameLayout.setVisibility(View.VISIBLE);
+        // Initialize shimmer layout
+        shimmerFrameLayout = view.findViewById(R.id.shimmerFrameLayout);
+        if (shimmerFrameLayout == null) {
+            // If direct access doesn't work, try through the included layout
+            View shimmerView = view.findViewById(R.id.shimmerLayout);
+            if (shimmerView != null) {
+                shimmerFrameLayout = shimmerView.findViewById(R.id.shimmerFrameLayout);
             }
         }
+        startShimmer();
 
         // Load user profile image and details
         if (auth.getCurrentUser() != null) {
@@ -330,8 +344,17 @@ public class homeFragment extends Fragment {
             database.getReference().child("Posts").removeEventListener(postsListener);
         }
 
+        // Show shimmer effect before loading
+        showShimmerEffect();
+
         // Record the start time to ensure minimum shimmer display duration
         long startTime = System.currentTimeMillis();
+
+        // Reference to Posts node
+        final DatabaseReference postsRef = database.getReference().child("Posts");
+
+        // Make sure it's synced for offline access
+        postsRef.keepSynced(true);
 
         postsListener = new ValueEventListener() {
             @Override
@@ -450,42 +473,60 @@ public class homeFragment extends Fragment {
         };
 
         // Add listener to database
-        database.getReference().child("Posts").addValueEventListener(postsListener);
+        postsRef.addValueEventListener(postsListener);
     }
 
-    private void showShimmerEffect() {
+    private void startShimmer() {
         if (binding == null)
             return;
 
-        View shimmerView = binding.getRoot().findViewById(R.id.shimmerLayout);
-        if (shimmerView != null) {
-            shimmerView.setVisibility(View.VISIBLE);
+        // Hide the actual post creation card
+        binding.createPostCard.setVisibility(View.GONE);
 
-            ShimmerFrameLayout shimmerFrameLayout = shimmerView.findViewById(R.id.shimmerFrameLayout);
-            if (shimmerFrameLayout != null) {
-                shimmerFrameLayout.startShimmer();
-                shimmerFrameLayout.setVisibility(View.VISIBLE);
+        if (shimmerFrameLayout != null) {
+            shimmerFrameLayout.setVisibility(View.VISIBLE);
+            shimmerFrameLayout.startShimmer();
+            binding.dashBoardRV.setVisibility(View.GONE);
+        } else {
+            // Fallback to included layout visibility if shimmerFrameLayout is not
+            // accessible
+            View shimmerView = binding.getRoot().findViewById(R.id.shimmerLayout);
+            if (shimmerView != null) {
+                shimmerView.setVisibility(View.VISIBLE);
             }
+            binding.dashBoardRV.setVisibility(View.GONE);
         }
+    }
 
-        binding.dashBoardRV.setVisibility(View.GONE);
+    private void stopShimmer() {
+        if (binding == null)
+            return;
+
+        // Show the actual post creation card
+        binding.createPostCard.setVisibility(View.VISIBLE);
+
+        if (shimmerFrameLayout != null) {
+            shimmerFrameLayout.stopShimmer();
+            shimmerFrameLayout.setVisibility(View.GONE);
+            binding.dashBoardRV.setVisibility(View.VISIBLE);
+        } else {
+            // Fallback to included layout visibility if shimmerFrameLayout is not
+            // accessible
+            View shimmerView = binding.getRoot().findViewById(R.id.shimmerLayout);
+            if (shimmerView != null) {
+                shimmerView.setVisibility(View.GONE);
+            }
+            binding.dashBoardRV.setVisibility(View.VISIBLE);
+        }
+    }
+
+    // Update the showShimmerEffect and hideShimmerEffect methods
+    private void showShimmerEffect() {
+        startShimmer();
     }
 
     private void hideShimmerEffect() {
-        if (binding == null)
-            return;
-
-        View shimmerView = binding.getRoot().findViewById(R.id.shimmerLayout);
-        if (shimmerView != null) {
-            shimmerView.setVisibility(View.GONE);
-
-            ShimmerFrameLayout shimmerFrameLayout = shimmerView.findViewById(R.id.shimmerFrameLayout);
-            if (shimmerFrameLayout != null) {
-                shimmerFrameLayout.stopShimmer();
-            }
-        }
-
-        binding.dashBoardRV.setVisibility(View.VISIBLE);
+        stopShimmer();
     }
 
     @Override
@@ -493,11 +534,19 @@ public class homeFragment extends Fragment {
         super.onResume();
         // Start shimmer effect in resume if posts are still loading
         if (isInitialPostLoad && binding != null) {
-            View shimmerView = binding.getRoot().findViewById(R.id.shimmerLayout);
-            if (shimmerView != null && shimmerView.getVisibility() == View.VISIBLE) {
-                ShimmerFrameLayout shimmerFrameLayout = shimmerView.findViewById(R.id.shimmerFrameLayout);
-                if (shimmerFrameLayout != null) {
+            if (shimmerFrameLayout != null) {
+                if (shimmerFrameLayout.getVisibility() == View.VISIBLE) {
                     shimmerFrameLayout.startShimmer();
+                    binding.createPostCard.setVisibility(View.GONE);
+                }
+            } else {
+                View shimmerView = binding.getRoot().findViewById(R.id.shimmerLayout);
+                if (shimmerView != null && shimmerView.getVisibility() == View.VISIBLE) {
+                    ShimmerFrameLayout frameLayout = shimmerView.findViewById(R.id.shimmerFrameLayout);
+                    if (frameLayout != null) {
+                        frameLayout.startShimmer();
+                        binding.createPostCard.setVisibility(View.GONE);
+                    }
                 }
             }
         }
@@ -508,11 +557,15 @@ public class homeFragment extends Fragment {
         super.onPause();
         // Stop shimmer effect in pause
         if (binding != null) {
-            View shimmerView = binding.getRoot().findViewById(R.id.shimmerLayout);
-            if (shimmerView != null) {
-                ShimmerFrameLayout shimmerFrameLayout = shimmerView.findViewById(R.id.shimmerFrameLayout);
-                if (shimmerFrameLayout != null) {
-                    shimmerFrameLayout.stopShimmer();
+            if (shimmerFrameLayout != null) {
+                shimmerFrameLayout.stopShimmer();
+            } else {
+                View shimmerView = binding.getRoot().findViewById(R.id.shimmerLayout);
+                if (shimmerView != null) {
+                    ShimmerFrameLayout frameLayout = shimmerView.findViewById(R.id.shimmerFrameLayout);
+                    if (frameLayout != null) {
+                        frameLayout.stopShimmer();
+                    }
                 }
             }
         }
