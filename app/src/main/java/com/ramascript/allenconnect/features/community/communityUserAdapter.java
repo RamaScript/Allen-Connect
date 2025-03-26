@@ -111,9 +111,9 @@ public class communityUserAdapter extends RecyclerView.Adapter<communityUserAdap
                      });
                   } else {
                      // User is not following - show follow option
-                     holder.binding.followTV.setBackgroundResource(R.drawable.btnbg);
+                     holder.binding.followTV.setBackgroundResource(R.drawable.gradient_btn);
                      holder.binding.followTV.setText("Follow");
-                     holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.white_my));
+                     holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.white));
 
                      // Add click listener for follow
                      holder.binding.followTV.setOnClickListener(v -> {
@@ -191,10 +191,10 @@ public class communityUserAdapter extends RecyclerView.Adapter<communityUserAdap
                                           }).addOnFailureListener(e -> {
                                              // Revert UI on failure
                                              holder.binding.followTV.setEnabled(true);
-                                             holder.binding.followTV.setBackgroundResource(R.drawable.btnbg);
+                                             holder.binding.followTV.setBackgroundResource(R.drawable.gradient_btn);
                                              holder.binding.followTV.setText("Follow");
                                              holder.binding.followTV
-                                                   .setTextColor(context.getResources().getColor(R.color.white_my));
+                                                   .setTextColor(context.getResources().getColor(R.color.white));
 
                                              Toast.makeText(context,
                                                    "Failed to update follower count: " + e.getMessage(),
@@ -206,10 +206,10 @@ public class communityUserAdapter extends RecyclerView.Adapter<communityUserAdap
                                  public void onCancelled(@NonNull DatabaseError error) {
                                     // Revert UI on failure
                                     holder.binding.followTV.setEnabled(true);
-                                    holder.binding.followTV.setBackgroundResource(R.drawable.btnbg);
+                                    holder.binding.followTV.setBackgroundResource(R.drawable.gradient_btn);
                                     holder.binding.followTV.setText("Follow");
                                     holder.binding.followTV
-                                          .setTextColor(context.getResources().getColor(R.color.white_my));
+                                          .setTextColor(context.getResources().getColor(R.color.white));
 
                                     Toast.makeText(context, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT)
                                           .show();
@@ -218,9 +218,9 @@ public class communityUserAdapter extends RecyclerView.Adapter<communityUserAdap
                      }).addOnFailureListener(e -> {
                         // Revert UI on failure
                         holder.binding.followTV.setEnabled(true);
-                        holder.binding.followTV.setBackgroundResource(R.drawable.btnbg);
+                        holder.binding.followTV.setBackgroundResource(R.drawable.gradient_btn);
                         holder.binding.followTV.setText("Follow");
-                        holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.white_my));
+                        holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.white));
 
                         Toast.makeText(context, "Failed to update following: " + e.getMessage(), Toast.LENGTH_SHORT)
                               .show();
@@ -228,9 +228,9 @@ public class communityUserAdapter extends RecyclerView.Adapter<communityUserAdap
             }).addOnFailureListener(e -> {
                // Revert UI on failure
                holder.binding.followTV.setEnabled(true);
-               holder.binding.followTV.setBackgroundResource(R.drawable.btnbg);
+               holder.binding.followTV.setBackgroundResource(R.drawable.gradient_btn);
                holder.binding.followTV.setText("Follow");
-               holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.white_my));
+               holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.white));
 
                Toast.makeText(context, "Failed to follow: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             });
@@ -241,9 +241,9 @@ public class communityUserAdapter extends RecyclerView.Adapter<communityUserAdap
       holder.binding.followTV.setEnabled(false);
 
       // Update UI immediately to prevent jitter
-      holder.binding.followTV.setBackgroundResource(R.drawable.btnbg);
+      holder.binding.followTV.setBackgroundResource(R.drawable.gradient_btn);
       holder.binding.followTV.setText("Follow");
-      holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.white_my));
+      holder.binding.followTV.setTextColor(context.getResources().getColor(R.color.white));
 
       // Remove follower relationship
       database.getReference().child("Users")

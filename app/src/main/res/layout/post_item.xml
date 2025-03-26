@@ -68,7 +68,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:paddingStart="12dp"
             android:fontFamily="@font/poppins"
             android:textColor="@color/black"
             android:textSize="14sp"/>

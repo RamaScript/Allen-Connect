@@ -31,6 +31,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.ramascript.allenconnect.features.auth.deleteAccountActivity;
+
 import com.ramascript.allenconnect.features.auth.loginAs;
 import com.ramascript.allenconnect.utils.baseFragment;
 import com.ramascript.allenconnect.features.about.meetDevsActivity;
@@ -313,7 +314,7 @@ public class profileFragment extends baseFragment {
                         } else {
                             // Not following yet
                             binding.followButton.setText("Follow");
-                            binding.followButton.setBackgroundResource(R.drawable.btnbg);
+                            binding.followButton.setBackgroundResource(R.drawable.gradient_btn);
                             binding.followButton.setTextColor(getResources().getColor(R.color.white));
 
                             // Set click listener for follow
@@ -413,7 +414,7 @@ public class profileFragment extends baseFragment {
                 .addOnFailureListener(e -> {
                     binding.followButton.setEnabled(true);
                     binding.followButton.setText("Follow");
-                    binding.followButton.setBackgroundResource(R.drawable.btnbg);
+                    binding.followButton.setBackgroundResource(R.drawable.gradient_btn);
                     binding.followButton.setTextColor(getResources().getColor(R.color.white));
 
                     Toast.makeText(getContext(), "Failed to follow: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -428,7 +429,7 @@ public class profileFragment extends baseFragment {
 
         // Update UI immediately
         binding.followButton.setText("Follow");
-        binding.followButton.setBackgroundResource(R.drawable.btnbg);
+        binding.followButton.setBackgroundResource(R.drawable.gradient_btn);
         binding.followButton.setTextColor(getResources().getColor(R.color.white));
 
         // Remove from follower list of profile user

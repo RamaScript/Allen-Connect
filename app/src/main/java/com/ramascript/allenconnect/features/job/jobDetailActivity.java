@@ -3,7 +3,9 @@ package com.ramascript.allenconnect.features.job;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -17,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ramascript.allenconnect.base.mainActivity;
+import com.ramascript.allenconnect.features.chat.chatDetailActivity;
 import com.ramascript.allenconnect.features.user.userModel;
 import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.ActivityJobDetailBinding;
@@ -24,8 +27,11 @@ import com.squareup.picasso.Picasso;
 
 public class jobDetailActivity extends AppCompatActivity {
 
-    ActivityJobDetailBinding binding;
-    FirebaseDatabase database;
+    private ActivityJobDetailBinding binding;
+    private FirebaseDatabase database;
+    private userModel user;
+    private jobModel job;
+    private String jobId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +39,7 @@ public class jobDetailActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         binding = ActivityJobDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -40,84 +47,128 @@ public class jobDetailActivity extends AppCompatActivity {
         });
 
         database = FirebaseDatabase.getInstance();
+        jobId = getIntent().getStringExtra("jobID");
 
-        binding.backBtnIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(jobDetailActivity.this, mainActivity.class);
-                intent.putExtra("openFragment", "jobsFragment");
-                startActivity(intent);
-                finish();
-            }
+        binding.backBtnIV.setOnClickListener(v -> {
+            Intent intent = new Intent(jobDetailActivity.this, mainActivity.class);
+            intent.putExtra("openFragment", "jobsFragment");
+            startActivity(intent);
+            finish();
         });
 
-        String jobId = getIntent().getStringExtra("jobID");
+        // Disable chat button initially
+        binding.chat.setEnabled(false);
+        loadJobDetails();
+    }
 
-        database.getReference().child("Jobs").child(jobId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    jobModel jobModel = snapshot.getValue(com.ramascript.allenconnect.features.job.jobModel.class);
+    private void loadJobDetails() {
+        if (jobId == null) return;
 
-                    // Populate views using jobModel and binding
+        database.getReference().child("Jobs").child(jobId)
+            .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (!snapshot.exists()) return;
 
-                    Picasso.get()
-                        .load(jobModel.getLogoImgPath())
-                        .placeholder(R.drawable.ic_avatar)
-                        .into(binding.companyLogo);
+                    job = snapshot.getValue(jobModel.class);
+                    if (job == null) return;
 
-                    binding.jobTitle.setText(Html.fromHtml("<b>Designation:</b> " + jobModel.getJobTitle()));
-                    binding.companyName.setText(Html.fromHtml("<b>Company Name:</b> " + jobModel.getCompanyName()));
-                    binding.jobType.setText(Html.fromHtml("<b>Job Type:</b> " + jobModel.getJobType()));
-                    binding.experienceLevel.setText(Html.fromHtml("<b>Experience Required:</b> " + jobModel.getExperienceRequired()));
-                    binding.courseEligibility.setText(Html.fromHtml("<b>Courses Eligible:</b> " + String.join(", ", jobModel.getCoursesEligible())));
-                    binding.skillsRequired.setText(Html.fromHtml("<b>Skills Required:</b> " + String.join(", ", jobModel.getSkillsRequired())));
-                    binding.salary.setText(Html.fromHtml("<b>Salary:</b> " + jobModel.getSalary()));
-                    binding.contactEmail.setText(Html.fromHtml("<b>Contact Email:</b> " + jobModel.getContactEmail()));
-                    binding.contactPhone.setText(Html.fromHtml("<b>Contact Phone:</b> " + jobModel.getContactPhone()));
-                    binding.jobDescription.setText(Html.fromHtml("<b>Job Description:</b> " + jobModel.getJobDescription()));
-                    binding.applicationDeadline.setText(Html.fromHtml("<b>Application Deadline:</b> " + jobModel.getApplicationDeadline()));
-
-                    database.getReference().child("Users").child(jobModel.getJobPostedBy()).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                userModel userModel = snapshot.getValue(com.ramascript.allenconnect.features.user.userModel.class);
-
-                                Picasso.get()
-                                    .load(userModel.getProfilePhoto())
-                                    .placeholder(R.drawable.ic_avatar)
-                                    .into(binding.jobPosterProfilePic);
-
-                                binding.jobPosterName.setText(Html.fromHtml(userModel.getName()));
-
-                                if(userModel.getUserType().equals("Alumni")){
-                                    binding.jobPosterTitle.setText(Html.fromHtml("<b>" + userModel.getJobRole() + "</b>" +
-                                                                                    " at <b>" + userModel.getCompany() + "</b> " +
-                                                                                    "<br><i>Alumni AllenHouse</i> - " +
-                                                                                    userModel.getPassingYear() + " Batch."));
-                                }
-                                else if(userModel.getUserType().equals("Professor")){
-                                    binding.jobPosterTitle.setText(Html.fromHtml("<b> Prof. </b> at Allenhouse"));
-                                }
-
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
+                    updateUI(job);
+                    loadJobPoster(job.getJobPostedBy());
                 }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
+    }
+
+    private void updateUI(jobModel job) {
+
+            Picasso.get()
+                .load(job.getLogoImgPath())
+                .placeholder(R.drawable.ic_avatar)
+                .into(binding.companyLogo);
+
+            setTextWithHtml(binding.jobTitle, "Designation:", job.getJobTitle());
+            setTextWithHtml(binding.companyName, "Company Name:", job.getCompanyName());
+            setTextWithHtml(binding.jobType, "Job Type:", job.getJobType());
+            setTextWithHtml(binding.experienceLevel, "Experience Required:", job.getExperienceRequired());
+            setTextWithHtml(binding.courseEligibility, "Courses Eligible:", String.join(", ", job.getCoursesEligible()));
+            setTextWithHtml(binding.skillsRequired, "Skills Required:", String.join(", ", job.getSkillsRequired()));
+            setTextWithHtml(binding.salary, "Salary:", job.getSalary());
+            setTextWithHtml(binding.contactEmail, "Contact Email:", job.getContactEmail());
+            setTextWithHtml(binding.contactPhone, "Contact Phone:", job.getContactPhone());
+            setTextWithHtml(binding.jobDescription, "Job Description:", job.getJobDescription());
+            setTextWithHtml(binding.applicationDeadline, "Application Deadline:", job.getApplicationDeadline());
+
+    }
+
+    private void loadJobPoster(String userId) {
+        if (userId == null) return;
+
+        database.getReference().child("Users").child(userId)
+            .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (!snapshot.exists()) return;
+
+                    user = snapshot.getValue(userModel.class);
+                    if (user == null) return;
+
+                    updateJobPosterUI();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
+    }
+
+    private void updateJobPosterUI() {
+            Picasso.get()
+                .load(user.getProfilePhoto())
+                .placeholder(R.drawable.ic_avatar)
+                .into(binding.jobPosterProfilePic);
+
+            binding.jobPosterName.setText(Html.fromHtml(user.getName()));
+
+            String jobPosterTitle;
+            if ("Alumni".equals(user.getUserType())) {
+                jobPosterTitle = "<b>" + user.getJobRole() + "</b> at <b>" +
+                    user.getCompany() + "</b><br><i>Alumni AllenHouse</i> - " +
+                    user.getPassingYear() + " Batch.";
+            } else if ("Professor".equals(user.getUserType())) {
+                jobPosterTitle = "<b>Prof.</b> at Allenhouse";
+            } else {
+                jobPosterTitle = "";
             }
+            binding.jobPosterTitle.setText(Html.fromHtml(jobPosterTitle));
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            // Enable chat button now that user data is available
+            binding.chat.setEnabled(true);
+            binding.chat.setOnClickListener(v -> openChat());
+    }
 
-            }
-        });
+    private void openChat() {
+        if (user == null) return;
+        Log.d("ChatDebug", "User ID: " + job.getJobPostedBy());
+        Log.d("ChatDebug", "User Profile: " + user.getProfilePhoto());
+        Log.d("ChatDebug", "User Name: " + user.getName());
 
+        Toast.makeText(this, "clicked on chat", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(jobDetailActivity.this, chatDetailActivity.class);
+        intent.putExtra("userId", job.getJobPostedBy());
+        intent.putExtra("profilePic", user.getProfilePhoto());
+        intent.putExtra("userName", user.getName());
+        startActivity(intent);
+        Toast.makeText(this, "started", Toast.LENGTH_SHORT).show();
+    }
 
+    private void setTextWithHtml(View view, String label, String value) {
+        if (value == null || value.trim().isEmpty()) return;
+        if (view instanceof android.widget.TextView) {
+            ((android.widget.TextView) view).setText(Html.fromHtml("<b>" + label + "</b> " + value));
+        }
     }
 }
