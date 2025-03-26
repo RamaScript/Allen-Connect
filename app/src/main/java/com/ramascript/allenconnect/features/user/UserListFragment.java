@@ -17,6 +17,8 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.ramascript.allenconnect.R;
 
 public class UserListFragment extends Fragment {
@@ -31,6 +33,8 @@ public class UserListFragment extends Fragment {
     private TabLayout tabLayout;
     private TextView titleTextView;
     private ImageView backButton;
+    private FirebaseAuth auth;
+    private FirebaseDatabase database;
 
     public UserListFragment() {
         // Required empty public constructor
@@ -51,6 +55,21 @@ public class UserListFragment extends Fragment {
         if (getArguments() != null) {
             userId = getArguments().getString(ARG_USER_ID, "");
             initialTab = getArguments().getInt(ARG_INITIAL_TAB, 0);
+        }
+
+        auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+
+        // Keep data synced for offline capability
+        try {
+            if (userId != null && !userId.isEmpty()) {
+                // Set up data syncing for both followers and following
+                database.getReference().child("Users").child(userId).child("Followers").keepSynced(true);
+                database.getReference().child("Users").child(userId).child("Following").keepSynced(true);
+                database.getReference().child("Users").keepSynced(true);
+            }
+        } catch (Exception e) {
+            Log.e("UserListFragment", "Error setting keepSynced: " + e.getMessage());
         }
     }
 

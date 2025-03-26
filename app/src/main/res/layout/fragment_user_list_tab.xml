@@ -14,11 +14,20 @@
         android:clipToPadding="false"
         android:paddingTop="8dp"
         android:paddingBottom="16dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/rv_comm_student" />
+
+    <!-- Shimmer Layout -->
+    <include
+        android:id="@+id/shimmerLayout"
+        layout="@layout/shimmer_user_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
 
     <!-- Empty State View -->
     <include
