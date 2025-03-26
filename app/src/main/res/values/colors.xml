@@ -22,6 +22,7 @@
     <color name="orange">#FF5722</color>
     <color name="light_orange">#FFE0B2</color>
     <color name="chat_background">#FFF</color>
+    <color name="shimmer_color">#DDDDDD</color>
 
 
     <color name="color_primary">#007AFF</color>

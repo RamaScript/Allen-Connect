@@ -184,6 +184,14 @@
 
             </androidx.cardview.widget.CardView>
 
+            <!-- Shimmer Layout -->
+            <include
+                android:id="@+id/shimmerLayout"
+                layout="@layout/shimmer_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/dashBoardRV"
                 android:layout_width="match_parent"
@@ -192,6 +200,7 @@
                 android:nestedScrollingEnabled="true"
                 android:paddingTop="8dp"
                 android:paddingBottom="80dp"
+                android:visibility="gone"
                 tools:listitem="@layout/post_item" />
 
         </LinearLayout>

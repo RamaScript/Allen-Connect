@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -68,6 +69,9 @@ public class homeFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
+
+        // Reset initial post load flag when fragment is created
+        isInitialPostLoad = true;
     }
 
     @Override
@@ -83,8 +87,19 @@ public class homeFragment extends Fragment {
         dialog.setMessage("Please Wait");
         dialog.setCancelable(false);
 
-        // Show progress bar while loading posts
-        binding.progressBar.setVisibility(View.VISIBLE);
+        // Make RecyclerView initially hidden
+        binding.dashBoardRV.setVisibility(View.GONE);
+
+        // Get the shimmer layout directly from the included layout
+        View shimmerView = view.findViewById(R.id.shimmerLayout);
+        ShimmerFrameLayout shimmerFrameLayout = null;
+        if (shimmerView != null) {
+            shimmerFrameLayout = shimmerView.findViewById(R.id.shimmerFrameLayout);
+            if (shimmerFrameLayout != null) {
+                shimmerFrameLayout.startShimmer();
+                shimmerFrameLayout.setVisibility(View.VISIBLE);
+            }
+        }
 
         // Load user profile image and details
         if (auth.getCurrentUser() != null) {
@@ -315,6 +330,9 @@ public class homeFragment extends Fragment {
             database.getReference().child("Posts").removeEventListener(postsListener);
         }
 
+        // Record the start time to ensure minimum shimmer display duration
+        long startTime = System.currentTimeMillis();
+
         postsListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -342,7 +360,27 @@ public class homeFragment extends Fragment {
 
                     // Update UI
                     postAdapter.notifyDataSetChanged();
-                    binding.progressBar.setVisibility(View.GONE);
+
+                    // Calculate elapsed time
+                    long elapsed = System.currentTimeMillis() - startTime;
+                    // Ensure shimmer displays for at least 1 second (1000ms)
+                    long minimumShimmerTime = 1000;
+
+                    if (elapsed < minimumShimmerTime) {
+                        // Delay hiding shimmer to ensure it's visible long enough to be noticed
+                        new android.os.Handler().postDelayed(() -> {
+                            if (binding != null) {
+                                // Hide shimmer effect and show RecyclerView
+                                hideShimmerEffect();
+                                binding.progressBar.setVisibility(View.GONE);
+                            }
+                        }, minimumShimmerTime - elapsed);
+                    } else {
+                        // Hide shimmer effect and show RecyclerView immediately if enough time has
+                        // passed
+                        hideShimmerEffect();
+                        binding.progressBar.setVisibility(View.GONE);
+                    }
 
                     // Mark initial load as complete
                     isInitialPostLoad = false;
@@ -406,6 +444,7 @@ public class homeFragment extends Fragment {
                 if (!isAdded() || binding == null) {
                     return;
                 }
+                hideShimmerEffect();
                 binding.progressBar.setVisibility(View.GONE);
             }
         };
@@ -414,10 +453,78 @@ public class homeFragment extends Fragment {
         database.getReference().child("Posts").addValueEventListener(postsListener);
     }
 
+    private void showShimmerEffect() {
+        if (binding == null)
+            return;
+
+        View shimmerView = binding.getRoot().findViewById(R.id.shimmerLayout);
+        if (shimmerView != null) {
+            shimmerView.setVisibility(View.VISIBLE);
+
+            ShimmerFrameLayout shimmerFrameLayout = shimmerView.findViewById(R.id.shimmerFrameLayout);
+            if (shimmerFrameLayout != null) {
+                shimmerFrameLayout.startShimmer();
+                shimmerFrameLayout.setVisibility(View.VISIBLE);
+            }
+        }
+
+        binding.dashBoardRV.setVisibility(View.GONE);
+    }
+
+    private void hideShimmerEffect() {
+        if (binding == null)
+            return;
+
+        View shimmerView = binding.getRoot().findViewById(R.id.shimmerLayout);
+        if (shimmerView != null) {
+            shimmerView.setVisibility(View.GONE);
+
+            ShimmerFrameLayout shimmerFrameLayout = shimmerView.findViewById(R.id.shimmerFrameLayout);
+            if (shimmerFrameLayout != null) {
+                shimmerFrameLayout.stopShimmer();
+            }
+        }
+
+        binding.dashBoardRV.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Start shimmer effect in resume if posts are still loading
+        if (isInitialPostLoad && binding != null) {
+            View shimmerView = binding.getRoot().findViewById(R.id.shimmerLayout);
+            if (shimmerView != null && shimmerView.getVisibility() == View.VISIBLE) {
+                ShimmerFrameLayout shimmerFrameLayout = shimmerView.findViewById(R.id.shimmerFrameLayout);
+                if (shimmerFrameLayout != null) {
+                    shimmerFrameLayout.startShimmer();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Stop shimmer effect in pause
+        if (binding != null) {
+            View shimmerView = binding.getRoot().findViewById(R.id.shimmerLayout);
+            if (shimmerView != null) {
+                ShimmerFrameLayout shimmerFrameLayout = shimmerView.findViewById(R.id.shimmerFrameLayout);
+                if (shimmerFrameLayout != null) {
+                    shimmerFrameLayout.stopShimmer();
+                }
+            }
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         System.out.println("homeFragment onDestroyView called");
+
+        // Stop shimmer animation
+        hideShimmerEffect();
 
         // Clean up listeners
         if (postsListener != null && database != null) {
