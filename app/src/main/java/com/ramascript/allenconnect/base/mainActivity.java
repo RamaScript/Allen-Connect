@@ -119,26 +119,26 @@ public class mainActivity extends AppCompatActivity {
                     (savedInstanceState != null) + ", initialFragmentLoaded=" + initialFragmentLoaded);
         }
 
-        // Add this at the end of onCreate to handle back button globally
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                // If we're not on the home fragment, navigate to home
-                if (currentFragmentId != R.id.navigation_home) {
-                    System.out.println("Back pressed: Navigating to homeFragment");
-                    navigateToFragment(new homeFragment(), R.id.navigation_home);
+                FragmentManager fragmentManager = getSupportFragmentManager();
+
+                // If there are fragments in the back stack, pop the last one
+                if (fragmentManager.getBackStackEntryCount() > 0) {
+                    fragmentManager.popBackStack();
                 } else {
-                    // If we're already on home, show exit dialog
-                    System.out.println("Back pressed: Already on homeFragment, showing exit dialog");
+                    // If no fragments are in the back stack, show exit dialog
                     new AlertDialog.Builder(mainActivity.this)
-                            .setMessage("Do you want to leave the app?")
-                            .setCancelable(false)
-                            .setPositiveButton("Yes", (dialog, id) -> finish())
-                            .setNegativeButton("No", null)
-                            .show();
+                        .setMessage("Do you want to leave the app?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", (dialog, id) -> finish())
+                        .setNegativeButton("No", null)
+                        .show();
                 }
             }
         });
+
     }
 
     @Override

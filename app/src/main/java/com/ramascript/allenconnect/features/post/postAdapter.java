@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -114,6 +115,29 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
 
         // Load like status
         loadLikeStatus(holder, post);
+
+        // Add click listener to open the user's profile
+        holder.postUserLL.setOnClickListener(v -> {
+            navigateToProfile(post.getPostedBy());
+        });
+    }
+
+    // Method to navigate to the profile fragment
+    private void navigateToProfile(String userId) {
+        if (context instanceof androidx.fragment.app.FragmentActivity) {
+            androidx.fragment.app.FragmentActivity activity = (androidx.fragment.app.FragmentActivity) context;
+
+            // Create new profile fragment instance with the user ID
+            com.ramascript.allenconnect.features.user.profileFragment profileFragment = com.ramascript.allenconnect.features.user.profileFragment
+                .newInstance(userId);
+
+            // Replace the current fragment with the profile fragment
+            activity.getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, profileFragment)
+                .addToBackStack("homeFragment") // Use a named back stack for better control
+                .commit();
+        }
     }
 
     private void loadUserInfo(ViewHolder holder, String userId, String postId) {
@@ -316,6 +340,8 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
         ImageView profile, postImage, like, comment, share;
         TextView name, time, likes, comments, description, about;
 
+        LinearLayout postUserLL;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             profile = itemView.findViewById(R.id.profileImage);
@@ -329,6 +355,7 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
             comments = itemView.findViewById(R.id.comments);
             description = itemView.findViewById(R.id.description);
             about = itemView.findViewById(R.id.about);
+            postUserLL = itemView.findViewById(R.id.postUserLL);
         }
     }
 }

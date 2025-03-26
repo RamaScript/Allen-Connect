@@ -16,6 +16,7 @@
 
         <!-- User Info -->
         <LinearLayout
+            android:id="@+id/postUserLL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -40,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
                     android:textColor="@color/black"
-                    android:text="sample username"
+                    android:text=""
                     android:textSize="14sp"/>
 
                 <TextView

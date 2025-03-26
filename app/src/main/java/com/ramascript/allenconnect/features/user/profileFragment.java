@@ -105,7 +105,7 @@ public class profileFragment extends baseFragment {
 
         // Set up back button - maintain scroll behavior
         binding.backButton.setOnClickListener(v -> {
-            requireActivity().onBackPressed();
+            requireActivity().getOnBackPressedDispatcher().onBackPressed();
         });
 
         // Only show menu button for current user's profile
