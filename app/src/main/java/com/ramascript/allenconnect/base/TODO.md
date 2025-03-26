@@ -4,9 +4,7 @@
 > Add "Show Password" option in the Login Screen 🔵  
 > Remove "Login as" option (not needed) 🔵  
 > Modify Comments Section to support text-only posts 🔵  
-> Remove Password Field from the Database 🔵  
-> Allow users to Navigate to the Profile of a Job Poster from Job Posts 🔵  
-> Allow users to Navigate to the Profile of a Chat User from Chat Details 🔵  
+> Remove Password Field from the Database 🔵 
 > Implement Side Navigation in the App 🔵
 
 ## ⚡ Medium Effort Features [Medium Priority]

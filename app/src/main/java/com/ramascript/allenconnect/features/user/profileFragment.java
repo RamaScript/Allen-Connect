@@ -591,6 +591,69 @@ public class profileFragment extends baseFragment {
 
     private void setupClickListeners() {
         binding.profileSettingsMenuBtn.setOnClickListener(v -> showProfileMenu(v));
+
+        // Add click listeners for followers and following counts
+        binding.followersCountTV.setOnClickListener(v -> showFollowersList());
+
+        // For the followers label
+        View followersLabel = ((View) binding.followersCountTV.getParent()).findViewById(
+                R.id.followersLabel);
+        if (followersLabel instanceof TextView) {
+            followersLabel.setOnClickListener(v -> showFollowersList());
+        }
+
+        binding.followingCountTV.setOnClickListener(v -> showFollowingList());
+
+        // For the following label
+        View followingLabel = ((View) binding.followingCountTV.getParent()).findViewById(
+                R.id.followingLabel);
+        if (followingLabel instanceof TextView) {
+            followingLabel.setOnClickListener(v -> showFollowingList());
+        }
+    }
+
+    private void showFollowersList() {
+        if (userId == null || userId.isEmpty()) {
+            Log.e("profileFragment", "Cannot show followers list: userId is null or empty");
+            Toast.makeText(getContext(), "Unable to load followers", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Show followers list with tabbed interface
+        UserListFragment fragment = UserListFragment.newInstance(userId, "followers");
+
+        try {
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        } catch (Exception e) {
+            Log.e("profileFragment", "Error showing followers list: " + e.getMessage());
+            Toast.makeText(getContext(), "Error loading followers", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showFollowingList() {
+        if (userId == null || userId.isEmpty()) {
+            Log.e("profileFragment", "Cannot show following list: userId is null or empty");
+            Toast.makeText(getContext(), "Unable to load following", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Show following list with tabbed interface, starting on the following tab
+        UserListFragment fragment = UserListFragment.newInstance(userId, "following");
+
+        try {
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        } catch (Exception e) {
+            Log.e("profileFragment", "Error showing following list: " + e.getMessage());
+            Toast.makeText(getContext(), "Error loading following", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
