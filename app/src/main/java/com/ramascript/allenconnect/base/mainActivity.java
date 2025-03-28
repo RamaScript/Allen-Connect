@@ -42,6 +42,7 @@ import com.ramascript.allenconnect.features.community.communityFragment;
 import com.ramascript.allenconnect.features.post.postFragment;
 import com.ramascript.allenconnect.features.user.profileFragment;
 import com.ramascript.allenconnect.databinding.ActivityMainBinding;
+import com.ramascript.allenconnect.features.chat.IncomingCallService;
 
 public class mainActivity extends AppCompatActivity {
 
@@ -66,6 +67,9 @@ public class mainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         System.out.println("mainActivity onCreate called with savedInstanceState: " +
                 (savedInstanceState == null ? "null" : "not null"));
+
+        // Start the incoming call service to handle background calls
+        startService(new Intent(this, IncomingCallService.class));
 
         // Check for direct profile loading first - must be done before UI inflation
         Intent intent = getIntent();

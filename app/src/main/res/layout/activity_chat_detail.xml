@@ -1,214 +1,212 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:fitsSystemWindows="true"
-    android:hardwareAccelerated="true"
     tools:context=".features.chat.chatDetailActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
+        android:id="@+id/linearLayout7"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/backBtnIV"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="12dp"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="Back button"
+            app:tint="@color/black" />
 
         <LinearLayout
-            android:id="@+id/linearLayout7"
+            android:id="@+id/chatUserLL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingVertical="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:gravity="center"
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/backBtnIV"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="12dp"
-                android:src="@drawable/ic_arrow_back"
-                android:contentDescription="Back button"
-                app:tint="@color/black" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profileImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
+                android:src="@drawable/ic_avatar" />
 
             <LinearLayout
-                android:id="@+id/chatUserLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_marginStart="12dp"
                 android:layout_weight="1"
-                android:orientation="horizontal">
+                android:gravity="center_vertical"
+                android:orientation="vertical">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/profile_image"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="16dp"
-                    android:src="@drawable/ic_avatar" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/userName"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical">
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/userName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppins_semibold"
-                        android:textColor="@color/black"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/lastSeenText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppins"
-                        android:textColor="#757575"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/onlineStatus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppins"
-                        android:text="online now"
-                        android:textColor="@color/color_primary"
-                        android:textSize="12sp"
-                        android:visibility="gone" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/onlineStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="online now"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
             </LinearLayout>
-
-            <ImageView
-                android:id="@+id/videoCallBtn"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="16dp"
-                android:contentDescription="Video call"
-                android:src="@drawable/ic_video_call"
-                app:tint="@color/black" />
-
-            <ImageView
-                android:id="@+id/audioCallBtn"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="16dp"
-                android:contentDescription="Audio call"
-                android:src="@drawable/ic_call"
-                app:tint="@color/black" />
-
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/chatRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/white"
-            android:clipToPadding="false"
-            android:orientation="vertical"
-            android:overScrollMode="never"
-            android:paddingVertical="16dp"
-            android:paddingBottom="8dp"
-            android:stackFromBottom="true"
-            android:transcriptMode="alwaysScroll"
-            android:layerType="hardware"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@+id/deletedAccountMessage"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout7"
-            tools:listitem="@layout/rv_sample_receiver" />
+        <ImageView
+            android:id="@+id/videoCallBtn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="Video call"
+            android:src="@drawable/ic_videocam"
+            app:tint="@color/black" />
 
-        <TextView
-            android:id="@+id/deletedAccountMessage"
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/audioCallBtn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="Audio call"
+            android:src="@drawable/ic_call"
+            app:tint="@color/black" />
+
+        <ImageView
+            android:id="@+id/menuBtn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="More options"
+            android:src="@drawable/ic_more_vert"
+            app:tint="@color/black" />
+
+    </LinearLayout>
+
+    <!-- Update the toolbar to make it visible and show options menu -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="?android:attr/actionBarSize"
+        android:background="@android:color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:overScrollMode="never"
+        android:paddingVertical="16dp"
+        android:paddingBottom="8dp"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"
+        android:layerType="hardware"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@+id/userDeletedMsg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout7"
+        tools:listitem="@layout/rv_sample_receiver" />
+
+    <TextView
+        android:id="@+id/userDeletedMsg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFEBEE"
+        android:padding="16dp"
+        android:text="This account has been deleted. You cannot send messages to it."
+        android:textAlignment="center"
+        android:textColor="#D32F2F"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/linear"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:gravity="center"
+        android:minHeight="64dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="12dp"
+        android:paddingTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#FFEBEE"
-            android:fontFamily="@font/poppins"
-            android:padding="16dp"
-            android:text="This account has been deleted. You cannot send messages to it."
-            android:textAlignment="center"
-            android:textColor="#D32F2F"
-            android:textSize="14sp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/linear"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            app:cardCornerRadius="16dp"
+            app:strokeColor="@android:color/transparent"
+            app:strokeWidth="1dp">
 
-        <LinearLayout
-            android:id="@+id/linear"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:gravity="center"
-            android:minHeight="64dp"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingBottom="12dp"
-            android:paddingTop="8dp"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                app:cardCornerRadius="16dp"
-                app:strokeColor="@android:color/transparent"
-                app:strokeWidth="1dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <EditText
+                    android:id="@+id/msgEt"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="12dp">
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="Type something..."
+                    android:inputType="textMultiLine"
+                    android:maxLines="4"
+                    android:textSize="16sp" />
 
-                    <EditText
-                        android:id="@+id/msgEt"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:hint="Type something..."
-                        android:inputType="textMultiLine"
-                        android:maxLines="4"
-                        android:textSize="16sp" />
+                <ImageView
+                    android:id="@+id/attachmentBtn"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="Attach files"
+                    android:src="@drawable/ic_gallery"
+                    app:tint="@color/grey" />
 
-                    <ImageView
-                        android:id="@+id/attachmentBtn"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="8dp"
-                        android:contentDescription="Attach files"
-                        android:src="@drawable/ic_gallery"
-                        app:tint="@color/gray" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+        <ImageView
+            android:id="@+id/send"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/gradient_btn"
+            android:contentDescription="Send message"
+            android:padding="12dp"
+            app:srcCompat="@drawable/ic_send"
+            app:tint="@color/white" />
 
-            <ImageView
-                android:id="@+id/send"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@drawable/gradient_btn"
-                android:contentDescription="Send message"
-                android:padding="12dp"
-                app:srcCompat="@drawable/ic_send"
-                app:tint="@color/white" />
+    </LinearLayout>
 
-        </LinearLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

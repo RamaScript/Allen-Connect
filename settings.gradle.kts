@@ -16,9 +16,15 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
+        google {
+            // Explicitly include WebRTC
+            content {
+                includeGroup("org.webrtc")
+            }
+        }
         mavenCentral()
         maven("https://jitpack.io")
+        maven("https://maven.google.com")
     }
 }
 

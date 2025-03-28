@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_call_history"
+        android:title="Call History"
+        android:icon="@drawable/ic_call_received"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+        
+    <item
+        android:id="@+id/menu_profile"
+        android:title="View Profile"
+        android:orderInCategory="200"
+        app:showAsAction="never" />
+        
+    <item
+        android:id="@+id/menu_clear_chat"
+        android:title="Clear Chat"
+        android:orderInCategory="300"
+        app:showAsAction="never" />
+
+</menu> 

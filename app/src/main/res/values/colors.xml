@@ -31,8 +31,11 @@
     <color name="color_secondry">#00FFE5</color>
     <color name="cyan">#00FFFF</color>
 
-
-
-
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorSuccess">#4CAF50</color>
+    <color name="colorError">#F44336</color>
+    <color name="grey">#757575</color>
 
 </resources>

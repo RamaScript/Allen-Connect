@@ -68,4 +68,16 @@ dependencies {
 
     implementation ("com.google.android.material:material:1.9.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
+    
+    // Networking
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    
+    // Camera permissions handling
+    implementation("androidx.camera:camera-core:1.3.0")
+    implementation("androidx.camera:camera-camera2:1.3.0")
+    implementation("androidx.camera:camera-lifecycle:1.3.0")
+    implementation("androidx.camera:camera-view:1.3.0")
+    
+    // Permissions handling
+    implementation("com.guolindev.permissionx:permissionx:1.7.1")
 }

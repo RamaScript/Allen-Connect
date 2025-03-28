@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,10 +46,13 @@ public class chatDetailActivity extends AppCompatActivity {
     private String receiverRoom;
     private ValueEventListener messageListener;
     private ValueEventListener onlineStatusListener;
+    private ValueEventListener incomingCallListener;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final Executor backgroundExecutor = Executors.newSingleThreadExecutor();
     private long lastMessageReadTimestamp = 0;
     private boolean isActivityActive = false;
+    private String receiverName;
+    private String receiverProfilePic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,13 @@ public class chatDetailActivity extends AppCompatActivity {
             binding = ActivityChatDetailBinding.inflate(getLayoutInflater());
             setContentView(binding.getRoot());
 
+            // Set up the toolbar properly for menu
+            setSupportActionBar(binding.toolbar);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+            // Extra code to ensure the overflow menu shows up
+            binding.toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_more_vert));
+
             database = FirebaseDatabase.getInstance();
             auth = FirebaseAuth.getInstance();
 
@@ -67,8 +80,8 @@ public class chatDetailActivity extends AppCompatActivity {
 
             // Get receiver details from intent
             receiverId = getIntent().getStringExtra("userId");
-            String receiverName = getIntent().getStringExtra("userName");
-            String profilePic = getIntent().getStringExtra("profilePic");
+            receiverName = getIntent().getStringExtra("userName");
+            receiverProfilePic = getIntent().getStringExtra("profilePic");
 
             if (receiverId == null) {
                 finish();
@@ -81,9 +94,9 @@ public class chatDetailActivity extends AppCompatActivity {
             // Set receiver details
             if (binding != null) {
                 binding.userName.setText(receiverName);
-                if (profilePic != null && !profilePic.isEmpty()) {
+                if (receiverProfilePic != null && !receiverProfilePic.isEmpty()) {
                     Picasso.get()
-                            .load(profilePic)
+                            .load(receiverProfilePic)
                             .placeholder(R.drawable.ic_avatar)
                             .into(binding.profileImage);
                 }
@@ -94,6 +107,13 @@ public class chatDetailActivity extends AppCompatActivity {
                         navigateToUserProfile(receiverId);
                     }
                 });
+
+                // Add video call button
+                binding.videoCallBtn.setVisibility(View.VISIBLE);
+                binding.videoCallBtn.setOnClickListener(v -> initiateVideoCall());
+
+                // Add click listener for menu button
+                binding.menuBtn.setOnClickListener(v -> showPopupMenu());
 
                 // Check if user is deleted immediately
                 database.getReference()
@@ -149,10 +169,77 @@ public class chatDetailActivity extends AppCompatActivity {
             // Setup listeners
             setupMessageListener();
             monitorOnlineStatus();
+            listenForIncomingCalls();
         } catch (Exception e) {
             Log.e("chatDetailActivity", "Error in onCreate: " + e.getMessage());
             finish();
         }
+    }
+
+    private void initiateVideoCall() {
+        // Check if user is online first
+        database.getReference()
+                .child("Users")
+                .child(receiverId)
+                .child("online")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists() && Boolean.TRUE.equals(snapshot.getValue(Boolean.class))) {
+                            // User is online, start video call
+                            startVideoCallActivity(true);
+                        } else {
+                            // User is offline, show message
+                            Toast.makeText(chatDetailActivity.this,
+                                    "User is offline. Try again later.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(chatDetailActivity.this,
+                                "Could not check user status", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void startVideoCallActivity(boolean isInitiator) {
+        Intent intent = new Intent(chatDetailActivity.this, VideoCallActivity.class);
+        intent.putExtra("userId", receiverId);
+        intent.putExtra("userName", receiverName);
+        intent.putExtra("profilePic", receiverProfilePic);
+        intent.putExtra("isCallInitiator", isInitiator);
+        startActivity(intent);
+    }
+
+    private void listenForIncomingCalls() {
+        // Listen for incoming call requests
+        DatabaseReference callRef = database.getReference()
+                .child("calls")
+                .child(auth.getUid() + "_" + receiverId);
+
+        incomingCallListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && "offer".equals(snapshot.child("type").getValue(String.class))) {
+                    // We've received a call from the current chat partner
+                    long timestamp = snapshot.child("timestamp").getValue(Long.class);
+                    long currentTime = new Date().getTime();
+
+                    // Only handle calls that are recent (within last 30 seconds)
+                    if ((currentTime - timestamp) < 30000) {
+                        startVideoCallActivity(false);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("chatDetailActivity", "Error listening for calls: " + error.getMessage());
+            }
+        };
+
+        callRef.addValueEventListener(incomingCallListener);
     }
 
     private void navigateToUserProfile(String userId) {
@@ -302,35 +389,24 @@ public class chatDetailActivity extends AppCompatActivity {
     }
 
     private void monitorOnlineStatus() {
-        if (onlineStatusListener != null || receiverId == null || database == null) {
-            return; // Already set up or prerequisites not met
-        }
+        if (binding == null || receiverId == null)
+            return;
 
         onlineStatusListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (binding == null || isFinishing() || isDestroyed())
-                    return;
-
                 try {
+                    if (binding == null || isFinishing() || isDestroyed())
+                        return;
+
                     if (snapshot.exists()) {
-                        // Check if account is deleted
-                        if (snapshot.hasChild("isDeleted")
-                                && Boolean.TRUE.equals(snapshot.child("isDeleted").getValue(Boolean.class))) {
-                            // Handle deleted account UI
-                            handleDeletedAccountUI();
-                            return;
-                        }
-
-                        // Check online status
-                        Boolean isOnline = snapshot.child("online").getValue(Boolean.class);
-
-                        // If online, show the "Online Now" text with color_primary
-                        if (isOnline != null && isOnline) {
+                        Boolean online = snapshot.child("online").getValue(Boolean.class);
+                        if (online != null && online) {
+                            // User is online
+                            binding.onlineStatus.setText("Online now");
                             binding.onlineStatus.setVisibility(View.VISIBLE);
-                            binding.lastSeenText.setVisibility(View.GONE); // Hide lastSeenText when online
                         } else {
-                            // User is offline, hide "Online Now" and show last seen time
+                            // User is offline, hide "Online Now"
                             binding.onlineStatus.setVisibility(View.GONE);
 
                             // Get last seen timestamp
@@ -338,20 +414,19 @@ public class chatDetailActivity extends AppCompatActivity {
                             if (lastSeen != null) {
                                 String lastSeenText = "Last seen "
                                         + userModel.getFormattedLastSeen(lastSeen);
-                                binding.lastSeenText.setText(lastSeenText);
-                                binding.lastSeenText.setVisibility(View.VISIBLE);
+                                // Update onlineStatus to show last seen instead
+                                binding.onlineStatus.setText(lastSeenText);
+                                binding.onlineStatus.setVisibility(View.VISIBLE);
                             } else {
-                                binding.lastSeenText.setVisibility(View.GONE);
+                                binding.onlineStatus.setVisibility(View.GONE);
                             }
                         }
                     } else {
                         binding.onlineStatus.setVisibility(View.GONE);
-                        binding.lastSeenText.setVisibility(View.GONE);
                     }
                 } catch (Exception e) {
                     Log.e("chatDetailActivity", "Error in online status: " + e.getMessage());
                     binding.onlineStatus.setVisibility(View.GONE);
-                    binding.lastSeenText.setVisibility(View.GONE);
                 }
             }
 
@@ -359,7 +434,6 @@ public class chatDetailActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.w("chatDetailActivity", "Online status monitoring cancelled");
                 binding.onlineStatus.setVisibility(View.GONE);
-                binding.lastSeenText.setVisibility(View.GONE);
             }
         };
 
@@ -373,9 +447,8 @@ public class chatDetailActivity extends AppCompatActivity {
         if (binding == null || isFinishing() || isDestroyed())
             return;
 
-        // Hide online status and last seen
+        // Hide online status
         binding.onlineStatus.setVisibility(View.GONE);
-        binding.lastSeenText.setVisibility(View.GONE);
 
         // Hide call buttons for deleted users
         binding.videoCallBtn.setVisibility(View.GONE);
@@ -385,8 +458,8 @@ public class chatDetailActivity extends AppCompatActivity {
         binding.linear.setVisibility(View.GONE);
 
         // Show deleted account message
-        binding.deletedAccountMessage.setVisibility(View.VISIBLE);
-        binding.deletedAccountMessage.setText("This account has been deleted. You cannot send messages to it.");
+        binding.userDeletedMsg.setVisibility(View.VISIBLE);
+        binding.userDeletedMsg.setText("This account has been deleted. You cannot send messages to it.");
     }
 
     private void markMessagesAsRead() {
@@ -528,27 +601,91 @@ public class chatDetailActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        // Remove Firebase listeners to prevent callbacks after activity is destroyed
-        if (senderRoom != null && database != null) {
+        if (messageListener != null) {
             database.getReference().child("chats").child(senderRoom).removeEventListener(messageListener);
         }
-
-        if (receiverId != null && database != null) {
+        if (onlineStatusListener != null) {
             database.getReference().child("Users").child(receiverId).removeEventListener(onlineStatusListener);
         }
-
-        // Cancel any pending tasks
-        mainHandler.removeCallbacksAndMessages(null);
-
-        // Clean up references
-        if (messageList != null) {
-            messageList.clear();
-            messageList = null;
+        if (incomingCallListener != null) {
+            database.getReference().child("calls").child(auth.getUid() + "_" + receiverId)
+                    .removeEventListener(incomingCallListener);
         }
-        adapter = null;
-        binding = null;
-        database = null;
-        auth = null;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.chat_detail_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.menu_call_history) {
+            navigateToCallHistory();
+            return true;
+        } else if (id == R.id.menu_profile) {
+            if (receiverId != null) {
+                navigateToUserProfile(receiverId);
+            }
+            return true;
+        } else if (id == R.id.menu_clear_chat) {
+            clearChat();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void navigateToCallHistory() {
+        Intent intent = new Intent(chatDetailActivity.this, CallHistoryActivity.class);
+        intent.putExtra("userId", receiverId); // Optional - to filter calls with this user
+        startActivity(intent);
+    }
+
+    private void clearChat() {
+        // Show confirmation dialog
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Clear Chat")
+                .setMessage("Are you sure you want to clear all messages?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    // Clear messages from database
+                    if (senderRoom != null) {
+                        database.getReference().child("chats").child(senderRoom).child("messages").removeValue()
+                                .addOnSuccessListener(unused -> {
+                                    Toast.makeText(chatDetailActivity.this, "Chat cleared", Toast.LENGTH_SHORT).show();
+                                });
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private void showPopupMenu() {
+        PopupMenu popupMenu = new PopupMenu(this, binding.menuBtn);
+        popupMenu.getMenuInflater().inflate(R.menu.chat_detail_menu, popupMenu.getMenu());
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.menu_call_history) {
+                navigateToCallHistory();
+                return true;
+            } else if (id == R.id.menu_profile) {
+                if (receiverId != null) {
+                    navigateToUserProfile(receiverId);
+                }
+                return true;
+            } else if (id == R.id.menu_clear_chat) {
+                clearChat();
+                return true;
+            }
+
+            return false;
+        });
+
+        popupMenu.show();
     }
 }
