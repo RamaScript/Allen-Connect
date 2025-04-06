@@ -539,6 +539,15 @@ public class homeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        // Reset initial load flag when resuming to ensure data reloads
+        isInitialPostLoad = true;
+
+        // Reload posts when coming back from other fragments
+        if (database != null) {
+            loadPosts();
+        }
+
         // Start shimmer effect in resume if posts are still loading
         if (isInitialPostLoad && binding != null) {
             if (shimmerFrameLayout != null) {

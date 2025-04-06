@@ -71,6 +71,11 @@ public class profileFragment extends baseFragment {
         Bundle args = new Bundle();
         args.putString("userId", userId);
         fragment.setArguments(args);
+
+        // Reset state variables
+        fragment.isCurrentUserProfile = false; // Will be rechecked in onCreate
+        fragment.currentUser = null;
+
         return fragment;
     }
 
@@ -125,9 +130,12 @@ public class profileFragment extends baseFragment {
         loadUserData();
         setupClickListeners();
 
-        // Set up back button - maintain scroll behavior
+        // Set up back button with proper back navigation
         binding.backButton.setOnClickListener(v -> {
-            requireActivity().getOnBackPressedDispatcher().onBackPressed();
+            // Use proper back navigation to restore previous fragment state
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
         });
 
         // Only show menu button for current user's profile
@@ -1074,6 +1082,28 @@ public class profileFragment extends baseFragment {
             });
         }
 
+        @Override
+        public void onResume() {
+            super.onResume();
+
+            // Show bottom navigation when resuming the fragment
+            if (getActivity() != null) {
+                View bottomNav = getActivity().findViewById(R.id.bottomNavView);
+                if (bottomNav != null && bottomNav.getTranslationY() > 0) {
+                    isNavBarHidden = false;
+                    bottomNav.animate()
+                            .translationY(0)
+                            .setDuration(200)
+                            .start();
+                }
+            }
+
+            // Reload posts data when returning to ensure fresh data
+            if (userId != null) {
+                loadUserPosts();
+            }
+        }
+
         private void loadUserPosts() {
             if (userId == null)
                 return;
@@ -1160,23 +1190,6 @@ public class profileFragment extends baseFragment {
                 postsRecyclerView.setVisibility(View.VISIBLE);
                 if (postAdapter != null) {
                     postAdapter.notifyDataSetChanged();
-                }
-            }
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-
-            // Show bottom navigation when resuming the fragment
-            if (getActivity() != null) {
-                View bottomNav = getActivity().findViewById(R.id.bottomNavView);
-                if (bottomNav != null && bottomNav.getTranslationY() > 0) {
-                    isNavBarHidden = false;
-                    bottomNav.animate()
-                            .translationY(0)
-                            .setDuration(200)
-                            .start();
                 }
             }
         }

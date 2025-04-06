@@ -16,7 +16,6 @@
 
         <!-- User Info -->
         <LinearLayout
-            android:id="@+id/postUserLL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -29,6 +28,7 @@
                 android:src="@drawable/ic_avatar"/>
 
             <LinearLayout
+                android:id="@+id/postUserLL"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -54,17 +54,25 @@
                     android:textColor="@color/gray"
                     android:textSize="12sp" />
 
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/poppins"
+                    android:text="Mar 26, 2025 • 10:21 AM"
+                    android:textColor="@color/gray"
+                    android:textSize="10sp" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins"
-                android:layout_gravity="bottom"
-                android:text="Mar 26, 2025 1634"
-                android:textColor="@color/gray"
-                android:textSize="10sp" />
+            <ImageView
+                android:id="@+id/postMenu"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="top|end"
+                app:srcCompat="@drawable/ic_menu" />
+
         </LinearLayout>
 
         <!-- Description -->
@@ -160,4 +168,4 @@
                 app:tint="@color/gray"/>
         </LinearLayout>
     </LinearLayout>
-</androidx.cardview.widget.CardView> 
+</androidx.cardview.widget.CardView>

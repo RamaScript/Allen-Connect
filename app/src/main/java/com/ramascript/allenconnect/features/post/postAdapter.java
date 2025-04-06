@@ -103,7 +103,7 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
         });
 
         // Set time
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy • hh:mm a", Locale.getDefault());
         holder.time.setText(sdf.format(new Date(post.getPostedAt())));
 
         // Set a tag to track which post ID we're loading data for
@@ -120,6 +120,103 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
         holder.postUserLL.setOnClickListener(v -> {
             navigateToProfile(post.getPostedBy());
         });
+
+        // Set up menu button click listener
+        if (holder.postMenu != null) {
+            // Show menu only if post belongs to current user or is admin
+            boolean isCurrentUserPost = auth.getCurrentUser() != null &&
+                    auth.getCurrentUser().getUid().equals(post.getPostedBy());
+
+            if (isCurrentUserPost) {
+                holder.postMenu.setVisibility(View.VISIBLE);
+                holder.postMenu.setOnClickListener(v -> {
+                    showPostMenu(holder, post);
+                });
+            } else {
+                holder.postMenu.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void showPostMenu(ViewHolder holder, postModel post) {
+        // Create popup menu
+        android.widget.PopupMenu popupMenu = new android.widget.PopupMenu(context, holder.postMenu);
+        popupMenu.inflate(R.menu.post_menu);
+
+        // Only show delete option for posts made by current user
+        popupMenu.getMenu().findItem(R.id.action_delete_post).setVisible(
+                auth.getCurrentUser() != null &&
+                        auth.getCurrentUser().getUid().equals(post.getPostedBy()));
+
+        // Set up menu item click listener
+        popupMenu.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.action_delete_post) {
+                deletePost(post);
+                return true;
+            }
+            return false;
+        });
+
+        // Show the menu
+        popupMenu.show();
+    }
+
+    private void deletePost(postModel post) {
+        // Show confirmation dialog
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
+        builder.setTitle("Delete Post");
+        builder.setMessage("Are you sure you want to delete this post?");
+        builder.setPositiveButton("Delete", (dialog, which) -> {
+            // First delete any post image from storage
+            if (post.getPostImage() != null && !post.getPostImage().isEmpty()) {
+                com.google.firebase.storage.FirebaseStorage.getInstance().getReferenceFromUrl(post.getPostImage())
+                        .delete()
+                        .addOnCompleteListener(task -> {
+                            // Proceed with deleting post data regardless of image deletion success
+                            deletePostData(post);
+                        });
+            } else {
+                // No image to delete, just delete post data
+                deletePostData(post);
+            }
+        });
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    private void deletePostData(postModel post) {
+        // Delete the post from database
+        database.getReference()
+                .child("Posts")
+                .child(post.getPostId())
+                .removeValue()
+                .addOnSuccessListener(unused -> {
+                    // Find position of post in list
+                    int position = -1;
+                    for (int i = 0; i < list.size(); i++) {
+                        if (list.get(i).getPostId().equals(post.getPostId())) {
+                            position = i;
+                            break;
+                        }
+                    }
+
+                    // Remove from list and notify adapter
+                    if (position != -1) {
+                        list.remove(position);
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, list.size());
+
+                        // Show success message
+                        android.widget.Toast.makeText(context, "Post deleted successfully",
+                                android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Show error message
+                    android.widget.Toast.makeText(context, "Failed to delete post: " + e.getMessage(),
+                            android.widget.Toast.LENGTH_SHORT).show();
+                });
     }
 
     // Method to navigate to the profile fragment
@@ -129,14 +226,14 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
 
             // Create new profile fragment instance with the user ID
             com.ramascript.allenconnect.features.user.profileFragment profileFragment = com.ramascript.allenconnect.features.user.profileFragment
-                .newInstance(userId);
+                    .newInstance(userId);
 
             // Replace the current fragment with the profile fragment
             activity.getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, profileFragment)
-                .addToBackStack("homeFragment") // Use a named back stack for better control
-                .commit();
+                    .beginTransaction()
+                    .replace(R.id.container, profileFragment)
+                    .addToBackStack(null) // Use null for default back stack behavior
+                    .commit();
         }
     }
 
@@ -337,7 +434,7 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView profile, postImage, like, comment, share;
+        ImageView profile, postImage, like, comment, share, postMenu;
         TextView name, time, likes, comments, description, about;
 
         LinearLayout postUserLL;
@@ -356,6 +453,7 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
             description = itemView.findViewById(R.id.description);
             about = itemView.findViewById(R.id.about);
             postUserLL = itemView.findViewById(R.id.postUserLL);
+            postMenu = itemView.findViewById(R.id.postMenu);
         }
     }
 }
