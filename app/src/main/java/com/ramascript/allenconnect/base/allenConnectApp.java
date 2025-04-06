@@ -208,7 +208,7 @@ public class allenConnectApp extends Application implements Application.Activity
                 // Store current state
                 isConnectedToInternet = isNetworkAvailable();
 
-                // If we're going offline, set up a special listener to confirm changes were
+
                 // applied
                 if (!actuallyOnline) {
                     userStatusRef.child("online").addListenerForSingleValueEvent(new ValueEventListener() {
