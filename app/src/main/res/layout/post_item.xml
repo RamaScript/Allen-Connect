@@ -40,27 +40,31 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_semibold"
+                    android:text="Sample User"
                     android:textColor="@color/black"
-                    android:text=""
-                    android:textSize="14sp"/>
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/about"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:fontFamily="@font/poppins"
+                    android:text="about the user"
                     android:textColor="@color/gray"
-                    android:textSize="12sp"
-                    android:layout_marginTop="2dp"/>
+                    android:textSize="12sp" />
 
-                <TextView
-                    android:id="@+id/time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins"
-                    android:textColor="@color/gray"
-                    android:textSize="12sp"/>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:layout_gravity="bottom"
+                android:text="Mar 26, 2025 1634"
+                android:textColor="@color/gray"
+                android:textSize="10sp" />
         </LinearLayout>
 
         <!-- Description -->
@@ -71,6 +75,7 @@
             android:layout_marginTop="12dp"
             android:fontFamily="@font/poppins"
             android:textColor="@color/black"
+            android:text="post caption will be shown here"
             android:textSize="14sp"/>
 
 
@@ -114,6 +119,7 @@
                     android:layout_marginStart="4dp"
                     android:fontFamily="@font/poppins"
                     android:textColor="@color/gray"
+                    android:text="72"
                     android:textSize="14sp"/>
             </LinearLayout>
 
@@ -139,6 +145,7 @@
                     android:layout_marginStart="4dp"
                     android:fontFamily="@font/poppins"
                     android:textColor="@color/gray"
+                    android:text="564"
                     android:textSize="14sp"/>
             </LinearLayout>
 

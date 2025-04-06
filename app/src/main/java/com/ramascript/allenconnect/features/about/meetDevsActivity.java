@@ -41,7 +41,7 @@ public class meetDevsActivity extends AppCompatActivity {
             }
         });
 
-        binding.portfolioRamaIV.setOnClickListener(new View.OnClickListener() {
+        binding.portfolioRamaLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(meetDevsActivity.this, webShowPortfolioActivity.class);
@@ -50,7 +50,7 @@ public class meetDevsActivity extends AppCompatActivity {
             }
         });
 
-        binding.portfolioYashIV.setOnClickListener(new View.OnClickListener() {
+        binding.portfolioYashLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(meetDevsActivity.this, webShowPortfolioActivity.class);
@@ -59,7 +59,7 @@ public class meetDevsActivity extends AppCompatActivity {
             }
         });
 
-        binding.portfolioPriyanshiIV.setOnClickListener(new View.OnClickListener() {
+        binding.portfolioPriyanshiLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(meetDevsActivity.this, webShowPortfolioActivity.class);
