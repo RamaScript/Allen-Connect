@@ -220,7 +220,7 @@ public class homeFragment extends Fragment {
             @Override
             public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 // When scrolling down, hide the bottom navigation
-                if (scrollY > oldScrollY && scrollY > 10) {
+                if (scrollY > oldScrollY) {
                     if (getActivity() != null && getActivity() instanceof mainActivity) {
                         ((mainActivity) getActivity()).hideBottomNavigation();
                     }

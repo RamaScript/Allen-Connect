@@ -1,4 +1,4 @@
-package com.ramascript.allenconnect.features.allenBot;
+package com.ramascript.allenconnect.features.bot;
 
 import android.Manifest;
 import android.content.Intent;

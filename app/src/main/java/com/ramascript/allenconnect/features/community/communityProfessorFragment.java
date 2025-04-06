@@ -219,8 +219,18 @@ public class communityProfessorFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        // Start shimmer effect if it's showing
         if (shimmerLayout != null && shimmerLayout.getVisibility() == View.VISIBLE && binding != null) {
             shimmerLayout.startShimmer();
+        }
+
+        // Reset isInitialLoad flag when returning to this fragment
+        isInitialLoad = true;
+
+        // Reload users data when returning to this fragment from another fragment
+        if (binding != null && list != null) {
+            loadUsers();
         }
     }
 

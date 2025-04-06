@@ -3,15 +3,12 @@ package com.ramascript.allenconnect.base;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -25,7 +22,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,7 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.features.about.meetDevsActivity;
-import com.ramascript.allenconnect.features.allenBot.allenBotActivity;
+import com.ramascript.allenconnect.features.bot.allenBotActivity;
 import com.ramascript.allenconnect.features.auth.loginAs;
 import com.ramascript.allenconnect.features.home.homeFragment;
 import com.ramascript.allenconnect.features.job.jobPostFragment;
@@ -454,8 +450,8 @@ public class mainActivity extends AppCompatActivity {
     public void hideBottomNavigation() {
         if (binding.bottomNavView.isShown()) {
             binding.bottomNavView.animate()
-                    .translationY(binding.bottomNavView.getHeight() + 16)
-                    .setDuration(200)
+                    .translationY(binding.bottomNavView.getHeight() + 240)
+                    .setDuration(120)
                     .start();
         }
     }
@@ -464,7 +460,7 @@ public class mainActivity extends AppCompatActivity {
         if (binding.bottomNavView.getTranslationY() > 0) {
             binding.bottomNavView.animate()
                     .translationY(0)
-                    .setDuration(200)
+                    .setDuration(120)
                     .start();
         }
     }

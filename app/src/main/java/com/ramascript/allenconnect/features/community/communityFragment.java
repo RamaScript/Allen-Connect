@@ -175,6 +175,17 @@ public class communityFragment extends baseFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        // Notify the current fragment that it should refresh its data
+        if (binding != null) {
+            int currentTab = binding.viewPager.getCurrentItem();
+            filterUsers(binding.searchEt.getText().toString(), currentTab);
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;

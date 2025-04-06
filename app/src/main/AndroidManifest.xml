@@ -64,7 +64,7 @@
             android:name=".features.about.meetDevsActivity"
             android:exported="false" />
         <activity
-            android:name=".features.allenBot.allenBotActivity"
+            android:name=".features.bot.allenBotActivity"
             android:exported="false" />
         <activity
             android:name=".features.comment.commentActivity"

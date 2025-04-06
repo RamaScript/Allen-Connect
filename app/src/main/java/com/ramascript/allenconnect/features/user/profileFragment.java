@@ -170,6 +170,20 @@ public class profileFragment extends baseFragment {
 
     private void setupViewPager() {
         viewPager = binding.viewPager;
+
+        // Important: Remove default padding from ViewPager2
+        if (viewPager.getChildAt(0) instanceof RecyclerView) {
+            RecyclerView recyclerView = (RecyclerView) viewPager.getChildAt(0);
+            recyclerView.setPadding(0, 0, 0, 0);
+            recyclerView.setClipToPadding(false);
+            recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+            // Remove any item decorations
+            for (int i = 0; i < recyclerView.getItemDecorationCount(); i++) {
+                recyclerView.removeItemDecorationAt(i);
+            }
+        }
+
         ProfilePagerAdapter pagerAdapter = new ProfilePagerAdapter(this);
         viewPager.setAdapter(pagerAdapter);
 
@@ -186,7 +200,7 @@ public class profileFragment extends baseFragment {
                     }
                 }).attach();
 
-        // Add page change callback to handle height
+        // Add page change callback to handle height and scroll behavior
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
@@ -207,6 +221,14 @@ public class profileFragment extends baseFragment {
                             viewPager.setLayoutParams(params);
                         }
                     });
+
+                    // Make sure bottom navigation is visible for Details tab
+                    if (getActivity() != null) {
+                        View bottomNav = getActivity().findViewById(com.ramascript.allenconnect.R.id.bottomNavView);
+                        if (bottomNav != null && bottomNav.getTranslationY() > 0) {
+                            bottomNav.animate().translationY(0).setDuration(200).start();
+                        }
+                    }
                 } else { // Posts tab
                     ViewGroup.LayoutParams params = viewPager.getLayoutParams();
                     params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -214,6 +236,40 @@ public class profileFragment extends baseFragment {
                 }
             }
         });
+
+        // Add scroll listener to the NestedScrollView
+        if (binding.profileNestedScroll != null) {
+            binding.profileNestedScroll.setOnScrollChangeListener(
+                    (androidx.core.widget.NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX,
+                            oldScrollY) -> {
+                        if (getActivity() == null)
+                            return;
+
+                        // Get the bottom navigation view
+                        View bottomNav = getActivity().findViewById(com.ramascript.allenconnect.R.id.bottomNavView);
+                        if (bottomNav == null)
+                            return;
+
+                        // When scrolling down, hide the bottom navigation
+                        if (scrollY > oldScrollY + 10) {
+                            if (bottomNav.getTranslationY() == 0) {
+                                bottomNav.animate()
+                                        .translationY(bottomNav.getHeight() + 100)
+                                        .setDuration(200)
+                                        .start();
+                            }
+                        }
+                        // When scrolling up, show the bottom navigation
+                        else if (oldScrollY > scrollY + 10) {
+                            if (bottomNav.getTranslationY() > 0) {
+                                bottomNav.animate()
+                                        .translationY(0)
+                                        .setDuration(200)
+                                        .start();
+                            }
+                        }
+                    });
+        }
 
         // Disable swipe
         viewPager.setUserInputEnabled(false);
@@ -844,6 +900,17 @@ public class profileFragment extends baseFragment {
         public int getItemCount() {
             return 2; // Two tabs: Posts and Details
         }
+
+        // Add for better handling of fragment recreation
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public boolean containsItem(long itemId) {
+            return itemId < getItemCount();
+        }
     }
 
     // Posts Fragment
@@ -856,12 +923,17 @@ public class profileFragment extends baseFragment {
         private FirebaseDatabase database;
         private String userId;
         private boolean isCurrentUserProfile;
+        private int lastScrollDy = 0;
+        private boolean isNavBarHidden = false;
 
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                 @Nullable Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_posts, container, false);
+
+            // Ensure no top padding is applied
+            view.setPadding(view.getPaddingLeft(), 0, view.getPaddingRight(), view.getPaddingBottom());
 
             // Initialize Firebase
             auth = FirebaseAuth.getInstance();
@@ -880,6 +952,11 @@ public class profileFragment extends baseFragment {
 
             // Initialize views
             postsRecyclerView = view.findViewById(R.id.postsRecyclerView);
+            postsRecyclerView.setNestedScrollingEnabled(true);
+            postsRecyclerView.setClipToPadding(false);
+            postsRecyclerView.setPadding(postsRecyclerView.getPaddingLeft(), 0,
+                    postsRecyclerView.getPaddingRight(), postsRecyclerView.getPaddingBottom());
+
             emptyStateView = view.findViewById(R.id.emptyStateView);
 
             // Change empty state text for other users' profiles
@@ -913,8 +990,88 @@ public class profileFragment extends baseFragment {
             LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
             layoutManager.setReverseLayout(true);
             layoutManager.setStackFromEnd(true);
+
+            // Clear any existing item decorations
+            while (postsRecyclerView.getItemDecorationCount() > 0) {
+                postsRecyclerView.removeItemDecorationAt(0);
+            }
+
+            // Reset padding to ensure no unwanted spacing
+            postsRecyclerView.setPadding(8, 0, 8, 80);
+
+            // Set fixed layout parameters
             postsRecyclerView.setLayoutManager(layoutManager);
             postsRecyclerView.setAdapter(postAdapter);
+
+            // Add direct scroll listener with threshold
+            postsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                private static final int SCROLL_THRESHOLD = 8;
+                private boolean scrollingUp = false;
+                private boolean scrollingDown = false;
+
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    if (getActivity() == null)
+                        return;
+
+                    // Direct manipulation of bottom navigation view
+                    View bottomNav = getActivity().findViewById(R.id.bottomNavView);
+                    if (bottomNav == null)
+                        return;
+
+                    // Accumulate scroll direction for smoother detection
+                    lastScrollDy += dy;
+
+                    // Reset if direction changes
+                    if ((lastScrollDy > 0 && dy < 0) || (lastScrollDy < 0 && dy > 0)) {
+                        lastScrollDy = dy;
+                    }
+
+                    // Use threshold to avoid jitter
+                    if (lastScrollDy > SCROLL_THRESHOLD && !isNavBarHidden) {
+                        // Scrolling down - hide nav bar
+                        isNavBarHidden = true;
+                        bottomNav.animate()
+                                .translationY(bottomNav.getHeight() + 100)
+                                .setDuration(200)
+                                .start();
+                        lastScrollDy = 0;
+                    } else if (lastScrollDy < -SCROLL_THRESHOLD && isNavBarHidden) {
+                        // Scrolling up - show nav bar
+                        isNavBarHidden = false;
+                        bottomNav.animate()
+                                .translationY(0)
+                                .setDuration(200)
+                                .start();
+                        lastScrollDy = 0;
+                    }
+                }
+
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+
+                    // When scrolling stops
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE && getActivity() != null) {
+                        // Reset accumulated scroll
+                        lastScrollDy = 0;
+
+                        // Show bottom nav when at top of list
+                        if (!recyclerView.canScrollVertically(-1)) {
+                            View bottomNav = getActivity().findViewById(R.id.bottomNavView);
+                            if (bottomNav != null && bottomNav.getTranslationY() > 0) {
+                                isNavBarHidden = false;
+                                bottomNav.animate()
+                                        .translationY(0)
+                                        .setDuration(200)
+                                        .start();
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         private void loadUserPosts() {
@@ -1003,6 +1160,23 @@ public class profileFragment extends baseFragment {
                 postsRecyclerView.setVisibility(View.VISIBLE);
                 if (postAdapter != null) {
                     postAdapter.notifyDataSetChanged();
+                }
+            }
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+
+            // Show bottom navigation when resuming the fragment
+            if (getActivity() != null) {
+                View bottomNav = getActivity().findViewById(R.id.bottomNavView);
+                if (bottomNav != null && bottomNav.getTranslationY() > 0) {
+                    isNavBarHidden = false;
+                    bottomNav.animate()
+                            .translationY(0)
+                            .setDuration(200)
+                            .start();
                 }
             }
         }

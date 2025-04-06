@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".features.allenBot.allenBotActivity">
+    tools:context=".features.bot.allenBotActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout"
