@@ -30,6 +30,7 @@ import com.ramascript.allenconnect.features.post.postAdapter;
 import com.ramascript.allenconnect.features.chat.chatActivity;
 import com.ramascript.allenconnect.features.notification.notificationFragment;
 import com.ramascript.allenconnect.features.post.postModel;
+import com.ramascript.allenconnect.features.report.ReportsActivity;
 import com.ramascript.allenconnect.features.user.userModel;
 import com.ramascript.allenconnect.R;
 import com.ramascript.allenconnect.databinding.FragmentHomeBinding;
@@ -115,6 +116,20 @@ public class homeFragment extends Fragment {
         }
         startShimmer();
 
+        // By default, hide the reports icon
+        binding.reportsHomeIV.setVisibility(View.GONE);
+
+        // Check if user is professor from SharedPreferences
+        if (getContext() != null) {
+            android.content.SharedPreferences sharedPreferences = getContext().getSharedPreferences("UserPrefs",
+                    android.content.Context.MODE_PRIVATE);
+            String userType = sharedPreferences.getString("userType", "");
+            if ("Professor".equals(userType)) {
+                // Show reports icon only for professors
+                binding.reportsHomeIV.setVisibility(View.VISIBLE);
+            }
+        }
+
         // Set click listener for hamburger menu
         binding.sideNavMenu.setOnClickListener(v -> {
             if (getActivity() instanceof mainActivity) {
@@ -148,11 +163,53 @@ public class homeFragment extends Fragment {
                             if ("Student".equals(userModel.getUserType())) {
                                 binding.title.setText(String.format("%s (%s year)", userModel.getCourse(),
                                         userModel.getYear()));
+
+                                // Save user type to SharedPreferences
+                                if (getContext() != null) {
+                                    android.content.SharedPreferences sharedPreferences = getContext()
+                                            .getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE);
+                                    android.content.SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString("userType", "Student");
+                                    editor.apply();
+                                }
+
+                                // Hide reports icon for students
+                                binding.reportsHomeIV.setVisibility(View.GONE);
                             } else if ("Alumni".equals(userModel.getUserType())) {
                                 binding.title.setText(userModel.getJobRole() + " at " + userModel.getCompany());
+
+                                // Save user type to SharedPreferences
+                                if (getContext() != null) {
+                                    android.content.SharedPreferences sharedPreferences = getContext()
+                                            .getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE);
+                                    android.content.SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString("userType", "Alumni");
+                                    editor.apply();
+                                }
+
+                                // Hide reports icon for alumni
+                                binding.reportsHomeIV.setVisibility(View.GONE);
                             } else if ("Professor".equals(userModel.getUserType())) {
                                 binding.title.setText("Professor at AGOI");
+
+                                // Save user type to SharedPreferences
+                                if (getContext() != null) {
+                                    android.content.SharedPreferences sharedPreferences = getContext()
+                                            .getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE);
+                                    android.content.SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString("userType", "Professor");
+                                    editor.apply();
+                                }
+
+                                // Show reports icon for professors only
+                                binding.reportsHomeIV.setVisibility(View.VISIBLE);
+                            } else {
+                                // For other user types, ensure reports icon is hidden
+                                binding.reportsHomeIV.setVisibility(View.GONE);
                             }
+
+                            // Make notification icon visible for all users
+                            binding.notificationHomeIV.setVisibility(View.VISIBLE);
                         }
                     }
                 }
@@ -176,6 +233,11 @@ public class homeFragment extends Fragment {
 
         binding.chatHomeIV.setOnClickListener(v -> {
             startActivity(new Intent(getContext(), chatActivity.class));
+        });
+
+        // Add click listener for reports icon
+        binding.reportsHomeIV.setOnClickListener(v -> {
+            startActivity(new Intent(getContext(), ReportsActivity.class));
         });
 
         // Handle image selection

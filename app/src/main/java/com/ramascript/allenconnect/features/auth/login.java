@@ -94,6 +94,13 @@ public class login extends AppCompatActivity {
                                         String dbUserType = snapshot.child("userType").getValue(String.class);
                                         assert userType != null;
                                         if (userType.equals(dbUserType)) {
+                                            // Save user type to SharedPreferences
+                                            android.content.SharedPreferences sharedPreferences = getSharedPreferences(
+                                                    "UserPrefs", MODE_PRIVATE);
+                                            android.content.SharedPreferences.Editor editor = sharedPreferences.edit();
+                                            editor.putString("userType", dbUserType);
+                                            editor.apply();
+
                                             Toast.makeText(login.this, "login Successful", Toast.LENGTH_SHORT).show();
                                             Intent i = new Intent(login.this, mainActivity.class);
                                             startActivity(i);

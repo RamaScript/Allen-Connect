@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ramascript.allenconnect.features.comment.commentActivity;
+import com.ramascript.allenconnect.features.report.ReportPostBottomSheet;
 import com.ramascript.allenconnect.features.user.userModel;
 import com.ramascript.allenconnect.R;
 import com.squareup.picasso.Picasso;
@@ -123,18 +125,11 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
 
         // Set up menu button click listener
         if (holder.postMenu != null) {
-            // Show menu only if post belongs to current user or is admin
-            boolean isCurrentUserPost = auth.getCurrentUser() != null &&
-                    auth.getCurrentUser().getUid().equals(post.getPostedBy());
-
-            if (isCurrentUserPost) {
-                holder.postMenu.setVisibility(View.VISIBLE);
-                holder.postMenu.setOnClickListener(v -> {
-                    showPostMenu(holder, post);
-                });
-            } else {
-                holder.postMenu.setVisibility(View.GONE);
-            }
+            // Show menu button for all posts
+            holder.postMenu.setVisibility(View.VISIBLE);
+            holder.postMenu.setOnClickListener(v -> {
+                showPostMenu(holder, post);
+            });
         }
     }
 
@@ -143,10 +138,14 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
         android.widget.PopupMenu popupMenu = new android.widget.PopupMenu(context, holder.postMenu);
         popupMenu.inflate(R.menu.post_menu);
 
+        boolean isCurrentUserPost = auth.getCurrentUser() != null &&
+                auth.getCurrentUser().getUid().equals(post.getPostedBy());
+
         // Only show delete option for posts made by current user
-        popupMenu.getMenu().findItem(R.id.action_delete_post).setVisible(
-                auth.getCurrentUser() != null &&
-                        auth.getCurrentUser().getUid().equals(post.getPostedBy()));
+        popupMenu.getMenu().findItem(R.id.action_delete_post).setVisible(isCurrentUserPost);
+
+        // Show "Report this post" option only for posts NOT made by current user
+        popupMenu.getMenu().findItem(R.id.action_report_post).setVisible(!isCurrentUserPost);
 
         // Set up menu item click listener
         popupMenu.setOnMenuItemClickListener(item -> {
@@ -154,12 +153,71 @@ public class postAdapter extends RecyclerView.Adapter<postAdapter.ViewHolder> {
             if (id == R.id.action_delete_post) {
                 deletePost(post);
                 return true;
+            } else if (id == R.id.action_report_post) {
+                showReportDialog(post);
+                return true;
             }
             return false;
         });
 
         // Show the menu
         popupMenu.show();
+    }
+
+    private void showReportDialog(postModel post) {
+        // First check if the user has already reported this post
+        if (auth.getCurrentUser() != null) {
+            String currentUserId = auth.getCurrentUser().getUid();
+            database.getReference().child("Reports").child(post.getPostId())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                boolean hasReported = false;
+                                for (DataSnapshot reportSnapshot : snapshot.getChildren()) {
+                                    if (reportSnapshot.child("reporterId").getValue(String.class) != null &&
+                                            reportSnapshot.child("reporterId").getValue(String.class)
+                                                    .equals(currentUserId)) {
+                                        hasReported = true;
+                                        break;
+                                    }
+                                }
+
+                                if (hasReported) {
+                                    Toast.makeText(context, "You have already reported this post", Toast.LENGTH_SHORT)
+                                            .show();
+                                } else {
+                                    // Create and show the report dialog
+                                    ReportPostBottomSheet reportSheet = ReportPostBottomSheet
+                                            .newInstance(post.getPostId());
+                                    if (context instanceof androidx.fragment.app.FragmentActivity) {
+                                        reportSheet.show(
+                                                ((androidx.fragment.app.FragmentActivity) context)
+                                                        .getSupportFragmentManager(),
+                                                "ReportPostBottomSheet");
+                                    }
+                                }
+                            } else {
+                                // No reports yet, show the dialog
+                                ReportPostBottomSheet reportSheet = ReportPostBottomSheet.newInstance(post.getPostId());
+                                if (context instanceof androidx.fragment.app.FragmentActivity) {
+                                    reportSheet.show(
+                                            ((androidx.fragment.app.FragmentActivity) context)
+                                                    .getSupportFragmentManager(),
+                                            "ReportPostBottomSheet");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(context, "Error checking reports: " + error.getMessage(), Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    });
+        } else {
+            Toast.makeText(context, "You must be logged in to report a post", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void deletePost(postModel post) {

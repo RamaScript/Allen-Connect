@@ -39,6 +39,7 @@ import com.ramascript.allenconnect.features.post.postFragment;
 import com.ramascript.allenconnect.features.user.profileFragment;
 import com.ramascript.allenconnect.databinding.ActivityMainBinding;
 import com.ramascript.allenconnect.features.chat.IncomingCallService;
+import com.ramascript.allenconnect.base.allenConnectApp;
 
 public class mainActivity extends AppCompatActivity {
 
@@ -224,6 +225,8 @@ public class mainActivity extends AppCompatActivity {
                     .setMessage("Do you want to sign out?")
                     .setCancelable(true)
                     .setPositiveButton("Yes", (dialog, which) -> {
+                        // Set user online status to false before logging out
+                        ((allenConnectApp) getApplication()).updateOnlineStatus(false);
                         // Sign out from Firebase
                         if (auth != null) {
                             auth.signOut();

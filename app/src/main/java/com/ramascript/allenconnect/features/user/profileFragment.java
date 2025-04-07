@@ -46,6 +46,7 @@ import com.ramascript.allenconnect.databinding.FragmentProfileBinding;
 import com.ramascript.allenconnect.features.post.postModel;
 import com.ramascript.allenconnect.features.post.postAdapter;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.ramascript.allenconnect.base.allenConnectApp;
 
 public class profileFragment extends baseFragment {
 
@@ -811,6 +812,10 @@ public class profileFragment extends baseFragment {
                 startActivity(new Intent(getContext(), deleteAccountActivity.class));
                 return true;
             } else if (item.getItemId() == R.id.action_logout) {
+                // Set user online status to false before logging out
+                if (getActivity() != null) {
+                    ((allenConnectApp) getActivity().getApplication()).updateOnlineStatus(false);
+                }
                 auth.signOut();
                 startActivity(new Intent(getActivity(), loginAs.class));
                 requireActivity().finish();
