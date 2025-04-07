@@ -2,6 +2,7 @@ package com.ramascript.allenconnect.features.report;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,10 +50,19 @@ public class ReportsActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         emptyStateTextView = findViewById(R.id.emptyStateTextView);
 
-        // Set up toolbar
+        // Set up toolbar with custom back button
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Reported Posts");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        // Setup back button click listener
+        ImageView backButton = findViewById(R.id.backButton);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> {
+                onBackPressed();
+            });
+        }
 
         // Set up RecyclerView
         reportsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -82,11 +92,14 @@ public class ReportsActivity extends AppCompatActivity {
                 }
 
                 final int[] pendingPosts = { (int) snapshot.getChildrenCount() };
+                android.util.Log.d("ReportsActivity", "Found " + snapshot.getChildrenCount() + " posts with reports");
 
                 // Iterate through all postIds
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     String postId = postSnapshot.getKey();
                     ArrayList<ReportModel> reports = new ArrayList<>();
+                    android.util.Log.d("ReportsActivity",
+                            "Processing post: " + postId + " with " + postSnapshot.getChildrenCount() + " reports");
 
                     // Iterate through all reports for this post
                     for (DataSnapshot reportSnapshot : postSnapshot.getChildren()) {
@@ -94,7 +107,30 @@ public class ReportsActivity extends AppCompatActivity {
                         if (report != null) {
                             report.setReportId(reportSnapshot.getKey());
                             report.setPostId(postId);
+
+                            // Debug logs for report data
+                            android.util.Log.d("ReportsActivity", "Report data: " +
+                                    "reportId=" + report.getReportId() +
+                                    ", postId=" + report.getPostId() +
+                                    ", reporterId=" + report.getReporterId() +
+                                    ", reporterName=" + report.getReporterName());
+
+                            // Check if reporterId is null/empty
+                            if (report.getReporterId() == null || report.getReporterId().isEmpty()) {
+                                android.util.Log.e("ReportsActivity", "ReporterId is null or empty in the database");
+                                // Try to get reporterId from raw snapshot data
+                                Object reporterIdObj = reportSnapshot.child("reporterId").getValue();
+                                if (reporterIdObj != null) {
+                                    String reporterId = reporterIdObj.toString();
+                                    android.util.Log.d("ReportsActivity",
+                                            "Fixed reporterId from snapshot: " + reporterId);
+                                    report.setReporterId(reporterId);
+                                }
+                            }
+
                             reports.add(report);
+                        } else {
+                            android.util.Log.e("ReportsActivity", "Failed to parse report from snapshot");
                         }
                     }
 
@@ -139,11 +175,5 @@ public class ReportsActivity extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
         emptyStateTextView.setVisibility(View.VISIBLE);
         emptyStateTextView.setText("No reported posts found");
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
     }
 }

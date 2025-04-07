@@ -1,6 +1,10 @@
 package com.ramascript.allenconnect.features.report;
 
-public class ReportModel {
+import java.io.Serializable;
+
+public class ReportModel implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String reportId;
     private String postId;
     private String reporterId;
