@@ -235,4 +235,22 @@
         android:indeterminateTint="@color/black"
         android:visibility="gone" />
 
+    <ImageView
+        android:id="@+id/chatbotIV"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/ic_chatbot"
+        android:background="@drawable/gradient_btn"
+        app:tint="@color/white"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="80dp"
+        android:scaleType="centerInside"
+        android:padding="12dp"
+        android:elevation="6dp"
+        android:contentDescription="Chatbot" />
+
+
+
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

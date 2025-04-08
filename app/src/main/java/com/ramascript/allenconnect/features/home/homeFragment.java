@@ -26,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.ramascript.allenconnect.features.bot.allenBotActivity;
 import com.ramascript.allenconnect.features.post.postAdapter;
 import com.ramascript.allenconnect.features.chat.chatActivity;
 import com.ramascript.allenconnect.features.notification.notificationFragment;
@@ -94,6 +95,10 @@ public class homeFragment extends Fragment {
         System.out.println("homeFragment onCreateView called");
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
+
+        binding.chatbotIV.setOnClickListener(v -> {
+            requireActivity().startActivity(new Intent(getContext(), allenBotActivity.class));
+        });
 
         // Initialize progress dialog
         dialog = new ProgressDialog(getContext());

@@ -7,58 +7,50 @@
     android:layout_height="match_parent"
     tools:context=".features.bot.allenBotActivity">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/border_bottom"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="8dp"
-        android:paddingRight="16dp"
+        app:elevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/backBtnIV"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="@color/black" />
-
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="24dp"
+        <LinearLayout
+            android:id="@+id/linearLayout8"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:layout_weight="1"
-            android:fontFamily="@font/poppins_semibold"
-            android:text="Allen Chat Bot"
-            android:textColor="@color/black"
-            android:textSize="24dp" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingVertical="8dp"
+            android:paddingHorizontal="8dp"
+            app:layout_scrollFlags="scroll|enterAlways|snap">
 
-        <ImageView
-            android:id="@+id/notificationMenuIV"
-            android:layout_width="@dimen/_8mdp"
-            android:layout_height="@dimen/_28mdp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_more"
-            android:visibility="invisible" />
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/black" />
 
-    <WebView
-        android:id="@+id/webview"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Allen Bot"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+
+        </LinearLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
