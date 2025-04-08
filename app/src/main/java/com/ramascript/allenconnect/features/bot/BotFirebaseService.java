@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -33,6 +34,7 @@ import java.util.UUID;
 public class BotFirebaseService {
     private static final String CHANNEL_ID = "bot_upload_channel";
     private static final int NOTIFICATION_ID = 1002;
+    private static final String TAG = "BotFirebaseService";
 
     private final Context context;
     private final FirebaseStorage storage;
@@ -87,8 +89,11 @@ public class BotFirebaseService {
                 }
 
                 @Override
-                public void onSuccess(String downloadUrl) {
+                public void onSuccess(String downloadUrl, String fileId) {
                     completedUploads[0]++;
+
+                    // Now extract and save the text content
+                    extractAndSaveFileText(file, fileId, userId);
 
                     // Check if all uploads are complete
                     if (completedUploads[0] + failedUploads[0] == files.size()) {
@@ -190,54 +195,85 @@ public class BotFirebaseService {
         DatabaseReference fileRef = database.child("data_for_chatbot").child(fileId);
         fileRef.setValue(fileData)
                 .addOnSuccessListener(aVoid -> {
-                    listener.onSuccess(downloadUrl);
+                    listener.onSuccess(downloadUrl, fileId);
                 })
                 .addOnFailureListener(e -> {
                     listener.onFailure(e);
                 });
     }
 
+    private void extractAndSaveFileText(BotFileItem file, String fileId, String userId) {
+        // Extract text from the file and save it to Firebase
+        FileTextExtractor.extractTextFromFile(context, file.getFileUri(), file.getFileType(),
+                new FileTextExtractor.TextExtractionCallback() {
+                    @Override
+                    public void onTextExtracted(String text) {
+                        // Save the extracted text to Firebase
+                        database.child("data_for_chatbot").child(fileId).child("extractedText").setValue(text)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d(TAG, "Text extraction saved successfully for file: " + fileId);
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e(TAG, "Error saving extracted text", e);
+                                });
+                    }
+
+                    @Override
+                    public void onExtractionFailed(Exception e) {
+                        Log.e(TAG, "Text extraction failed for file: " + fileId, e);
+                    }
+                });
+    }
+
     private void showUploadNotification(int progress, int totalFiles) {
+        String title = "Uploading files to Allen Bot";
+        String content = progress + "% (" + totalFiles + " files)";
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_upload)
-                .setContentTitle("Uploading files to AllenBot")
-                .setContentText("Uploading " + totalFiles + " file(s)... " + progress + "%")
-                .setProgress(100, progress, false)
+                .setContentTitle(title)
+                .setContentText(content)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setOngoing(true);
+                .setProgress(100, progress, false);
 
         notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 
     private void showUploadCompleteNotification(int totalFiles) {
+        String title = "Upload Complete";
+        String content = "Successfully uploaded " + totalFiles + " files";
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_upload)
-                .setContentTitle("Upload Complete")
-                .setContentText(totalFiles + " file(s) uploaded successfully")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true);
+                .setContentTitle(title)
+                .setContentText(content)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 
     private void showUploadFailedNotification() {
+        String title = "Upload Failed";
+        String content = "Failed to upload files";
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_upload)
-                .setContentTitle("Upload Failed")
-                .setContentText("Failed to upload files")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true);
+                .setContentTitle(title)
+                .setContentText(content)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 
     private void showUploadPartialNotification(int successCount, int failureCount) {
+        String title = "Upload Partially Complete";
+        String content = "Uploaded " + successCount + " files, " + failureCount + " failed";
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_upload)
-                .setContentTitle("Upload Partially Complete")
-                .setContentText(successCount + " file(s) uploaded, " + failureCount + " failed")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true);
+                .setContentTitle(title)
+                .setContentText(content)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
@@ -249,7 +285,7 @@ public class BotFirebaseService {
     public interface OnFileUploadListener {
         void onProgress(int progress);
 
-        void onSuccess(String downloadUrl);
+        void onSuccess(String downloadUrl, String fileId);
 
         void onFailure(Exception e);
     }

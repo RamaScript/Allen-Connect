@@ -1,8 +1,11 @@
 package com.ramascript.allenconnect.features.bot;
 
+import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,110 +15,114 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ramascript.allenconnect.R;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SelectedFilesAdapter extends RecyclerView.Adapter<SelectedFilesAdapter.FileViewHolder> {
-    private List<File> files = new ArrayList<>();
-    private OnFileRemoveListener listener;
+
+    private final List<FileItem> fileItems;
+    private final Context context;
+    private final OnFileRemoveListener removeListener;
 
     public interface OnFileRemoveListener {
-        void onFileRemove(File file);
+        void onRemoveFile(int position);
     }
 
-    public SelectedFilesAdapter(OnFileRemoveListener listener) {
-        this.listener = listener;
+    public static class FileItem {
+        private final Uri uri;
+        private final String displayName;
+        private final String fileType;
+
+        public FileItem(Uri uri, String displayName, String fileType) {
+            this.uri = uri;
+            this.displayName = displayName;
+            this.fileType = fileType;
+        }
+
+        public Uri getUri() {
+            return uri;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public String getFileType() {
+            return fileType;
+        }
+    }
+
+    public SelectedFilesAdapter(Context context, List<FileItem> fileItems, OnFileRemoveListener removeListener) {
+        this.context = context;
+        this.fileItems = fileItems;
+        this.removeListener = removeListener;
     }
 
     @NonNull
     @Override
     public FileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_selected_file, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_selected_file, parent, false);
         return new FileViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull FileViewHolder holder, int position) {
-        File file = files.get(position);
-        holder.tvFileName.setText(file.getName());
-        holder.tvFileSize.setText(formatFileSize(file.length()));
+        FileItem fileItem = fileItems.get(position);
+        holder.fileName.setText(fileItem.getDisplayName());
 
-        // Set file type icon based on extension
-        String extension = getFileExtension(file.getName()).toLowerCase();
-        int iconResId = R.drawable.ic_file_default;
-
-        if (extension.equals("pdf")) {
-            iconResId = R.drawable.ic_pdf;
-        } else if (extension.equals("doc") || extension.equals("docx")) {
-            iconResId = R.drawable.ic_word;
-        } else if (extension.equals("xls") || extension.equals("xlsx")) {
-            iconResId = R.drawable.ic_excel;
-        } else if (extension.equals("txt")) {
-            iconResId = R.drawable.ic_text;
+        // Set file type icon based on file extension
+        String fileType = fileItem.getFileType().toLowerCase();
+        if (fileType.equals("pdf")) {
+            holder.fileIcon.setImageResource(R.drawable.ic_pdf_file);
+        } else if (fileType.equals("doc") || fileType.equals("docx")) {
+            holder.fileIcon.setImageResource(R.drawable.ic_doc_file);
+        } else if (fileType.equals("xls") || fileType.equals("xlsx")) {
+            holder.fileIcon.setImageResource(R.drawable.ic_xls_file);
+        } else if (fileType.equals("txt")) {
+            holder.fileIcon.setImageResource(R.drawable.ic_txt_file);
+        } else {
+            holder.fileIcon.setImageResource(R.drawable.ic_file_generic);
         }
 
-        holder.ivFileType.setImageResource(iconResId);
-
-        holder.btnRemove.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onFileRemove(file);
+        holder.removeButton.setOnClickListener(v -> {
+            int adapterPosition = holder.getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                removeListener.onRemoveFile(adapterPosition);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return files.size();
+        return fileItems.size();
     }
 
-    public void setFiles(List<File> files) {
-        this.files = files;
-        notifyDataSetChanged();
+    public void addFile(FileItem fileItem) {
+        fileItems.add(fileItem);
+        notifyItemInserted(fileItems.size() - 1);
     }
 
-    public void addFile(File file) {
-        files.add(file);
-        notifyItemInserted(files.size() - 1);
-    }
-
-    public void removeFile(File file) {
-        int position = files.indexOf(file);
-        if (position != -1) {
-            files.remove(position);
+    public void removeFile(int position) {
+        if (position >= 0 && position < fileItems.size()) {
+            fileItems.remove(position);
             notifyItemRemoved(position);
+            notifyItemRangeChanged(position, fileItems.size());
         }
     }
 
-    private String formatFileSize(long size) {
-        if (size <= 0)
-            return "0 B";
-        final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
-        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
-        return String.format("%.1f %s", size / Math.pow(1024, digitGroups), units[digitGroups]);
-    }
-
-    private String getFileExtension(String fileName) {
-        if (fileName == null)
-            return "";
-        int lastDotIndex = fileName.lastIndexOf(".");
-        if (lastDotIndex == -1)
-            return "";
-        return fileName.substring(lastDotIndex + 1);
+    public List<FileItem> getFileItems() {
+        return fileItems;
     }
 
     static class FileViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivFileType;
-        TextView tvFileName;
-        TextView tvFileSize;
-        ImageView btnRemove;
+        ImageView fileIcon;
+        TextView fileName;
+        ImageButton removeButton;
 
         FileViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivFileType = itemView.findViewById(R.id.fileTypeIcon);
-            tvFileName = itemView.findViewById(R.id.fileNameText);
-            tvFileSize = itemView.findViewById(R.id.fileSizeText);
-            btnRemove = itemView.findViewById(R.id.removeButton);
+            fileIcon = itemView.findViewById(R.id.file_icon);
+            fileName = itemView.findViewById(R.id.file_name);
+            removeButton = itemView.findViewById(R.id.remove_file_button);
         }
     }
 }

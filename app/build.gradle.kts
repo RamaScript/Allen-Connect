@@ -33,6 +33,23 @@ android {
     buildFeatures{
         viewBinding = true
     }
+    
+    // Add packaging options to handle duplicate files
+    packaging {
+        resources {
+            excludes += listOf(
+                "META-INF/DEPENDENCIES", 
+                "META-INF/LICENSE", 
+                "META-INF/LICENSE.txt", 
+                "META-INF/license.txt", 
+                "META-INF/NOTICE", 
+                "META-INF/NOTICE.txt", 
+                "META-INF/notice.txt", 
+                "META-INF/ASL2.0", 
+                "META-INF/*.kotlin_module"
+            )
+        }
+    }
 }
 
 dependencies {
@@ -80,4 +97,16 @@ dependencies {
     
     // Permissions handling
     implementation("com.guolindev.permissionx:permissionx:1.7.1")
+
+
+    // Add PDFBox for PDF text extraction
+    implementation ("org.apache.pdfbox:pdfbox:2.0.27")
+    implementation ("org.apache.pdfbox:fontbox:2.0.27")
+
+    // Add Apache POI for DOCX, XLSX text extraction
+    implementation ("org.apache.poi:poi:5.2.3")
+    implementation ("org.apache.poi:poi-ooxml:5.2.3")
+
+    // Gemini AI API
+    implementation ("com.google.ai.client.generativeai:generativeai:0.1.1")
 }

@@ -42,28 +42,8 @@ public class BotFileAdapter extends RecyclerView.Adapter<BotFileAdapter.FileView
         holder.tvFileName.setText(item.getFileName());
         holder.ivFileIcon.setImageResource(item.getFileIconResId());
 
-        // Set description if exists
-        if (item.getDescription() != null && !item.getDescription().isEmpty()) {
-            holder.etFileDescription.setText(item.getDescription());
-        } else {
-            holder.etFileDescription.setText("");
-        }
-
-        // Set up description change listener
-        holder.etFileDescription.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                item.setDescription(s.toString());
-            }
-        });
+        // Hide the description field since it's not in the layout
+        // If a description field is needed, we would need to modify the layout
 
         // Set up remove button
         holder.btnRemoveFile.setOnClickListener(v -> {
@@ -97,15 +77,13 @@ public class BotFileAdapter extends RecyclerView.Adapter<BotFileAdapter.FileView
     static class FileViewHolder extends RecyclerView.ViewHolder {
         ImageView ivFileIcon;
         TextView tvFileName;
-        TextInputEditText etFileDescription;
         ImageView btnRemoveFile;
 
         FileViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivFileIcon = itemView.findViewById(R.id.fileTypeIcon);
-            tvFileName = itemView.findViewById(R.id.fileNameText);
-            etFileDescription = itemView.findViewById(R.id.etFileDescription);
-            btnRemoveFile = itemView.findViewById(R.id.removeButton);
+            ivFileIcon = itemView.findViewById(R.id.file_icon);
+            tvFileName = itemView.findViewById(R.id.file_name);
+            btnRemoveFile = itemView.findViewById(R.id.remove_file_button);
         }
     }
 }

@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import android.util.Log;
 
 public class allenBotActivity extends AppCompatActivity {
 
@@ -50,6 +51,7 @@ public class allenBotActivity extends AppCompatActivity {
     private DatabaseReference chatDatabase;
     private String currentUserId;
     private boolean isLoadingMessages = false;
+    private BotGeminiService geminiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,9 @@ public class allenBotActivity extends AppCompatActivity {
 
         // Initialize Firebase
         chatDatabase = FirebaseDatabase.getInstance().getReference().child("bot_chats").child(currentUserId);
+
+        // Initialize Gemini service
+        geminiService = new BotGeminiService(this);
 
         // Set up RecyclerView
         chatAdapter = new BotChatAdapter();
@@ -172,6 +177,11 @@ public class allenBotActivity extends AppCompatActivity {
     }
 
     private void sendMessage(String text) {
+        // Disable input field and show loading indicator to prevent multiple sends
+        binding.messageInput.setEnabled(false);
+        binding.sendButton.setEnabled(false);
+        binding.progressBar.setVisibility(View.VISIBLE);
+
         // Create user message
         BotChatMessage userMessage = new BotChatMessage(text, true);
         userMessage.setUserId(currentUserId);
@@ -183,18 +193,85 @@ public class allenBotActivity extends AppCompatActivity {
                     // Clear input
                     binding.messageInput.setText("");
 
-                    // Create bot response (for now a generic response)
-                    BotChatMessage botResponse = new BotChatMessage(
-                            "Sorry, the chat bot is currently under development. Please check back later.", false);
-                    botResponse.setUserId("bot");
-                    botResponse.setTimestamp(System.currentTimeMillis());
+                    // Generate response using Gemini AI
+                    geminiService.getResponseWithDocumentContext(currentUserId, text,
+                            new BotGeminiService.ResponseCallback() {
+                                @Override
+                                public void onResponseReceived(String response) {
+                                    // Create bot response
+                                    BotChatMessage botResponse = new BotChatMessage(response, false);
+                                    botResponse.setUserId("bot");
+                                    botResponse.setTimestamp(System.currentTimeMillis());
 
-                    // Save bot response to Firebase
-                    String botMessageId = UUID.randomUUID().toString();
-                    chatDatabase.child(botMessageId).setValue(botResponse);
+                                    // Save bot response to Firebase
+                                    String botMessageId = UUID.randomUUID().toString();
+                                    chatDatabase.child(botMessageId).setValue(botResponse)
+                                            .addOnSuccessListener(aVoid2 -> {
+                                                // Re-enable input field
+                                                runOnUiThread(() -> {
+                                                    binding.messageInput.setEnabled(true);
+                                                    binding.sendButton.setEnabled(true);
+                                                    binding.progressBar.setVisibility(View.GONE);
+                                                });
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Toast.makeText(allenBotActivity.this,
+                                                        "Failed to save bot response",
+                                                        Toast.LENGTH_SHORT).show();
+
+                                                binding.messageInput.setEnabled(true);
+                                                binding.sendButton.setEnabled(true);
+                                                binding.progressBar.setVisibility(View.GONE);
+                                            });
+                                }
+
+                                @Override
+                                public void onError(String errorMessage) {
+                                    // Handle error
+                                    BotChatMessage errorResponse = new BotChatMessage(
+                                            "Sorry, I'm having trouble responding right now.", false);
+                                    errorResponse.setUserId("bot");
+                                    errorResponse.setTimestamp(System.currentTimeMillis());
+
+                                    // Save error response to Firebase
+                                    String botMessageId = UUID.randomUUID().toString();
+                                    chatDatabase.child(botMessageId).setValue(errorResponse);
+
+                                    // Log the error to logcat but don't show it to the user
+                                    Log.e("BotChat", "API Error: " + errorMessage);
+
+                                    // If there's a 404 error with the model, try listing available models
+                                    if (errorMessage.contains("404") && errorMessage.contains("models")) {
+                                        geminiService.listAvailableModels(new BotGeminiService.ResponseCallback() {
+                                            @Override
+                                            public void onResponseReceived(String response) {
+                                                // Log the available models but don't show to user
+                                                Log.d("BotChat", "Available models: " + response);
+                                            }
+
+                                            @Override
+                                            public void onError(String listError) {
+                                                Log.e("BotChat", "Failed to list models: " + listError);
+                                            }
+                                        });
+                                    }
+
+                                    // Re-enable input field
+                                    binding.messageInput.setEnabled(true);
+                                    binding.sendButton.setEnabled(true);
+                                    binding.progressBar.setVisibility(View.GONE);
+                                }
+                            });
                 })
-                .addOnFailureListener(e -> Toast
-                        .makeText(allenBotActivity.this, "Failed to send message", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Toast.makeText(allenBotActivity.this,
+                            "Failed to send message",
+                            Toast.LENGTH_SHORT).show();
+
+                    binding.messageInput.setEnabled(true);
+                    binding.sendButton.setEnabled(true);
+                    binding.progressBar.setVisibility(View.GONE);
+                });
     }
 
     private void openUploadActivity() {

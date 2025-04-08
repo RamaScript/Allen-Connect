@@ -15,6 +15,12 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    
+    <!-- Selected Files -->
+    <string name="file_icon_description">File Icon</string>
+    <string name="remove_file_button_description">Remove File</string>
+    <string name="file_type_icon">File Type Icon</string>
+    <string name="remove_file">Remove File</string>
 
     <string-array name="job_types">
         <item>Select Job Type</item> <!-- This acts as the hint -->
