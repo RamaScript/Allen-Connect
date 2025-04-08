@@ -70,6 +70,12 @@
             android:name=".features.bot.allenBotActivity"
             android:exported="false" />
         <activity
+            android:name=".features.bot.BotUploadActivity"
+            android:exported="false" />
+        <activity
+            android:name=".features.bot.UploadedFilesActivity"
+            android:exported="false" />
+        <activity
             android:name=".features.comment.commentActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />

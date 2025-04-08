@@ -20,6 +20,7 @@
     <color name="more_light_gray2">#F6F6F6</color>
     <color name="portfolio">#ef6c00</color>
     <color name="orange">#FF5722</color>
+    <color name="orange_light">#FF8963</color>
     <color name="light_orange">#FFE0B2</color>
     <color name="chat_background">#FFF</color>
     <color name="shimmer_color">#DDDDDD</color>
@@ -37,5 +38,7 @@
     <color name="colorSuccess">#4CAF50</color>
     <color name="colorError">#F44336</color>
     <color name="grey">#757575</color>
+
+    <color name="selection_highlight">#E3F2FD</color>
 
 </resources>

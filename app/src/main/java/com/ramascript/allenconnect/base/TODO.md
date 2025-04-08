@@ -10,7 +10,7 @@
 - Fix issue where bottom navigation appears above keyboard 🔵
 - Smoothly hide bottom nav on scroll (match Community Fragment behavior) 🔵
 - Fix dark mode related UI issues 🔵
-- Post time me don't use 24 hrs format use 12hrs format with AM and PM 
+- users should be able to see the profile photo of others and thire own as wel
 
 ---
 
