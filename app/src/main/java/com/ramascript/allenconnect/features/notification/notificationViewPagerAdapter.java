@@ -15,10 +15,10 @@ public class notificationViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position){
-            case 0: return new activityNotificationFragment();
+            case 0: return new activitiesNotificationFragment();
             case 1: return new requestsNotificationFragment();
             case 2: return new eventsNotificationFragment();
-            default: return new activityNotificationFragment();
+            default: return new activitiesNotificationFragment();
         }
     }
 

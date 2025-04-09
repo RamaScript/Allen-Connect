@@ -45,11 +45,9 @@
 
             <ImageView
                 android:id="@+id/profileSettingsMenuBtn"
-                android:layout_width="42dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:paddingVertical="8dp"
-                android:paddingHorizontal="16dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
                 app:srcCompat="@drawable/ic_more"
                 app:tint="@color/dark_gray" />
         </LinearLayout>

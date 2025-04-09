@@ -65,13 +65,6 @@ public class chatDetailActivity extends AppCompatActivity {
             binding = ActivityChatDetailBinding.inflate(getLayoutInflater());
             setContentView(binding.getRoot());
 
-            // Set up the toolbar properly for menu
-            setSupportActionBar(binding.toolbar);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-            // Extra code to ensure the overflow menu shows up
-            binding.toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_more_vert));
-
             database = FirebaseDatabase.getInstance();
             auth = FirebaseAuth.getInstance();
 

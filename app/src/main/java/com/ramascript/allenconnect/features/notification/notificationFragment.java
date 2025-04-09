@@ -11,9 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 import com.ramascript.allenconnect.base.mainActivity;
+import com.ramascript.allenconnect.databinding.FragmentNotificationBinding;
 import com.ramascript.allenconnect.features.home.homeFragment;
 import com.ramascript.allenconnect.R;
 
@@ -21,6 +23,7 @@ public class notificationFragment extends Fragment {
 
     ViewPager viewPager;
     TabLayout tabLayout;
+    FragmentNotificationBinding binding;
 
     public notificationFragment() {
         // Required empty public constructor
@@ -34,58 +37,32 @@ public class notificationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment\
-        View view = inflater.inflate(R.layout.fragment_notification, container, false);
+        // Inflate the layout for this fragment
+        binding = FragmentNotificationBinding.inflate(inflater, container, false);
 
-        ImageView backBtnIV = view.findViewById(R.id.backBtnIV);
-        backBtnIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getActivity() instanceof mainActivity) {
-                    ((mainActivity) getActivity()).navigateToFragment(new homeFragment(), R.id.navigation_home);
+        binding.backBtnIV.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().onBackPressed();
+            }
+        });
+
+        binding.menuBtn.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(getContext(), binding.menuBtn);
+            popupMenu.getMenu().add("Notification Settings");
+
+            popupMenu.setOnMenuItemClickListener(item -> {
+                if (item.getTitle().equals("Notification Settings")) {
+                    Toast.makeText(getContext(), "Feature is in development phase", Toast.LENGTH_SHORT).show();
                 }
-            }
+                return true;
+            });
+
+            popupMenu.show();
         });
 
-        ImageView notificationMenuIV = view.findViewById(R.id.notificationMenuIV);
+        binding.viewPager.setAdapter(new notificationViewPagerAdapter(getChildFragmentManager()));
+        binding.tabLayout.setupWithViewPager(binding.viewPager);
 
-        notificationMenuIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Create a PopupMenu
-                PopupMenu popupMenu = new PopupMenu(getContext(), v);
-
-                // Inflate the menu resource
-                popupMenu.getMenuInflater().inflate(R.menu.notification_menu, popupMenu.getMenu());
-
-                // Set a click listener for menu item clicks
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getItemId() == R.id.action_settings) {
-                            // Handle settings click
-                            // Add your logic for opening settings or handling the event
-                            return true;
-                        } else if (item.getItemId() == R.id.action_logout) {
-                            // handle
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                });
-
-                // Show the popup menu
-                popupMenu.show();
-            }
-        });
-
-        viewPager = view.findViewById(R.id.viewPager);
-        viewPager.setAdapter(new notificationViewPagerAdapter(getChildFragmentManager()));
-
-        tabLayout = view.findViewById(R.id.tabLayout);
-        tabLayout.setupWithViewPager(viewPager);
-
-        return view;
+        return binding.getRoot();
     }
 }

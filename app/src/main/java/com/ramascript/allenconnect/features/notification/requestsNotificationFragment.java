@@ -20,11 +20,9 @@ public class requestsNotificationFragment extends Fragment {
     ArrayList<notificationModel> list;
     notificationAdapter adapter;
 
-
     public requestsNotificationFragment() {
         // Required empty public constructor
     }
-
 
     public static requestsNotificationFragment newInstance(String param1, String param2) {
         requestsNotificationFragment fragment = new requestsNotificationFragment();
@@ -38,7 +36,7 @@ public class requestsNotificationFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_requests_notification, container, false);
 
@@ -50,6 +48,36 @@ public class requestsNotificationFragment extends Fragment {
         list.add(new notificationModel(R.drawable.ic_avatar, "<b>yashraj </b> Sent you a request", " 1 oct"));
         list.add(new notificationModel(R.drawable.ic_avatar, "<b>arvind</b> Sent you a request", "1 oct"));
         list.add(new notificationModel(R.drawable.ic_avatar, "<b>aman </b> Sent you a request", "1 oct"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Vikram</b> sent you a friend request", "1 hr ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Anjali</b> sent you a friend request", "2 hrs ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Arjun</b> sent you a friend request", "3 hrs ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Kavya</b> sent you a friend request", "5 hrs ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Mohan</b> sent you a friend request", "Yesterday"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Aisha</b> sent you a friend request", "Yesterday"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Rohan</b> sent you a friend request", "2 days ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Prerna</b> sent you a follow request", "2 days ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Nikhil</b> sent you a friend request", "3 days ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Shreya</b> sent you a friend request", "4 days ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Gaurav</b> sent you a follow request", "5 days ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Tanvi</b> sent you a friend request", "6 days ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Siddharth</b> sent you a friend request",
+                "1 week ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Kirti</b> sent you a follow request", "1 week ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Vijay</b> sent you a friend request", "1 week ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Aditi</b> sent you a friend request", "2 weeks ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Kabir</b> sent you a friend request", "2 weeks ago"));
+        list.add(
+                new notificationModel(R.drawable.ic_avatar, "<b>Nandini</b> sent you a follow request", "2 weeks ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Rahul</b> sent you a friend request", "2 weeks ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Simran</b> sent you a friend request", "3 weeks ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Vivek</b> sent you a friend request", "3 weeks ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Neelam</b> sent you a follow request", "3 weeks ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Raj</b> sent you a friend request", "1 month ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Meena</b> sent you a friend request", "1 month ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Sachin</b> sent you a friend request", "1 month ago"));
+        list.add(
+                new notificationModel(R.drawable.ic_avatar, "<b>Deepika</b> sent you a follow request", "1 month ago"));
+        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Akshay</b> sent you a friend request", "1 month ago"));
 
         adapter = new notificationAdapter(list, getContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);

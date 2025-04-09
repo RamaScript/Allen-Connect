@@ -48,14 +48,14 @@
                 android:textSize="24dp" />
 
             <ImageView
-                android:id="@+id/notificationMenuIV"
-                android:layout_width="@dimen/_8mdp"
-                android:layout_height="@dimen/_28mdp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
+                android:id="@+id/menuBtn"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
+                android:visibility="invisible"
+                android:contentDescription="More options"
                 android:src="@drawable/ic_more"
-                android:visibility="invisible" />
+                app:tint="@color/black" />
         </LinearLayout>
 
     </com.google.android.material.appbar.AppBarLayout>

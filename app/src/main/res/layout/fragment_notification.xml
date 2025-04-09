@@ -6,63 +6,76 @@
     android:layout_height="match_parent"
     tools:context=".features.notification.notificationFragment">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/border_bottom"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="8dp"
-        android:paddingRight="16dp"
+        app:elevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/backBtnIV"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="@color/black" />
-
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="24dp"
+        <LinearLayout
+            android:id="@+id/linearLayout8"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:layout_weight="1"
-            android:fontFamily="@font/poppins_semibold"
-            android:text="Notifications"
-            android:textColor="@color/black"
-            android:textSize="22dp" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingVertical="8dp"
+            android:paddingHorizontal="8dp"
+            app:layout_scrollFlags="scroll|enterAlways|snap">
 
-        <ImageView
-            android:id="@+id/notificationMenuIV"
-            android:layout_width="@dimen/_8mdp"
-            android:layout_height="@dimen/_20mdp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_more"
-            android:visibility="invisible" />
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/backBtnIV"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/black" />
 
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Notifications"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
+            <ImageView
+                android:id="@+id/menuBtn"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
+                android:contentDescription="More options"
+                android:src="@drawable/ic_more"
+                app:tint="@color/black" />
+        </LinearLayout>
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView3"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        app:tabTextColor="@color/black"
-        app:tabIndicatorColor="@color/black"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        app:cardCornerRadius="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            app:tabIndicatorColor="@color/black"
+            app:tabSelectedTextColor="@color/black" />
+    </androidx.cardview.widget.CardView>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
@@ -72,5 +85,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/cardView3" />
 </androidx.constraintlayout.widget.ConstraintLayout>

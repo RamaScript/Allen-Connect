@@ -21,8 +21,9 @@
 
         <ImageView
             android:id="@+id/backBtnIV"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="8dp"
             android:layout_marginStart="12dp"
             android:src="@drawable/ic_arrow_back"
             android:contentDescription="Back button"
@@ -89,24 +90,16 @@
 
         <ImageView
             android:id="@+id/menuBtn"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="16dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="8dp"
             android:contentDescription="More options"
-            android:src="@drawable/ic_more_vert"
+            android:src="@drawable/ic_more"
             app:tint="@color/black" />
 
     </LinearLayout>
 
-    <!-- Update the toolbar to make it visible and show options menu -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_marginTop="?android:attr/actionBarSize"
-        android:background="@android:color/transparent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatRecyclerView"
