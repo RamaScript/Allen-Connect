@@ -109,4 +109,7 @@ dependencies {
 
     // Gemini AI API
     implementation ("com.google.ai.client.generativeai:generativeai:0.1.1")
+
+    implementation ("com.airbnb.android:lottie:6.6.4")
+
 }
