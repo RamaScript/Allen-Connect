@@ -136,34 +136,19 @@ public class mainActivity extends AppCompatActivity {
                 // If there are fragments in the back stack, pop the last one
                 if (fragmentManager.getBackStackEntryCount() > 0) {
                     fragmentManager.popBackStack();
-                } else {
-                    // Check if we're in a user profile that's not the current user
+                    // Update bottom navigation to match the current fragment
                     Fragment currentFragment = fragmentManager.findFragmentById(R.id.container);
-                    if (currentFragment instanceof profileFragment) {
-                        profileFragment pf = (profileFragment) currentFragment;
-                        if (!pf.isCurrentUserProfile()) {
-                            try {
-                                // Safely load the home fragment
-                                Fragment homeFragment = new homeFragment();
-
-                                // Use immediate transaction to avoid async issues
-                                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                                transaction.replace(R.id.container, homeFragment);
-                                transaction.commitNow();
-
-                                // Update navigation selection after fragment is loaded
-                                currentFragmentId = R.id.navigation_home;
-                                binding.bottomNavView.setSelectedItemId(R.id.navigation_home);
-                                return;
-                            } catch (Exception e) {
-                                Log.e("mainActivity", "Error returning to home: " + e.getMessage());
-                                // If all else fails, restart the activity
-                                recreate();
-                                return;
-                            }
-                        }
+                    if (currentFragment instanceof homeFragment) {
+                        currentFragmentId = R.id.navigation_home;
+                        binding.bottomNavView.setSelectedItemId(R.id.navigation_home);
+                    } else if (currentFragment instanceof communityFragment) {
+                        currentFragmentId = R.id.navigation_community;
+                        binding.bottomNavView.setSelectedItemId(R.id.navigation_community);
+                    } else if (currentFragment instanceof profileFragment) {
+                        currentFragmentId = R.id.navigation_profile;
+                        binding.bottomNavView.setSelectedItemId(R.id.navigation_profile);
                     }
-
+                } else {
                     // If no fragments are in the back stack, show exit dialog
                     new AlertDialog.Builder(mainActivity.this)
                             .setMessage("Do you want to leave the app?")
@@ -390,64 +375,64 @@ public class mainActivity extends AppCompatActivity {
     }
 
     private void handlePostNavigation() {
-        database.getReference().child("Users").child(auth.getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            String userType = snapshot.child("userType").getValue(String.class);
+        // Get user type from SharedPreferences
+        String userType = getSharedPreferences("UserPrefs", MODE_PRIVATE).getString("userType", "Student"); // Default to Student if not found
 
-                            if ("Student".equals(userType)) {
-                                loadFragment(new postFragment(), false);
-                            } else {
-                                binding.postOptions.setVisibility(View.VISIBLE);
+        if ("Student".equals(userType)) {
+            loadFragment(new postFragment(), false);
+        } else {
+            // Create and show custom dialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            View dialogView = getLayoutInflater().inflate(R.layout.dialog_post_options, null);
+            builder.setView(dialogView);
 
-                                binding.createPost.setOnClickListener(v -> {
-                                    loadFragment(new postFragment(), false);
-                                });
+            AlertDialog dialog = builder.create();
 
-                                binding.JobPost.setOnClickListener(v -> {
-                                    loadFragment(new jobPostFragment(), false);
-                                });
-                            }
-                        }
-                    }
+            // Set click listeners
+            dialogView.findViewById(R.id.createPostOption).setOnClickListener(v -> {
+                loadFragment(new postFragment(), false);
+                dialog.dismiss();
+            });
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                    }
-                });
+            dialogView.findViewById(R.id.postJobOption).setOnClickListener(v -> {
+                loadFragment(new jobPostFragment(), false);
+                dialog.dismiss();
+            });
+
+            dialogView.findViewById(R.id.cancelButton).setOnClickListener(v -> {
+                dialog.dismiss();
+                // Restore the previous bottom navigation selection
+                binding.bottomNavView.setSelectedItemId(currentFragmentId);
+            });
+
+            dialog.setOnCancelListener(dialogInterface -> {
+                // Restore the previous bottom navigation selection
+                binding.bottomNavView.setSelectedItemId(currentFragmentId);
+            });
+
+            dialog.show();
+        }
     }
 
     public void loadFragment(Fragment fragment, boolean isAppInitialized) {
-        System.out.println("loadFragment called with: " + fragment.getClass().getSimpleName() +
-                ", isAppInitialized=" + isAppInitialized);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        // By default making sure ki postoption wala jo card hai wo invisible rahe
-        binding.postOptions.setVisibility(View.GONE);
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        // Always use replace, never add to back stack
+        // Replace the current fragment
         transaction.replace(R.id.container, fragment);
 
-        // Never add to back stack - this is crucial
-        // transaction.addToBackStack(null); - REMOVE THIS if it exists
+        // Add to back stack if it's not the initial fragment
+        if (!isAppInitialized) {
+            transaction.addToBackStack(null);
+        }
 
         transaction.commit();
     }
 
-    // Also update this method to handle fragment navigation from other places
     public void navigateToFragment(Fragment fragment, int navigationId) {
-        if (navigationId != currentFragmentId) {
-            currentFragmentId = navigationId;
-            loadFragment(fragment, false);
-            updateBottomNavSelection(navigationId);
-        }
-    }
-
-    public void updateBottomNavSelection(int itemId) {
-        binding.bottomNavView.setSelectedItemId(itemId);
+        currentFragmentId = navigationId;
+        loadFragment(fragment, false);
+        binding.bottomNavView.setSelectedItemId(navigationId);
     }
 
     public void hideBottomNavigation() {
@@ -488,8 +473,6 @@ public class mainActivity extends AppCompatActivity {
             return;
 
         // Hide post options
-        binding.postOptions.setVisibility(View.GONE);
-
         // Use a transaction without animation
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_NONE); // No animation

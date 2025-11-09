@@ -38,16 +38,16 @@ public class activitiesNotificationFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.notificationRV);
         list = new ArrayList<>();
-        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Ramanand</b> mentioned u in comment", "Just Now"));
-        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Raju</b> mentioned u in Story", "kal "));
+        list.add(new notificationModel(R.drawable.rama, "<b>Ramanand</b> mentioned u in comment", "Just Now"));
+        list.add(new notificationModel(R.drawable.rajat, "<b>Rajat</b> mentioned u in Story", "kal "));
         list.add(new notificationModel(R.drawable.ic_avatar, "<b>shadow </b>mentioned u in comment", "parso"));
-        list.add(new notificationModel(R.drawable.ic_avatar, "<b>yashraj </b>mentioned u in comment", " 1 oct"));
+        list.add(new notificationModel(R.drawable.yash, "<b>yashraj </b>mentioned u in comment", " 1 oct"));
         list.add(new notificationModel(R.drawable.ic_avatar, "<b>arvind</b> mentioned u in comment", "1 oct"));
         list.add(new notificationModel(R.drawable.ic_avatar, "<b>aman </b>mentioned u in comment", "1 oct"));
-        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Vikram</b> liked your post", "2 hrs ago"));
-        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Priya</b> commented on your photo", "3 hrs ago"));
+        list.add(new notificationModel(R.drawable.rama, "<b>Ramanand</b> liked your post", "2 hrs ago"));
+        list.add(new notificationModel(R.drawable.priyanshi, "<b>Priya</b> commented on your photo", "3 hrs ago"));
         list.add(new notificationModel(R.drawable.ic_avatar, "<b>Ananya</b> shared your post", "5 hrs ago"));
-        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Rajesh</b> replied to your comment", "Yesterday"));
+        list.add(new notificationModel(R.drawable.rajat, "<b>Rajat</b> replied to your comment", "Yesterday"));
         list.add(new notificationModel(R.drawable.ic_avatar, "<b>Neha</b> tagged you in a post", "Yesterday"));
         list.add(new notificationModel(R.drawable.ic_avatar, "<b>Amit</b> mentioned you in a group", "2 days ago"));
         list.add(new notificationModel(R.drawable.ic_avatar, "<b>Shreya</b> reacted to your story", "3 days ago"));

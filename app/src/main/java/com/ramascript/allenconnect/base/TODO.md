@@ -56,3 +56,6 @@
 - 🟢 High Priority – Core feature, requires significant development time
 - 🟡 Medium Priority – Important for UX, but can be done after major features
 - 🔵 Low Priority – Minor UI/UX changes, quick fixes  
+
+
+> when uploading images unko compress karo ojas maam ka imag load hone me ltime lagta hai 

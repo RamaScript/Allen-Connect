@@ -39,11 +39,11 @@ public class eventsNotificationFragment extends Fragment {
         recyclerView = view.findViewById(R.id.eventNotificationRV);
         list = new ArrayList<>();
 
-        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Exuberance</b> college fest is coming on 12th April",
+        list.add(new notificationModel(R.drawable.exuberance, "<b>Exuberance</b> college fest is coming on 12th April",
                 "2 days ago"));
-        list.add(new notificationModel(R.drawable.ic_avatar, "<b>Winter Gala</b> is on 31st December", "3 days ago"));
+        list.add(new notificationModel(R.drawable.winter_gala, "<b>Winter Gala</b> is on 31st December", "3 days ago"));
         list.add(
-                new notificationModel(R.drawable.ic_avatar, "<b>University Exams</b> start on 10th May", "1 week ago"));
+                new notificationModel(R.drawable.csjm, "<b>University Exams</b> start on 10th May", "1 week ago"));
         list.add(new notificationModel(R.drawable.ic_avatar, "<b>Annual Cultural Fest</b> is scheduled for 15th March",
                 "Yesterday"));
         list.add(new notificationModel(R.drawable.ic_avatar, "<b>Tech Summit</b> happening on 5th June", "5 days ago"));

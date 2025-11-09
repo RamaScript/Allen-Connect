@@ -29,53 +29,6 @@
             app:civ_border_color="@color/black"
             app:civ_border_width="2dp" />
 
-        <LinearLayout
-            android:id="@+id/postOptions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="72dp"
-            android:background="@drawable/round"
-            android:elevation="@dimen/_8mdp"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="12dp"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/createPost"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:background="@drawable/border_black"
-                android:fontFamily="@font/poppins_regular"
-                android:gravity="center"
-                android:letterSpacing="0.01"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:text="Create Post"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                app:backgroundTint="@color/black" />
-
-            <TextView
-                android:id="@+id/JobPost"
-                android:layout_width="match_parent"
-                android:layout_height="32dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/border_black"
-                android:fontFamily="@font/poppins_regular"
-                android:gravity="center"
-                android:letterSpacing="0.01"
-                android:padding="2dp"
-                android:text="Post Job"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                app:backgroundTint="@color/black" />
-
-        </LinearLayout>
-
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavView"
             android:layout_width="match_parent"
